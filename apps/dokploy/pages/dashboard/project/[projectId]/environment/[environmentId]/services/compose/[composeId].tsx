@@ -33,6 +33,8 @@ import { ShowVolumeBackups } from "@/components/dashboard/application/volume-bac
 import { AddCommandCompose } from "@/components/dashboard/compose/advanced/add-command";
 import { IsolatedDeploymentTab } from "@/components/dashboard/compose/advanced/add-isolation";
 import { ShowComposeContainers } from "@/components/dashboard/compose/containers/show-compose-containers";
+import { ComposeConfigurationTabs } from "@/components/dashboard/compose/compose-configuration-tabs";
+import { ComposeOverview } from "@/components/dashboard/compose/compose-overview";
 import { DeleteService } from "@/components/dashboard/compose/delete-service";
 import { ShowGeneralCompose } from "@/components/dashboard/compose/general/show";
 import { ShowDockerLogsCompose } from "@/components/dashboard/compose/logs/show";
@@ -67,6 +69,8 @@ import { api } from "@/utils/api";
 import { useWhitelabeling } from "@/utils/hooks/use-whitelabeling";
 
 type TabState =
+	| "overview"
+	| "configuration"
 	| "projects"
 	| "settings"
 	| "advanced"
@@ -343,51 +347,65 @@ const Service = (
 								>
 									<div className="flex flex-row items-center w-full overflow-auto">
 										<TabsList className="flex gap-8 max-md:gap-4 justify-start">
-											<TabsTrigger value="general">General</TabsTrigger>
-											{permissions?.envVars.read && (
-												<TabsTrigger value="environment">
-													Environment
-												</TabsTrigger>
-											)}
-											{permissions?.domain.read && (
-												<TabsTrigger value="domains">Domains</TabsTrigger>
-											)}
+											<TabsTrigger value="overview">Overview</TabsTrigger>
 											{permissions?.deployment.read && (
 												<TabsTrigger value="deployments">
 													Deployments
 												</TabsTrigger>
 											)}
-											{permissions?.service.read && (
-												<TabsTrigger value="containers">Containers</TabsTrigger>
-											)}
-											{permissions?.service.create && (
-												<TabsTrigger value="backups">Backups</TabsTrigger>
-											)}
-											{permissions?.schedule.read && (
-												<TabsTrigger value="schedules">Schedules</TabsTrigger>
-											)}
-											{permissions?.volumeBackup.read && (
-												<TabsTrigger value="volumeBackups">
-													Volume Backups
-												</TabsTrigger>
-											)}
 											{permissions?.logs.read && (
 												<TabsTrigger value="logs">Logs</TabsTrigger>
 											)}
-											{data?.sourceType !== "raw" && (
-												<TabsTrigger value="patches">Patches</TabsTrigger>
-											)}
-											{permissions?.monitoring.read &&
-												((data?.serverId && isCloud) || !data?.server) && (
-													<TabsTrigger value="monitoring">
-														Monitoring
-													</TabsTrigger>
-												)}
-											{permissions?.service.create && (
-												<TabsTrigger value="advanced">Advanced</TabsTrigger>
-											)}
+											<TabsTrigger value="configuration">
+												Configuration
+											</TabsTrigger>
 										</TabsList>
 									</div>
+
+									<TabsContent value="overview">
+										<div className="flex flex-col gap-4 pt-2.5">
+											<ComposeOverview
+												composeId={composeId}
+												name={data?.name || ""}
+												description={data?.description || null}
+												composeStatus={data?.composeStatus || null}
+												composeType={data?.composeType || "docker-compose"}
+												sourceType={data?.sourceType || "raw"}
+												serverId={data?.serverId || ""}
+												serverName={data?.server?.name || null}
+												appName={data?.appName || ""}
+												canDeploy={!!permissions?.service.create}
+												canReadDomains={canReadDomains}
+												canReadDeployments={canReadDeployments}
+											/>
+										</div>
+									</TabsContent>
+
+									<TabsContent value="configuration">
+										<div className="flex flex-col gap-4 pt-2.5">
+											<ComposeConfigurationTabs
+												composeId={composeId}
+												sourceType={data?.sourceType || "raw"}
+												composeType={data?.composeType || "docker-compose"}
+												appName={data?.appName || ""}
+												serverId={data?.serverId || ""}
+												server={
+													data?.server
+														? {
+																ipAddress: data.server.ipAddress,
+																metricsConfig: {
+																	server: {
+																		port: data.server.metricsConfig?.server?.port,
+																		token: data.server.metricsConfig?.server?.token,
+																	},
+																},
+															}
+														: null
+												}
+												refreshToken={data?.refreshToken || ""}
+											/>
+										</div>
+									</TabsContent>
 
 									<TabsContent value="general">
 										<div className="flex flex-col gap-4 pt-2.5">
@@ -612,7 +630,7 @@ export async function getServerSideProps(
 				props: {
 					trpcState: helpers.dehydrate(),
 					composeId: params?.composeId,
-					activeTab: (activeTab || "general") as TabState,
+					activeTab: (activeTab || "overview") as TabState,
 					environmentId: params?.environmentId,
 				},
 			};
