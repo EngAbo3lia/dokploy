@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { DateTooltip } from "@/components/shared/date-tooltip";
+import { DialogAction } from "@/components/shared/dialog-action";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { api } from "@/utils/api";
@@ -120,7 +121,9 @@ export const ProjectHealthSummary = ({
 						{meta.label}
 					</Badge>
 					<span className="flex items-center gap-2 text-sm text-muted-foreground">
-						<span>{services.length} services</span>
+						<span>
+							{services.length} service{services.length !== 1 ? "s" : ""}
+						</span>
 						<span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
 							<span className="size-1.5 rounded-full bg-emerald-500" />
 							{services.filter((s) => s.runtime === "healthy").length} running
@@ -138,19 +141,25 @@ export const ProjectHealthSummary = ({
 					</span>
 				</div>
 				{composeServices.length > 0 && (
-					<Button
-						variant="outline"
-						size="sm"
+					<DialogAction
+						title={`Deploy all ${composeServices.length} service${composeServices.length !== 1 ? "s" : ""}?`}
+						description={`This will trigger a deployment for all ${composeServices.length} compose service${composeServices.length !== 1 ? "s" : ""} in this environment. Make sure your latest changes are committed before proceeding.`}
+						type="default"
 						onClick={deployAll}
-						disabled={isDeployingAll}
 					>
-						{isDeployingAll ? (
-							<Loader2 className="size-4 animate-spin" />
-						) : (
-							<Play className="size-4" />
-						)}
-						Deploy all
-					</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							disabled={isDeployingAll}
+						>
+							{isDeployingAll ? (
+								<Loader2 className="size-4 animate-spin" />
+							) : (
+								<Play className="size-4" />
+							)}
+							Deploy all{composeServices.length > 0 ? ` ${composeServices.length}` : ""}
+						</Button>
+					</DialogAction>
 				)}
 			</div>
 			<div className="flex flex-wrap gap-x-8 gap-y-3 p-4 pt-2 text-sm text-muted-foreground">
@@ -159,7 +168,7 @@ export const ProjectHealthSummary = ({
 					<strong className="font-medium text-foreground">
 						{health.containers.total}
 					</strong>
-					containers
+					container{health.containers.total !== 1 ? "s" : ""}
 					<span className="text-emerald-600 dark:text-emerald-400">
 						· {health.containers.healthy} healthy
 					</span>
@@ -169,7 +178,7 @@ export const ProjectHealthSummary = ({
 					<strong className="font-medium text-foreground">
 						{domains.length}
 					</strong>
-					domains
+					domain{domains.length !== 1 ? "s" : ""}
 					<span>· {domains.filter((d) => d.enabled).length} active</span>
 				</span>
 				<span className="flex items-center gap-1.5">

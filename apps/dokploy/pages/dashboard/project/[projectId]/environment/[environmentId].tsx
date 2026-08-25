@@ -12,6 +12,7 @@ import {
 	CircuitBoard,
 	FolderInput,
 	GitBranch,
+	Globe2,
 	GlobeIcon,
 	History,
 	LayoutDashboard,
@@ -319,26 +320,39 @@ const ServiceRuntimeDot = ({
 	name: string;
 }) => {
 	const className = isDeploying
-		? "bg-blue-500 animate-pulse"
+		? "bg-blue-500"
 		: runtime === "healthy"
 			? "bg-emerald-500"
 			: runtime === "degraded"
-				? "bg-amber-500 animate-pulse"
+				? "bg-amber-500"
 				: runtime === "failed"
 					? "bg-red-500"
 					: "bg-muted-foreground/40";
 	const label = isDeploying
 		? "Deploying"
 		: runtime === "healthy"
-			? "Healthy"
+			? "Running"
 			: runtime === "degraded"
 				? "Degraded"
 				: runtime === "failed"
 					? "Failed"
 					: "Unknown";
+	const textColor = isDeploying
+		? "text-blue-600 dark:text-blue-400"
+		: runtime === "healthy"
+			? "text-emerald-600 dark:text-emerald-400"
+			: runtime === "degraded"
+				? "text-amber-600 dark:text-amber-400"
+				: runtime === "failed"
+					? "text-red-600 dark:text-red-400"
+					: "text-muted-foreground";
 	return (
-		<span title={`${label} — ${name}`} className="inline-flex size-2.5">
-			<span className={`inline-flex size-2.5 rounded-full ${className}`} />
+		<span
+			title={`${label} — ${name}`}
+			className={`inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5 text-[11px] font-medium shadow-sm ${textColor}`}
+		>
+			<span className={`size-1.5 rounded-full ${className}`} />
+			{label}
 		</span>
 	);
 };
@@ -414,9 +428,9 @@ const EnvironmentPage = (
 
 	const [sortBy, setSortBy] = useState<string>(() => {
 		if (typeof window !== "undefined") {
-			return localStorage.getItem("servicesSort") || "lastDeploy-desc";
+			return localStorage.getItem("servicesSort") || "name-asc";
 		}
-		return "lastDeploy-desc";
+		return "name-asc";
 	});
 
 	useEffect(() => {
@@ -1274,38 +1288,36 @@ const EnvironmentPage = (
 							{tab === "services" ? (
 								<>
 								<div className="flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
-									<div className="flex items-center gap-4">
-										<div className="flex items-center gap-2">
-											<Checkbox
-												checked={selectedServices.length > 0}
-												className={cn(
-													"data-[state=checked]:bg-primary",
-													selectedServices.length > 0 &&
-														selectedServices.length < filteredServices.length &&
-														"bg-primary/50",
-												)}
-												onCheckedChange={handleSelectAll}
-											/>
-											<span className="text-sm">
-												Select All{" "}
-												{selectedServices.length > 0 &&
-													`(${selectedServices.length}/${filteredServices.length})`}
-											</span>
-										</div>
+									{selectedServices.length > 0 && (
+										<div className="flex items-center gap-4">
+											<div className="flex items-center gap-2">
+												<Checkbox
+													checked={selectedServices.length === filteredServices.length}
+													className={cn(
+														"data-[state=checked]:bg-primary",
+														selectedServices.length > 0 &&
+															selectedServices.length < filteredServices.length &&
+															"bg-primary/50",
+													)}
+													onCheckedChange={handleSelectAll}
+												/>
+												<span className="text-sm">
+													{selectedServices.length} of {filteredServices.length} selected
+												</span>
+											</div>
 
-										<DropdownMenu
-											open={isDropdownOpen}
-											onOpenChange={setIsDropdownOpen}
-										>
-											<DropdownMenuTrigger asChild>
-												<Button
-													variant="outline"
-													disabled={selectedServices.length === 0}
-													isLoading={isBulkActionLoading}
-												>
-													Bulk Actions
-												</Button>
-											</DropdownMenuTrigger>
+											<DropdownMenu
+												open={isDropdownOpen}
+												onOpenChange={setIsDropdownOpen}
+											>
+												<DropdownMenuTrigger asChild>
+													<Button
+														variant="outline"
+														isLoading={isBulkActionLoading}
+													>
+														Bulk Actions
+													</Button>
+												</DropdownMenuTrigger>
 											<DropdownMenuContent align="end">
 												<DropdownMenuLabel>Actions</DropdownMenuLabel>
 												<DropdownMenuSeparator />
@@ -1639,6 +1651,7 @@ const EnvironmentPage = (
 											</DropdownMenuContent>
 										</DropdownMenu>
 									</div>
+									)}
 
 									<div className="flex flex-col gap-2 lg:flex-row lg:gap-4 lg:items-center">
 										<div className="w-full relative">
@@ -1655,6 +1668,8 @@ const EnvironmentPage = (
 												<SelectValue placeholder="Sort by..." />
 											</SelectTrigger>
 											<SelectContent>
+												<SelectItem value="name-asc">Name (A-Z)</SelectItem>
+												<SelectItem value="name-desc">Name (Z-A)</SelectItem>
 												<SelectItem value="lastDeploy-desc">
 													Recently deployed
 												</SelectItem>
@@ -1664,8 +1679,6 @@ const EnvironmentPage = (
 												<SelectItem value="createdAt-asc">
 													Oldest first
 												</SelectItem>
-												<SelectItem value="name-asc">Name (A-Z)</SelectItem>
-												<SelectItem value="name-desc">Name (Z-A)</SelectItem>
 												<SelectItem value="type-asc">Type (A-Z)</SelectItem>
 												<SelectItem value="type-desc">Type (Z-A)</SelectItem>
 											</SelectContent>
@@ -1842,35 +1855,57 @@ const EnvironmentPage = (
 																		</div>
 																	</div>
 
-																	<CardHeader>
+																	<CardHeader className="pb-2">
 																		<CardTitle className="flex items-center justify-between">
 																			<div className="flex flex-row items-center gap-2 justify-between w-full">
-																				<div className="flex flex-col gap-2">
+																				<div className="flex flex-col gap-1">
 																					<span className="text-base flex items-center gap-2 font-medium leading-none flex-wrap">
 																						{service.name}
 																					</span>
-																					{service.description && (
-																						<span className="text-sm font-medium text-muted-foreground">
-																							{service.description}
-																						</span>
-																					)}
+																					<div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+																						{service.type === "compose" && <CircuitBoard className="size-3" />}
+																						{service.type === "application" && <GlobeIcon className="size-3" />}
+																						{service.type === "postgres" && <PostgresqlIcon className="size-3" />}
+																						{service.type === "redis" && <RedisIcon className="size-3" />}
+																						{service.type === "mariadb" && <MariadbIcon className="size-3" />}
+																						{service.type === "mongo" && <MongodbIcon className="size-3" />}
+																						{service.type === "mysql" && <MysqlIcon className="size-3" />}
+																						{service.type === "libsql" && <LibsqlIcon className="size-3" />}
+																						{service.type === "compose"
+																							? "Docker Compose"
+																							: service.type === "application"
+																								? "Application"
+																								: service.type === "postgres"
+																									? "PostgreSQL"
+																									: service.type === "redis"
+																										? "Redis"
+																										: service.type === "mariadb"
+																											? "MariaDB"
+																											: service.type === "mongo"
+																												? "MongoDB"
+																												: service.type === "mysql"
+																													? "MySQL"
+																													: service.type === "libsql"
+																														? "LibSQL"
+																														: service.type}
+																					</div>
 																				</div>
 
 																				<span className="text-sm font-medium text-muted-foreground self-start">
 																					{service.type === "postgres" && (
-																						<PostgresqlIcon className="h-7 w-7" />
+																						<PostgresqlIcon className="h-6 w-6" />
 																					)}
 																					{service.type === "redis" && (
-																						<RedisIcon className="h-7 w-7" />
+																						<RedisIcon className="h-6 w-6" />
 																					)}
 																					{service.type === "mariadb" && (
-																						<MariadbIcon className="h-7 w-7" />
+																						<MariadbIcon className="h-6 w-6" />
 																					)}
 																					{service.type === "mongo" && (
-																						<MongodbIcon className="h-7 w-7" />
+																						<MongodbIcon className="h-6 w-6" />
 																					)}
 																					{service.type === "mysql" && (
-																						<MysqlIcon className="h-7 w-7" />
+																						<MysqlIcon className="h-6 w-6" />
 																					)}
 																					{service.type === "application" &&
 																						(service.icon ? (
@@ -1878,10 +1913,10 @@ const EnvironmentPage = (
 																							<img
 																								src={service.icon}
 																								alt={service.name}
-																								className="size-7 object-contain"
+																								className="size-6 object-contain"
 																							/>
 																						) : (
-																							<GlobeIcon className="h-6 w-6" />
+																							<GlobeIcon className="h-5 w-5" />
 																						))}
 																					{service.type === "compose" &&
 																						(service.icon ? (
@@ -1889,13 +1924,11 @@ const EnvironmentPage = (
 																							<img
 																								src={service.icon}
 																								alt={service.name}
-																								className="size-7 object-contain rounded-sm"
+																								className="size-6 object-contain rounded-sm"
 																							/>
-																						) : (
-																							<CircuitBoard className="h-6 w-6" />
-																						))}
+																						) : null)}
 																					{service.type === "libsql" && (
-																						<LibsqlIcon className="h-6 w-6" />
+																						<LibsqlIcon className="h-5 w-5" />
 																					)}
 																				</span>
 																			</div>
@@ -1907,7 +1940,7 @@ const EnvironmentPage = (
 																		);
 																		if (!health) return null;
 																		return (
-																			<CardContent className="p-0 px-6 pb-2 space-y-2 text-xs">
+																			<CardContent className="p-0 px-6 pb-2 space-y-1 text-xs">
 																				<div className="flex items-center gap-1.5 text-muted-foreground">
 																					<Boxes className="size-3.5" />
 																					<span>
@@ -1933,23 +1966,34 @@ const EnvironmentPage = (
 																					</DateTooltip>
 																				)}
 																				{health.domains.length > 0 && (
-																					<div className="flex flex-wrap gap-1.5 pt-0.5">
-																						{health.domains.map((domain) => (
-																							<a
-																								key={domain.host}
-																								href={`http${domain.https ? "s" : ""}://${domain.host}`}
-																								target="_blank"
-																								rel="noreferrer"
-																								className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[11px] font-medium transition-colors ${
-																									domain.enabled
-																										? "border-border bg-accent hover:bg-primary/10"
-																										: "border-border bg-muted/40 text-muted-foreground line-through"
-																								}`}
-																							>
-																								<ArrowUpRight className="size-3" />
-																								{domain.host}
-																							</a>
-																						))}
+																					<div className="flex items-center gap-1.5 text-muted-foreground">
+																						<Globe2 className="size-3.5 shrink-0" />
+																						{(() => {
+																							const primary = health.domains.find((d) => d.enabled) || health.domains[0];
+																							if (!primary) return null;
+																							const rest = health.domains.length - 1;
+																							return (
+																								<span className="flex items-center gap-1">
+																									<a
+																										href={`http${primary.https ? "s" : ""}://${primary.host}`}
+																										target="_blank"
+																										rel="noreferrer"
+																										onClick={(e) => e.stopPropagation()}
+																										className={`inline-flex items-center gap-0.5 rounded text-[11px] hover:text-primary transition-colors ${
+																											primary.enabled ? "" : "line-through"
+																										}`}
+																									>
+																										{primary.host}
+																										<ArrowUpRight className="size-3" />
+																									</a>
+																									{rest > 0 && (
+																										<span className="text-[11px] text-muted-foreground/70">
+																											+{rest} domain{rest !== 1 ? "s" : ""}
+																										</span>
+																									)}
+																								</span>
+																							);
+																						})()}
 																					</div>
 																				)}
 																				{health.git?.repository && (
@@ -1966,22 +2010,16 @@ const EnvironmentPage = (
 																			</CardContent>
 																		);
 																	})()}
-																	<CardFooter className="mt-auto">
-																		<div className="space-y-1 text-sm w-full">
-																			<div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+																	{service.serverId && (
+																		<CardFooter className="mt-auto pt-2">
+																			<div className="flex items-center gap-1.5 text-xs text-muted-foreground w-full">
 																				<ServerIcon className="size-3" />
 																				<span className="truncate">
-																					{service.serverName ||
-																						(service.serverId
-																							? "Remote server"
-																							: "Dokploy Server (local)")}
+																					{service.serverName || "Remote server"}
 																				</span>
 																			</div>
-																			<DateTooltip date={service.createdAt}>
-																				Created
-																			</DateTooltip>
-																		</div>
-																	</CardFooter>
+																		</CardFooter>
+																	)}
 																</Card>
 															</Link>
 														</ContextMenuTrigger>
