@@ -1,0 +1,64 @@
+services:
+  dokploy:
+    image: dokploy-local:patch
+    container_name: dokploy-test
+    depends_on:
+      - postgres
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:dokploy123@postgres:5432/dokploy
+      - REDIS_URL=redis://redis:6379
+      - API_KEY=bcc9c314-3c90-4b8e-a8c8-4c5b0b3f8f0e
+      - SERVER_URL=http://localhost:3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - dokploy-data:/etc/dokploy
+      - ./.env.production.local:/app/.env
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+  traefik:
+    image: traefik:v3.3
+    container_name: dokploy-test-traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.exposedByDefault=false"
+      - "--providers.docker.network=dokploy-network"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - "9080:80"
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - dokploy-network
+    restart: unless-stopped
+  postgres:
+    image: postgres:16-alpine
+    container_name: dokploy-test-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=dokploy123
+      - POSTGRES_DB=dokploy
+    volumes:
+      - dokploy-postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+  redis:
+    image: redis:7-alpine
+    container_name: dokploy-test-redis
+    command: redis-server --maxmemory-policy noeviction
+    volumes:
+      - dokploy-redis:/data
+    restart: unless-stopped
+networks:
+  dokploy-network:
+    external: true
+volumes:
+  dokploy-data:
+  dokploy-postgres:
+  dokploy-redis:
+
