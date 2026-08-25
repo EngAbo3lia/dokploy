@@ -26,8 +26,12 @@ import {
 	findPostgresById,
 	findProjectById,
 	findRedisById,
-	findUserById,
+		findUserById,
+	getAllProjectsHealth,
+	getProjectHealth,
 	IS_CLOUD,
+
+
 	updateProjectById,
 } from "@dokploy/server";
 import { db } from "@dokploy/server/db";
@@ -398,6 +402,28 @@ export const projectRouter = createTRPCRouter({
 			where: eq(projects.organizationId, ctx.session.activeOrganizationId),
 			orderBy: desc(projects.createdAt),
 		});
+	}),
+
+	health: withPermission("service", "read")
+		.input(apiFindOneProject)
+		.query(async ({ input, ctx }) => {
+			if (ctx.user.role !== "owner" && ctx.user.role !== "admin") {
+				const { accessedProjects } = await findMemberByUserId(
+					ctx.user.id,
+					ctx.session.activeOrganizationId,
+				);
+				if (!accessedProjects.includes(input.projectId)) {
+					throw new TRPCError({
+						code: "UNAUTHORIZED",
+						message: "You don't have access to this project",
+					});
+				}
+			}
+			return getProjectHealth(input.projectId);
+		}),
+
+	healthAll: withPermission("service", "read").query(async ({ ctx }) => {
+		return getAllProjectsHealth(ctx.session.activeOrganizationId);
 	}),
 
 	allForPermissions: withPermission("member", "update").query(

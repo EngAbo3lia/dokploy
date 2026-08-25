@@ -53,6 +53,7 @@ import {
 } from "@/components/ui/select";
 import { api } from "@/utils/api";
 import { useDebounce } from "@/utils/hooks/use-debounce";
+import { STATUS_META } from "../project/health-status";
 import { HandleProject } from "./handle-project";
 import { ProjectEnvironment } from "./project-environment";
 
@@ -65,6 +66,19 @@ export const ShowProjects = () => {
 	const { data: permissions } = api.user.getPermissions.useQuery();
 	const { mutateAsync } = api.project.remove.useMutation();
 	const { data: availableTags } = api.tag.all.useQuery();
+	const { data: projectsHealth } = api.project.healthAll.useQuery(undefined, {
+		refetchInterval: 60000,
+	});
+	const healthByProjectId = useMemo(
+		() =>
+			new Map(
+				(projectsHealth || []).map((projectHealth) => [
+					projectHealth.projectId,
+					projectHealth,
+				]),
+			),
+		[projectsHealth],
+	);
 
 	const [searchQuery, setSearchQuery] = useState(
 		router.isReady && typeof router.query.q === "string" ? router.query.q : "",
@@ -372,6 +386,70 @@ export const ShowProjects = () => {
 																				</div>
 																			)}
 
+																		{(() => {
+																			const health =
+																				healthByProjectId.get(
+																					project.projectId,
+																				);
+																			if (!health) return null;
+																			const meta =
+																				STATUS_META[health.status];
+																			return (
+																				<div className="mt-2 flex flex-col gap-1.5">
+																					<span
+																						className={`inline-flex w-fit items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium ${meta.badge}`}
+																					>
+																						<span className="relative flex size-1.5">
+																							{meta.pulse && (
+																								<span
+																									className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-60 ${meta.dot}`}
+																								/>
+																							)}
+																							<span
+																								className={`relative inline-flex size-1.5 rounded-full ${meta.dot}`}
+																							/>
+																						</span>
+																						{meta.label}
+																					</span>
+																					<span className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+																						<span>
+																							{health.totals.services}{" "}
+																							services
+																						</span>
+																						<span className="text-emerald-600 dark:text-emerald-400">
+																							{health.totals.running}{" "}
+																							running
+																						</span>
+																						{health.totals.failed > 0 && (
+																							<span className="text-red-600 dark:text-red-400">
+																								{health.totals.failed}{" "}
+																								failed
+																							</span>
+																						)}
+																						{health.totals.deploying >
+																							0 && (
+																							<span className="text-blue-600 dark:text-blue-400">
+																								{health.totals.deploying}{" "}
+																								deploying
+																							</span>
+																						)}
+																					</span>
+																					{health.totals.lastDeployAt && (
+																						<DateTooltip
+																							date={
+																								health
+																									.totals
+																									.lastDeployAt
+																							}
+																						>
+																							<span className="text-muted-foreground">
+																								Last deploy
+																							</span>
+																						</DateTooltip>
+																					)}
+																				</div>
+																			);
+																		})()}
 																		{hasNoEnvironments && (
 																			<div className="flex flex-row gap-2 items-center rounded-lg bg-yellow-50 p-2 mt-2 dark:bg-yellow-950">
 																				<AlertTriangle className="size-4 text-yellow-600 dark:text-yellow-400 shrink-0" />

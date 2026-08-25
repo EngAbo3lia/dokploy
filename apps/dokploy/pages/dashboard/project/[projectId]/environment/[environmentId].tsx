@@ -2,12 +2,15 @@ import type { findEnvironmentById } from "@dokploy/server";
 import { validateRequest } from "@dokploy/server/lib/auth";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import {
+	ArrowUpRight,
 	Ban,
+	Boxes,
 	Check,
 	CheckCircle2,
 	ChevronsUpDown,
 	CircuitBoard,
 	FolderInput,
+	GitBranch,
 	GlobeIcon,
 	Loader2,
 	Play,
@@ -50,6 +53,7 @@ import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdvanceBreadcrumb } from "@/components/shared/advance-breadcrumb";
 import { AlertBlock } from "@/components/shared/alert-block";
 import { DateTooltip } from "@/components/shared/date-tooltip";
+import { ProjectHealthSummary } from "@/components/dashboard/project/project-health-summary";
 import { DialogAction } from "@/components/shared/dialog-action";
 import { FocusShortcutInput } from "@/components/shared/focus-shortcut-input";
 import { StatusTooltip } from "@/components/shared/status-tooltip";
@@ -293,6 +297,40 @@ export const extractServicesFromEnvironment = (
 	return allServices;
 };
 
+const ServiceRuntimeDot = ({
+	runtime,
+	isDeploying,
+	name,
+}: {
+	runtime: "healthy" | "degraded" | "failed" | "unknown";
+	isDeploying: boolean;
+	name: string;
+}) => {
+	const className = isDeploying
+		? "bg-blue-500 animate-pulse"
+		: runtime === "healthy"
+			? "bg-emerald-500"
+			: runtime === "degraded"
+				? "bg-amber-500 animate-pulse"
+				: runtime === "failed"
+					? "bg-red-500"
+					: "bg-muted-foreground/40";
+	const label = isDeploying
+		? "Deploying"
+		: runtime === "healthy"
+			? "Healthy"
+			: runtime === "degraded"
+				? "Degraded"
+				: runtime === "failed"
+					? "Failed"
+					: "Unknown";
+	return (
+		<span title={`${label} — ${name}`} className="inline-flex size-2.5">
+			<span className={`inline-flex size-2.5 rounded-full ${className}`} />
+		</span>
+	);
+};
+
 const EnvironmentPage = (
 	props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) => {
@@ -305,6 +343,27 @@ const EnvironmentPage = (
 	const { data: environments } = api.environment.byProjectId.useQuery({
 		projectId: projectId,
 	});
+	const {
+		data: projectHealth,
+		isFetching: isHealthLoading,
+		refetch: refetchHealth,
+	} = api.project.health.useQuery(
+		{ projectId: projectId },
+		{ refetchInterval: 30000 },
+	);
+	const currentEnvHealth = projectHealth?.environments.find(
+		(env) => env.environmentId === environmentId,
+	);
+	const healthByServiceId = useMemo(
+		() =>
+			new Map(
+				(currentEnvHealth?.services || []).map((service) => [
+					service.serviceId,
+					service,
+				]),
+			),
+		[currentEnvHealth],
+	);
 	const environmentDropdownItems =
 		environments?.map((env) => ({
 			name: env.name,
@@ -1106,6 +1165,13 @@ const EnvironmentPage = (
 							</div>
 						</div>
 						<CardContent className="space-y-2 py-8 border-t gap-4 flex flex-col min-h-[60vh]">
+							<ProjectHealthSummary
+								health={currentEnvHealth}
+								isLoading={isHealthLoading}
+								onRetry={() => {
+									refetchHealth();
+								}}
+							/>
 							<>
 								<div className="flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
 									<div className="flex items-center gap-4">
@@ -1637,7 +1703,22 @@ const EnvironmentPage = (
 																		</div>
 																	)}
 																	<div className="absolute -right-1 -top-2">
-																		<StatusTooltip status={service.status} />
+																		{(() => {
+																			const health = healthByServiceId.get(
+																				service.id,
+																			);
+																			return health ? (
+																				<ServiceRuntimeDot
+																					runtime={health.runtime}
+																					isDeploying={health.isDeploying}
+																					name={service.name}
+																				/>
+																			) : (
+																				<StatusTooltip
+																					status={service.status}
+																				/>
+																			);
+																		})()}
 																	</div>
 
 																	<div
@@ -1720,16 +1801,82 @@ const EnvironmentPage = (
 																			</div>
 																		</CardTitle>
 																	</CardHeader>
-																	<CardFooter className="mt-auto">
-																		<div className="space-y-1 text-sm w-full">
-																			{service.serverName && (
-																				<div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
-																					<ServerIcon className="size-3" />
-																					<span className="truncate">
-																						{service.serverName}
+																	{(() => {
+																		const health = healthByServiceId.get(
+																			service.id,
+																		);
+																		if (!health) return null;
+																		return (
+																			<CardContent className="p-0 px-6 pb-2 space-y-2 text-xs">
+																				<div className="flex items-center gap-1.5 text-muted-foreground">
+																					<Boxes className="size-3.5" />
+																					<span>
+																						{health.containers.total} container
+																						{health.containers.total !== 1 ? "s" : ""} ·{" "}
+																						{health.containers.running} running ·{" "}
+																						{health.containers.healthy} healthy
 																					</span>
 																				</div>
-																			)}
+																				{health.lastDeployment && (
+																					<DateTooltip
+																						date={
+																							health.lastDeployment.finishedAt ||
+																							health.lastDeployment.startedAt ||
+																							health.lastDeployment.createdAt ||
+																							""
+																						}
+																						className="mb-0"
+																					>
+																						<span className="text-muted-foreground">
+																							Last deploy
+																						</span>
+																					</DateTooltip>
+																				)}
+																				{health.domains.length > 0 && (
+																					<div className="flex flex-wrap gap-1.5 pt-0.5">
+																						{health.domains.map((domain) => (
+																							<a
+																								key={domain.host}
+																								href={`http${domain.https ? "s" : ""}://${domain.host}`}
+																								target="_blank"
+																								rel="noreferrer"
+																								className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[11px] font-medium transition-colors ${
+																									domain.enabled
+																										? "border-border bg-accent hover:bg-primary/10"
+																										: "border-border bg-muted/40 text-muted-foreground line-through"
+																								}`}
+																							>
+																								<ArrowUpRight className="size-3" />
+																								{domain.host}
+																							</a>
+																						))}
+																					</div>
+																				)}
+																				{health.git?.repository && (
+																					<div className="flex items-center gap-1.5 text-muted-foreground">
+																						<GitBranch className="size-3.5" />
+																						<span className="truncate">
+																							{health.git.repository}
+																							{health.git.branch
+																								? ` · ${health.git.branch}`
+																								: ""}
+																						</span>
+																					</div>
+																				)}
+																			</CardContent>
+																		);
+																	})()}
+																	<CardFooter className="mt-auto">
+																		<div className="space-y-1 text-sm w-full">
+																			<div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+																				<ServerIcon className="size-3" />
+																				<span className="truncate">
+																					{service.serverName ||
+																						(service.serverId
+																							? "Remote server"
+																							: "Dokploy Server (local)")}
+																				</span>
+																			</div>
 																			<DateTooltip date={service.createdAt}>
 																				Created
 																			</DateTooltip>
