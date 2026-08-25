@@ -447,6 +447,57 @@ export const ShowProjects = () => {
 																							</span>
 																						</DateTooltip>
 																					)}
+																					{(() => {
+																						const firstEnv =
+																							health.environments[0];
+																						if (
+																							!firstEnv ||
+																							firstEnv.services.length === 0
+																						)
+																							return null;
+																						return (
+																							<span className="flex flex-wrap gap-1">
+																								{firstEnv.services
+																									.slice(0, 8)
+																									.map((service) => (
+																										<span
+																											key={service.serviceId}
+																											title={service.name}
+																											className="inline-flex h-5 min-w-5 items-center justify-center rounded-md border bg-muted px-1 text-[10px] font-medium text-muted-foreground"
+																										>
+																											{service.name
+																												.split(" ")
+																												.slice(0, 2)
+																												.map((word) => word[0])
+																												.join("")
+																												.toUpperCase()}
+																										</span>
+																									))}
+																							</span>
+																						);
+																					})()}
+																					<span className="text-xs text-muted-foreground">
+																						{(() => {
+																							const servers = [
+																								...new Set(
+																									health.environments.flatMap(
+																										(env) =>
+																											env.services
+																												.map((s) => s.serverName)
+																												.filter(
+																													(
+																														name,
+																													): name is string =>
+																														Boolean(name),
+																												),
+																									),
+																								),
+																							];
+																							return servers.length > 0
+																								? servers.join(" + ")
+																								: "Dokploy Server (local)";
+																						})()}
+																					</span>
 																				</div>
 																			);
 																		})()}

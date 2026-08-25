@@ -14,13 +14,16 @@ import {
 	GitBranch,
 	GlobeIcon,
 	History,
+	LayoutDashboard,
 	LayoutGrid,
 	Loader2,
 	Play,
 	PlusIcon,
 	RefreshCw,
+	ScrollText,
 	Search,
 	ServerIcon,
+	Settings2,
 	SquareTerminal,
 	Trash2,
 	X,
@@ -30,6 +33,7 @@ import type {
 	InferGetServerSidePropsType,
 } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import { type ReactElement, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -59,6 +63,9 @@ import { DateTooltip } from "@/components/shared/date-tooltip";
 import { ProjectHealthSummary } from "@/components/dashboard/project/project-health-summary";
 import { ProjectDeployments } from "@/components/dashboard/project/project-deployments";
 import { ProjectMonitoring } from "@/components/dashboard/project/project-monitoring";
+import { ProjectOverview } from "@/components/dashboard/project/project-overview";
+import { ProjectLogs } from "@/components/dashboard/project/project-logs";
+import { ProjectConfiguration } from "@/components/dashboard/project/project-configuration";
 import { DialogAction } from "@/components/shared/dialog-action";
 import { FocusShortcutInput } from "@/components/shared/focus-shortcut-input";
 import { StatusTooltip } from "@/components/shared/status-tooltip";
@@ -341,9 +348,36 @@ const EnvironmentPage = (
 ) => {
 	const utils = api.useUtils();
 	const [isBulkActionLoading, setIsBulkActionLoading] = useState(false);
-	const [section, setSection] = useState<
-		"services" | "deployments" | "monitoring"
-	>("services");
+	type ProjectTab =
+		| "overview"
+		| "services"
+		| "deployments"
+		| "logs"
+		| "monitoring"
+		| "configuration";
+	const router = useRouter();
+	const [tab, setTab] = useState<ProjectTab>(() => {
+		if (typeof window !== "undefined") {
+			const queryTab = router.query.tab as ProjectTab | undefined;
+			if (
+				queryTab &&
+				["overview", "services", "deployments", "logs", "monitoring", "configuration"].includes(
+					queryTab,
+				)
+			) {
+				return queryTab;
+			}
+		}
+		return "overview";
+	});
+	const setProjectTab = (nextTab: ProjectTab) => {
+		setTab(nextTab);
+		router.push(
+			`/dashboard/project/${projectId}/environment/${environmentId}?tab=${nextTab}`,
+			undefined,
+			{ shallow: true },
+		);
+	};
 	const { projectId, environmentId } = props;
 	const { data: auth } = api.user.get.useQuery();
 	const { data: permissions } = api.user.getPermissions.useQuery();
@@ -1180,33 +1214,64 @@ const EnvironmentPage = (
 									refetchHealth();
 								}}
 							/>
-							<div className="flex flex-row gap-2">
-								<Button
-									variant={section === "services" ? "default" : "ghost"}
-									size="sm"
-									onClick={() => setSection("services")}
-								>
-									<LayoutGrid className="size-4" />
-									Services
-								</Button>
-								<Button
-									variant={section === "deployments" ? "default" : "ghost"}
-									size="sm"
-									onClick={() => setSection("deployments")}
-								>
-									<History className="size-4" />
-									Deployments
-								</Button>
-								<Button
-									variant={section === "monitoring" ? "default" : "ghost"}
-									size="sm"
-									onClick={() => setSection("monitoring")}
-								>
-									<Activity className="size-4" />
-									Monitoring
-								</Button>
+							<div className="flex flex-row gap-2 flex-wrap">
+								{(
+									[
+										{
+											value: "overview",
+											label: "Overview",
+											icon: LayoutDashboard,
+										},
+										{
+											value: "services",
+											label: "Services",
+											icon: LayoutGrid,
+										},
+										{
+											value: "deployments",
+											label: "Deployments",
+											icon: History,
+										},
+										{
+											value: "logs",
+											label: "Logs",
+											icon: ScrollText,
+										},
+										{
+											value: "monitoring",
+											label: "Monitoring",
+											icon: Activity,
+										},
+										{
+											value: "configuration",
+											label: "Configuration",
+											icon: Settings2,
+										},
+									] as const
+								).map((definition) => (
+									<Button
+										key={definition.value}
+										variant={tab === definition.value ? "default" : "ghost"}
+										size="sm"
+										onClick={() => setProjectTab(definition.value)}
+									>
+										<definition.icon className="size-4" />
+										{definition.label}
+									</Button>
+								))}
 							</div>
-							{section === "services" ? (
+							{tab === "overview" && (
+								<ProjectOverview
+									projectId={projectId}
+									environmentId={environmentId}
+									health={currentEnvHealth}
+									isLoading={isHealthLoading}
+									onRetry={() => {
+										refetchHealth();
+									}}
+								/>
+							)}
+							{tab === "services" ? (
 								<>
 								<div className="flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
 									<div className="flex items-center gap-4">
@@ -1970,20 +2035,32 @@ const EnvironmentPage = (
 									)}
 								</div>
 								</>
-							) : (
-								<>
-									{section === "deployments" ? (
-										<ProjectDeployments
-											projectId={projectId}
-											environmentId={environmentId}
-											healthServices={currentEnvHealth?.services || []}
-										/>
-									) : (
-										<ProjectMonitoring
-											services={currentEnvHealth?.services || []}
-										/>
-									)}
-								</>
+							) : null}
+							{tab === "deployments" && (
+								<ProjectDeployments
+									projectId={projectId}
+									environmentId={environmentId}
+									healthServices={currentEnvHealth?.services || []}
+								/>
+							)}
+							{tab === "logs" && (
+								<ProjectLogs
+									projectId={projectId}
+									environmentId={environmentId}
+									services={currentEnvHealth?.services || []}
+								/>
+							)}
+							{tab === "monitoring" && (
+								<ProjectMonitoring
+									services={currentEnvHealth?.services || []}
+								/>
+							)}
+							{tab === "configuration" && (
+								<ProjectConfiguration
+									projectId={projectId}
+									environmentId={environmentId}
+									services={currentEnvHealth?.services || []}
+								/>
 							)}
 						</CardContent>
 					</div>
