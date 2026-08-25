@@ -2,6 +2,7 @@ import type { findEnvironmentById } from "@dokploy/server";
 import { validateRequest } from "@dokploy/server/lib/auth";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import {
+	Activity,
 	ArrowUpRight,
 	Ban,
 	Boxes,
@@ -12,6 +13,8 @@ import {
 	FolderInput,
 	GitBranch,
 	GlobeIcon,
+	History,
+	LayoutGrid,
 	Loader2,
 	Play,
 	PlusIcon,
@@ -54,6 +57,8 @@ import { AdvanceBreadcrumb } from "@/components/shared/advance-breadcrumb";
 import { AlertBlock } from "@/components/shared/alert-block";
 import { DateTooltip } from "@/components/shared/date-tooltip";
 import { ProjectHealthSummary } from "@/components/dashboard/project/project-health-summary";
+import { ProjectDeployments } from "@/components/dashboard/project/project-deployments";
+import { ProjectMonitoring } from "@/components/dashboard/project/project-monitoring";
 import { DialogAction } from "@/components/shared/dialog-action";
 import { FocusShortcutInput } from "@/components/shared/focus-shortcut-input";
 import { StatusTooltip } from "@/components/shared/status-tooltip";
@@ -336,6 +341,9 @@ const EnvironmentPage = (
 ) => {
 	const utils = api.useUtils();
 	const [isBulkActionLoading, setIsBulkActionLoading] = useState(false);
+	const [section, setSection] = useState<
+		"services" | "deployments" | "monitoring"
+	>("services");
 	const { projectId, environmentId } = props;
 	const { data: auth } = api.user.get.useQuery();
 	const { data: permissions } = api.user.getPermissions.useQuery();
@@ -1172,7 +1180,34 @@ const EnvironmentPage = (
 									refetchHealth();
 								}}
 							/>
-							<>
+							<div className="flex flex-row gap-2">
+								<Button
+									variant={section === "services" ? "default" : "ghost"}
+									size="sm"
+									onClick={() => setSection("services")}
+								>
+									<LayoutGrid className="size-4" />
+									Services
+								</Button>
+								<Button
+									variant={section === "deployments" ? "default" : "ghost"}
+									size="sm"
+									onClick={() => setSection("deployments")}
+								>
+									<History className="size-4" />
+									Deployments
+								</Button>
+								<Button
+									variant={section === "monitoring" ? "default" : "ghost"}
+									size="sm"
+									onClick={() => setSection("monitoring")}
+								>
+									<Activity className="size-4" />
+									Monitoring
+								</Button>
+							</div>
+							{section === "services" ? (
+								<>
 								<div className="flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
 									<div className="flex items-center gap-4">
 										<div className="flex items-center gap-2">
@@ -1934,7 +1969,22 @@ const EnvironmentPage = (
 										</div>
 									)}
 								</div>
-							</>
+								</>
+							) : (
+								<>
+									{section === "deployments" ? (
+										<ProjectDeployments
+											projectId={projectId}
+											environmentId={environmentId}
+											healthServices={currentEnvHealth?.services || []}
+										/>
+									) : (
+										<ProjectMonitoring
+											services={currentEnvHealth?.services || []}
+										/>
+									)}
+								</>
+							)}
 						</CardContent>
 					</div>
 				</Card>
