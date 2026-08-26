@@ -5,7 +5,7 @@ import { getWebServerSettings } from "@dokploy/server/services/web-server-settin
 import { generateRandomDomain } from "@dokploy/server/templates";
 import { manageDomain } from "@dokploy/server/utils/traefik/domain";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import type { z } from "zod";
 import { type apiCreateDomain, domains } from "../db/schema";
 import { findApplicationById } from "./application";
@@ -209,4 +209,107 @@ export const validateDomain = async (
 				error instanceof Error ? error.message : "Failed to resolve domain",
 		};
 	}
+};
+
+export const verifyDomainDns = async (domainId: string) => {
+	const domain = await findDomainById(domainId);
+	const cleanDomain = domain.host.replace(/^https?:\/\//, "").split("/")[0];
+
+	try {
+		const ips = await resolveDns(cleanDomain || "");
+		const verified = ips.length > 0;
+		await updateDomainById(domainId, {
+			dnsVerified: verified,
+			dnsVerifiedAt: new Date().toISOString(),
+		});
+		return { verified, resolvedIp: ips.map((i) => i.toString()).join(", ") };
+	} catch {
+		await updateDomainById(domainId, {
+			dnsVerified: false,
+			dnsVerifiedAt: new Date().toISOString(),
+		});
+		return { verified: false, resolvedIp: null };
+	}
+};
+
+export const checkDomainSsl = async (domainId: string) => {
+	const domain = await findDomainById(domainId);
+	const cleanDomain = domain.host.replace(/^https?:\/\//, "").split("/")[0];
+
+	try {
+		const tls = await import("node:tls");
+
+		const result = await new Promise<{ status: string; expiry: string | null }>((resolve) => {
+			const socket = tls.connect(
+				{
+					port: 443,
+					host: cleanDomain || "",
+					servername: cleanDomain || "",
+					rejectUnauthorized: false,
+				},
+				() => {
+					const cert = socket.getPeerCertificate();
+					const expiry = cert?.valid_to
+						? new Date(cert.valid_to).toISOString()
+						: null;
+					const status = socket.authorized ? "active" : "failed";
+					socket.destroy();
+					resolve({ status, expiry });
+				},
+			);
+			socket.on("error", () => {
+				resolve({ status: "failed", expiry: null });
+			});
+			socket.setTimeout(5000, () => {
+				socket.destroy();
+				resolve({ status: "pending", expiry: null });
+			});
+		});
+
+		await updateDomainById(domainId, {
+			sslStatus: result.status,
+			sslCheckedAt: new Date().toISOString(),
+		});
+		return result;
+	} catch {
+		await updateDomainById(domainId, {
+			sslStatus: "pending",
+			sslCheckedAt: new Date().toISOString(),
+		});
+		return { status: "pending", expiry: null };
+	}
+};
+
+export type DomainFilter = {
+	environment?: string;
+	verified?: string;
+	search?: string;
+};
+
+export const findDomainsFiltered = async (
+	id: string,
+	type: "application" | "compose",
+	filters: DomainFilter = {},
+) => {
+	const { environment, verified, search } = filters;
+	const conditions = [eq(domains[`${type}Id`], id)];
+
+	if (environment && environment !== "all") {
+		conditions.push(eq(domains.environment, environment));
+	}
+	if (verified === "verified") {
+		conditions.push(eq(domains.dnsVerified, true));
+	} else if (verified === "unverified") {
+		conditions.push(eq(domains.dnsVerified, false));
+	}
+	if (search) {
+		conditions.push(sql`${domains.host} ILIKE ${`%${search}%`}`!);
+	}
+
+	const whereClause = and(...conditions);
+
+	return db.query.domains.findMany({
+		where: whereClause,
+		orderBy: desc(domains.createdAt),
+	});
 };

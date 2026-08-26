@@ -132,6 +132,12 @@ export const ProjectHealthSummary = ({
 							<span className="size-1.5 rounded-full bg-red-500" />
 							{services.filter((s) => s.runtime === "failed").length} failed
 						</span>
+						{services.filter((s) => s.runtime === "stopped").length > 0 && (
+							<span className="flex items-center gap-1 text-muted-foreground">
+								<span className="size-1.5 rounded-full bg-muted-foreground/50" />
+								{services.filter((s) => s.runtime === "stopped").length} stopped
+							</span>
+						)}
 						{services.filter((s) => s.isDeploying).length > 0 && (
 							<span className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
 								<span className="size-1.5 rounded-full bg-blue-500" />
@@ -150,7 +156,7 @@ export const ProjectHealthSummary = ({
 						<Button
 							variant="outline"
 							size="sm"
-							disabled={isDeployingAll}
+							onClick={() => deployAll()}
 						>
 							{isDeployingAll ? (
 								<Loader2 className="size-4 animate-spin" />

@@ -1072,3 +1072,118 @@ export const clearOldDeployments = async (
 		await execAsync(command);
 	}
 };
+
+export const findDeploymentDetailById = async (deploymentId: string) => {
+	const deployment = await db.query.deployments.findFirst({
+		where: eq(deployments.deploymentId, deploymentId),
+		with: {
+			application: {
+				columns: {
+					applicationId: true,
+					appName: true,
+					name: true,
+					serverId: true,
+					icon: true,
+				},
+			},
+			compose: {
+				columns: { composeId: true, appName: true, name: true, serverId: true },
+			},
+			server: {
+				columns: { serverId: true, name: true, serverType: true },
+			},
+			buildServer: {
+				columns: { serverId: true, name: true, serverType: true },
+			},
+			schedule: true,
+		},
+	});
+	if (!deployment) {
+		throw new TRPCError({
+			code: "NOT_FOUND",
+			message: "Deployment not found",
+		});
+	}
+	return deployment;
+};
+
+export const promoteDeployment = async (
+	deploymentId: string,
+	userId: string,
+) => {
+	const deployment = await findDeploymentDetailById(deploymentId);
+	if (deployment.status !== "done") {
+		throw new TRPCError({
+			code: "BAD_REQUEST",
+			message: "Only completed deployments can be promoted",
+		});
+	}
+	const updated = await db
+		.update(deployments)
+		.set({
+			environment: "production",
+		})
+		.where(eq(deployments.deploymentId, deploymentId))
+		.returning();
+	return updated[0];
+};
+
+export type DeploymentFilter = {
+	status?: string;
+	environment?: string;
+	search?: string;
+	page?: number;
+	pageSize?: number;
+};
+
+export const findDeploymentsFiltered = async (
+	id: string,
+	type: "application" | "compose",
+	filters: DeploymentFilter = {},
+) => {
+	const { status, environment, search, page = 1, pageSize = 20 } = filters;
+	const offset = (page - 1) * pageSize;
+	const conditions = [eq(deployments[`${type}Id`], id)];
+
+	if (status && status !== "all") {
+		conditions.push(eq(deployments.status, status as "running" | "done" | "error" | "cancelled"));
+	}
+	if (environment && environment !== "all") {
+		conditions.push(eq(deployments.environment, environment));
+	}
+	if (search) {
+		conditions.push(
+			or(
+				sql`${deployments.title} ILIKE ${`%${search}%`}`,
+				sql`${deployments.gitCommitMessage} ILIKE ${`%${search}%`}`,
+				sql`${deployments.gitAuthor} ILIKE ${`%${search}%`}`,
+				sql`${deployments.gitCommitSha} ILIKE ${`%${search}%`}`,
+			)!,
+		);
+	}
+
+	const whereClause = and(...conditions);
+
+	const [items, countResult] = await Promise.all([
+		db.query.deployments.findMany({
+			where: whereClause,
+			orderBy: desc(deployments.createdAt),
+			limit: pageSize,
+			offset,
+		}),
+		db
+			.select({ count: sql<number>`count(*)::int` })
+			.from(deployments)
+			.where(whereClause),
+	]);
+
+	const count = countResult[0]?.count ?? 0;
+
+	return {
+		items,
+		total: count,
+		page,
+		pageSize,
+		totalPages: Math.ceil(count / pageSize),
+	};
+};

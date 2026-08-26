@@ -17,14 +17,14 @@ export const resolveBuildsConcurrency = async (
 	try {
 		if (partition === LOCAL_PARTITION) {
 			const settings = await getWebServerSettings();
-			return normalize(settings?.buildsConcurrency ?? 1);
+			return normalize(settings?.buildsConcurrency ?? 3);
 		}
 
 		const currentServer = await db.query.server.findFirst({
 			where: eq(server.serverId, partition),
 			columns: { buildsConcurrency: true },
 		});
-		return normalize(currentServer?.buildsConcurrency ?? 1);
+		return normalize(currentServer?.buildsConcurrency ?? 3);
 	} catch (error) {
 		console.error(
 			"Failed to resolve builds concurrency, defaulting to 1",

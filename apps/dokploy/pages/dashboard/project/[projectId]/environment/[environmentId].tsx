@@ -315,7 +315,7 @@ const ServiceRuntimeDot = ({
 	isDeploying,
 	name,
 }: {
-	runtime: "healthy" | "degraded" | "failed" | "unknown";
+	runtime: "healthy" | "degraded" | "failed" | "stopped" | "unknown";
 	isDeploying: boolean;
 	name: string;
 }) => {
@@ -327,7 +327,9 @@ const ServiceRuntimeDot = ({
 				? "bg-amber-500"
 				: runtime === "failed"
 					? "bg-red-500"
-					: "bg-muted-foreground/40";
+					: runtime === "stopped"
+						? "bg-muted-foreground/50"
+						: "bg-muted-foreground/40";
 	const label = isDeploying
 		? "Deploying"
 		: runtime === "healthy"
@@ -336,7 +338,9 @@ const ServiceRuntimeDot = ({
 				? "Degraded"
 				: runtime === "failed"
 					? "Failed"
-					: "Unknown";
+					: runtime === "stopped"
+						? "Stopped"
+						: "Unknown";
 	const textColor = isDeploying
 		? "text-blue-600 dark:text-blue-400"
 		: runtime === "healthy"

@@ -147,7 +147,8 @@ export const ProjectOverview = ({
 							{services.length} services ·{" "}
 							{services.filter((s) => s.runtime === "healthy").length}{" "}
 							running ·{" "}
-							{services.filter((s) => s.runtime === "failed").length} failed
+							{services.filter((s) => s.runtime === "failed").length} failed ·{" "}
+							{services.filter((s) => s.runtime === "stopped").length} stopped
 						</span>
 					</div>
 					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -197,7 +198,9 @@ export const ProjectOverview = ({
 										? "bg-amber-500"
 										: service.runtime === "failed"
 											? "bg-red-500"
-											: "bg-muted-foreground/40";
+											: service.runtime === "stopped"
+												? "bg-muted-foreground/50"
+												: "bg-muted-foreground/40";
 							return (
 								<Link
 									key={service.serviceId}

@@ -36,6 +36,11 @@ const baseDomain: Domain = {
 	middlewares: null,
 	forwardAuthEnabled: false,
 	enabled: true,
+	dnsVerified: false,
+	dnsVerifiedAt: null,
+	sslStatus: "pending",
+	sslCheckedAt: null,
+	environment: "production",
 };
 
 describe("forwardAuthMiddlewareName", () => {

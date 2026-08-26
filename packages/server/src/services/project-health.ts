@@ -17,6 +17,7 @@ export type RuntimeState =
 	| "healthy"
 	| "degraded"
 	| "failed"
+	| "stopped"
 	| "unknown";
 
 export type ProjectHealthStatus =
@@ -87,6 +88,7 @@ export type ProjectHealth = {
 		services: number;
 		running: number;
 		failed: number;
+		stopped: number;
 		deploying: number;
 		containers: HealthContainers;
 		domains: number;
@@ -152,6 +154,13 @@ const deriveRuntime = (
 	}
 	if (serviceContainers.some((c) => c.state === "running")) {
 		return "healthy";
+	}
+	const allExitedCleanly = serviceContainers.every((c) => {
+		const exitMatch = c.status.match(/Exited \((\d+)\)/);
+		return exitMatch && exitMatch[1] === "0";
+	});
+	if (allExitedCleanly) {
+		return "stopped";
 	}
 	return "failed";
 };
@@ -550,6 +559,7 @@ const assembleProjectHealth = async (project: {
 			services: allServices.length,
 			running: allServices.filter((s) => s.runtime === "healthy").length,
 			failed: allServices.filter((s) => s.runtime === "failed").length,
+			stopped: allServices.filter((s) => s.runtime === "stopped").length,
 			deploying: allServices.filter((s) => s.isDeploying).length,
 			containers: summarizeContainers(allServices),
 			domains: domains.length,

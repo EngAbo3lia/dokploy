@@ -1,9 +1,11 @@
 import {
 	createDomain,
+	checkDomainSsl,
 	findApplicationById,
 	findDomainById,
 	findDomainsByApplicationId,
 	findDomainsByComposeId,
+	findDomainsFiltered,
 	findPreviewDeploymentById,
 	findServerById,
 	generateTraefikMeDomain,
@@ -13,6 +15,7 @@ import {
 	removeDomainById,
 	updateDomainById,
 	validateDomain,
+	verifyDomainDns,
 } from "@dokploy/server";
 import { checkServicePermissionAndAccess } from "@dokploy/server/services/permission";
 import { TRPCError } from "@trpc/server";
@@ -253,5 +256,52 @@ export const domainRouter = createTRPCRouter({
 		)
 		.mutation(async ({ input }) => {
 			return validateDomain(input.domain, input.serverIp);
+		}),
+
+	verifyDns: protectedProcedure
+		.input(z.object({ domainId: z.string().min(1) }))
+		.mutation(async ({ input, ctx }) => {
+			const domain = await findDomainById(input.domainId);
+			const serviceId = domain.applicationId || domain.composeId;
+			if (serviceId) {
+				await checkServicePermissionAndAccess(ctx, serviceId, {
+					domain: ["read"],
+				});
+			}
+			return verifyDomainDns(input.domainId);
+		}),
+
+	checkSsl: protectedProcedure
+		.input(z.object({ domainId: z.string().min(1) }))
+		.mutation(async ({ input, ctx }) => {
+			const domain = await findDomainById(input.domainId);
+			const serviceId = domain.applicationId || domain.composeId;
+			if (serviceId) {
+				await checkServicePermissionAndAccess(ctx, serviceId, {
+					domain: ["read"],
+				});
+			}
+			return checkDomainSsl(input.domainId);
+		}),
+
+	filteredList: protectedProcedure
+		.input(
+			z.object({
+				id: z.string().min(1),
+				type: z.enum(["application", "compose"]),
+				environment: z.string().optional(),
+				verified: z.string().optional(),
+				search: z.string().optional(),
+			}),
+		)
+		.query(async ({ input, ctx }) => {
+			await checkServicePermissionAndAccess(ctx, input.id, {
+				domain: ["read"],
+			});
+			return findDomainsFiltered(input.id, input.type, {
+				environment: input.environment,
+				verified: input.verified,
+				search: input.search,
+			});
 		}),
 });

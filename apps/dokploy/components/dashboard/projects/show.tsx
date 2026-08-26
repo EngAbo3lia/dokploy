@@ -426,6 +426,12 @@ export const ShowProjects = () => {
 																								failed
 																							</span>
 																						)}
+																						{health.totals.stopped > 0 && (
+																							<span className="text-muted-foreground">
+																								{health.totals.stopped}{" "}
+																								stopped
+																							</span>
+																						)}
 																						{health.totals.deploying >
 																							0 && (
 																							<span className="text-blue-600 dark:text-blue-400">

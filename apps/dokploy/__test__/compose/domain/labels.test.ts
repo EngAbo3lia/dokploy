@@ -23,9 +23,14 @@ describe("createDomainLabels", () => {
 		internalPath: "/",
 		stripPath: false,
 		middlewares: null,
-		forwardAuthEnabled: false,
-		enabled: true,
-	};
+	forwardAuthEnabled: false,
+	enabled: true,
+	dnsVerified: false,
+	dnsVerifiedAt: null,
+	sslStatus: "pending",
+	sslCheckedAt: null,
+	environment: "production",
+};
 
 	it("should create basic labels for web entrypoint", async () => {
 		const labels = await createDomainLabels(appName, baseDomain, "web");

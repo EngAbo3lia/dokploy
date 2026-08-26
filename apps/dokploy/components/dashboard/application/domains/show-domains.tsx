@@ -151,6 +151,10 @@ export const ShowDomains = ({ id, type }: Props) => {
 		api.domain.delete.useMutation();
 	const { mutateAsync: toggleEnable, isPending: isToggling } =
 		api.domain.toggleEnable.useMutation();
+	const { mutateAsync: verifyDns, isPending: isVerifyingDns } =
+		api.domain.verifyDns.useMutation();
+	const { mutateAsync: checkSsl, isPending: isCheckingSsl } =
+		api.domain.checkSsl.useMutation();
 
 	const handleToggleEnable = async (domainId: string) => {
 		try {
@@ -612,6 +616,84 @@ export const ShowDomains = ({ id, type }: Props) => {
 																</TooltipTrigger>
 																<TooltipContent>
 																	<p>SSL Certificate Provider</p>
+																</TooltipContent>
+															</Tooltip>
+														</TooltipProvider>
+													)}
+
+													<TooltipProvider>
+														<Tooltip>
+															<TooltipTrigger asChild>
+																<Badge
+																	variant="outline"
+																	className={
+																		item.dnsVerified
+																			? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+																			: "bg-muted/40 text-muted-foreground"
+																	}
+																	onClick={async () => {
+																		try {
+																			await verifyDns({ domainId: item.domainId });
+																			refetch();
+																			toast.success("DNS verification updated");
+																		} catch {
+																			toast.error("Failed to verify DNS");
+																		}
+																	}}
+																>
+																	{isVerifyingDns ? (
+																		<Loader2 className="size-3 mr-1 animate-spin" />
+																	) : item.dnsVerified ? (
+																		<CheckCircle2 className="size-3 mr-1" />
+																	) : (
+																		<XCircle className="size-3 mr-1" />
+																	)}
+																	DNS: {item.dnsVerified ? "Verified" : "Unverified"}
+																</Badge>
+															</TooltipTrigger>
+															<TooltipContent>
+																<p>{item.dnsVerified ? `Verified ${item.dnsVerifiedAt ? `at ${new Date(item.dnsVerifiedAt).toLocaleString()}` : ""}` : "Click badge to verify DNS"}</p>
+															</TooltipContent>
+														</Tooltip>
+													</TooltipProvider>
+
+													{item.https && (
+														<TooltipProvider>
+															<Tooltip>
+																<TooltipTrigger asChild>
+																	<Badge
+																		variant="outline"
+																		className={
+																			item.sslStatus === "active"
+																				? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+																				: item.sslStatus === "failed"
+																					? "bg-red-500/10 text-red-600 dark:text-red-400"
+																					: "bg-muted/40 text-muted-foreground"
+																		}
+																		onClick={async () => {
+																			try {
+																				await checkSsl({ domainId: item.domainId });
+																				refetch();
+																				toast.success("SSL status updated");
+																			} catch {
+																				toast.error("Failed to check SSL");
+																			}
+																		}}
+																	>
+																		{isCheckingSsl ? (
+																			<Loader2 className="size-3 mr-1 animate-spin" />
+																		) : item.sslStatus === "active" ? (
+																			<CheckCircle2 className="size-3 mr-1" />
+																		) : item.sslStatus === "failed" ? (
+																			<XCircle className="size-3 mr-1" />
+																		) : (
+																			<RefreshCw className="size-3 mr-1" />
+																		)}
+																		SSL: {item.sslStatus || "pending"}
+																	</Badge>
+																</TooltipTrigger>
+																<TooltipContent>
+																	<p>{item.sslCheckedAt ? `Last checked: ${new Date(item.sslCheckedAt).toLocaleString()}` : "Click to check SSL status"}</p>
 																</TooltipContent>
 															</Tooltip>
 														</TooltipProvider>

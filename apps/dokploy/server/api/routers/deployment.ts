@@ -6,8 +6,11 @@ import {
 	findAllDeploymentsByServerId,
 	findAllDeploymentsCentralized,
 	findDeploymentById,
+	findDeploymentDetailById,
+	findDeploymentsFiltered,
 	findScheduleById,
 	IS_CLOUD,
+	promoteDeployment,
 	removeDeployment,
 	resolveServicePath,
 	updateDeploymentStatus,
@@ -280,5 +283,63 @@ export const deploymentRouter = createTRPCRouter({
 
 			const { stdout } = await execAsync(command);
 			return stdout;
+		}),
+
+	detail: protectedProcedure
+		.input(z.object({ deploymentId: z.string().min(1) }))
+		.query(async ({ input, ctx }) => {
+			const deployment = await findDeploymentDetailById(input.deploymentId);
+			const serviceId = deployment.applicationId || deployment.composeId;
+			if (serviceId) {
+				await checkServicePermissionAndAccess(ctx, serviceId, {
+					deployment: ["read"],
+				});
+			}
+			return deployment;
+		}),
+
+	promote: protectedProcedure
+		.input(z.object({ deploymentId: z.string().min(1) }))
+		.mutation(async ({ input, ctx }) => {
+			const deployment = await findDeploymentDetailById(input.deploymentId);
+			const serviceId = deployment.applicationId || deployment.composeId;
+			if (serviceId) {
+				await checkServicePermissionAndAccess(ctx, serviceId, {
+					deployment: ["create"],
+				});
+			}
+			const result = await promoteDeployment(input.deploymentId, ctx.user.id);
+			await audit(ctx, {
+				action: "update",
+				resourceType: "deployment",
+				resourceId: deployment.deploymentId,
+				resourceName: `${deployment.title} promoted to production`,
+			});
+			return result;
+		}),
+
+	filteredList: protectedProcedure
+		.input(
+			z.object({
+				id: z.string().min(1),
+				type: z.enum(["application", "compose"]),
+				status: z.string().optional(),
+				environment: z.string().optional(),
+				search: z.string().optional(),
+				page: z.number().int().min(1).default(1),
+				pageSize: z.number().int().min(1).max(100).default(20),
+			}),
+		)
+		.query(async ({ input, ctx }) => {
+			await checkServicePermissionAndAccess(ctx, input.id, {
+				deployment: ["read"],
+			});
+			return findDeploymentsFiltered(input.id, input.type, {
+				status: input.status,
+				environment: input.environment,
+				search: input.search,
+				page: input.page,
+				pageSize: input.pageSize,
+			});
 		}),
 });

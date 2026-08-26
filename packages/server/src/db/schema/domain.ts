@@ -57,6 +57,11 @@ export const domains = pgTable("domain", {
 	middlewares: text("middlewares").array().default(sql`ARRAY[]::text[]`),
 	forwardAuthEnabled: boolean("forwardAuthEnabled").notNull().default(false),
 	enabled: boolean("enabled").notNull().default(true),
+	dnsVerified: boolean("dnsVerified").default(false),
+	dnsVerifiedAt: text("dnsVerifiedAt"),
+	sslStatus: text("sslStatus").default("pending"),
+	sslCheckedAt: text("sslCheckedAt"),
+	environment: text("environment").default("production"),
 });
 
 export const domainsRelations = relations(domains, ({ one }) => ({

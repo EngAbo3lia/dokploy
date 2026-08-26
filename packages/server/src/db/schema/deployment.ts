@@ -73,6 +73,12 @@ export const deployments = pgTable("deployment", {
 	buildServerId: text("buildServerId").references(() => server.serverId, {
 		onDelete: "cascade",
 	}),
+	gitBranch: text("gitBranch"),
+	gitCommitSha: text("gitCommitSha"),
+	gitCommitMessage: text("gitCommitMessage"),
+	gitAuthor: text("gitAuthor"),
+	environment: text("environment").default("production"),
+	deployUrl: text("deployUrl"),
 });
 
 export const deploymentsRelations = relations(deployments, ({ one }) => ({

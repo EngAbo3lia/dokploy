@@ -171,9 +171,11 @@ export const ComposeOverview = ({
 			? { label: "Unknown", className: "border-border bg-muted/40 text-muted-foreground", dot: "bg-muted-foreground/40" }
 			: degraded
 				? { label: "Degraded", className: "border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400", dot: "bg-amber-500" }
-				: running > 0
+				: running === containers.length
 					? { label: "Running", className: "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400", dot: "bg-emerald-500" }
-					: { label: "Stopped", className: "border-border bg-muted/40 text-muted-foreground", dot: "bg-muted-foreground/50" };
+					: running > 0
+						? { label: "Degraded", className: "border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400", dot: "bg-amber-500" }
+						: { label: "Stopped", className: "border-border bg-muted/40 text-muted-foreground", dot: "bg-muted-foreground/50" };
 
 	const domains = composeData?.domains || [];
 
@@ -202,7 +204,6 @@ export const ComposeOverview = ({
 						<div className="flex flex-row gap-2">
 							<Button
 								size="sm"
-								disabled={isDeploying || isRedeploying}
 								onClick={() =>
 									deployCompose({ composeId, title: "Deploy" })
 										.then(() => toast.success("Deployment queued"))
