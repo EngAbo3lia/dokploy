@@ -96,39 +96,58 @@ function StatusBadge({
 	);
 }
 
+const deploymentStatusMap: Record<
+	string,
+	{ status: VariantProps<typeof statusDotVariants>["status"]; label: string }
+> = {
+	running: { status: "running", label: "Building" },
+	done: { status: "done", label: "Deployed" },
+	success: { status: "done", label: "Deployed" },
+	error: { status: "error", label: "Failed" },
+	failed: { status: "error", label: "Failed" },
+	cancelled: { status: "cancelled", label: "Cancelled" },
+	canceled: { status: "cancelled", label: "Cancelled" },
+	queued: { status: "pending", label: "Queued" },
+	stopped: { status: "stopped", label: "Stopped" },
+};
+
 function DeploymentStatus({ status }: { status: string }) {
-	const mappedStatus = (
-		status === "running"
-			? "running"
-			: status === "success"
-				? "success"
-				: status === "failed"
-					? "failed"
-					: status === "canceled"
-						? "cancelled"
-						: status === "queued"
-							? "pending"
-							: status === "stopped"
-								? "stopped"
-								: "idle"
-	) as VariantProps<typeof statusDotVariants>["status"];
+	const mapped = deploymentStatusMap[status];
+	if (!mapped) {
+		return (
+			<StatusBadge status="idle">
+				{status ? status.charAt(0).toUpperCase() + status.slice(1) : "Unknown"}
+			</StatusBadge>
+		);
+	}
+	return <StatusBadge status={mapped.status}>{mapped.label}</StatusBadge>;
+}
 
-	const label =
-		status === "running"
-			? "Building"
-			: status === "success"
-				? "Deployed"
-				: status === "failed"
-					? "Failed"
-					: status === "canceled"
-						? "Canceled"
-						: status === "queued"
-							? "Queued"
-							: status === "stopped"
-								? "Stopped"
-								: status.charAt(0).toUpperCase() + status.slice(1);
-
-	return <StatusBadge status={mappedStatus}>{label}</StatusBadge>;
+export function mapServiceStatus(
+	status?: string | null,
+): VariantProps<typeof statusDotVariants>["status"] {
+	if (!status) {
+		return "idle";
+	}
+	if (["deploying", "starting", "deployed"].includes(status)) {
+		return "deploying";
+	}
+	if (["running", "queueing", "building"].includes(status)) {
+		return "deploying";
+	}
+	if (["healthy", "ready", "done", "success"].includes(status)) {
+		return "success";
+	}
+	if (["degraded", "warning"].includes(status)) {
+		return "warning";
+	}
+	if (["error", "failed", "unhealthy"].includes(status)) {
+		return "error";
+	}
+	if (["stopped", "idle", "cancelled", "canceled"].includes(status)) {
+		return "stopped";
+	}
+	return "idle";
 }
 
 export {

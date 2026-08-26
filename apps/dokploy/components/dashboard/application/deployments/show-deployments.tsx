@@ -6,8 +6,11 @@ import {
 	ChevronUp,
 	Clock,
 	Copy,
+	Eye,
 	Filter,
+	Info,
 	RocketIcon,
+	Scissors,
 	Search,
 	Settings,
 	Trash2,
@@ -15,10 +18,7 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DeploymentDetail } from "@/components/dashboard/deployment/deployment-detail";
-import {
-	DeploymentStatus,
-	StatusBadge,
-} from "@/components/shared/status-indicator";
+import { DeploymentStatus } from "@/components/shared/status-indicator";
 import { AlertBlock } from "@/components/shared/alert-block";
 import { EmptyState } from "@/components/shared/empty-state";
 import { SkeletonTable } from "@/components/shared/skeleton-card";
@@ -389,12 +389,12 @@ export const ShowDeployments = ({
 					/>
 				) : (
 					<div className="flex flex-col gap-0">
-						<div className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 items-center px-4 py-2 text-xs text-muted-foreground border-b">
-							<span className="w-8" />
+						<div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] gap-3 items-center px-4 py-2 text-xs text-muted-foreground border-b">
 							<span>Deployment</span>
 							<span className="hidden sm:block w-24 text-right">Duration</span>
-							<span className="w-20 text-right">Status</span>
-							<span className="w-32 text-right">Date</span>
+							<span className="min-w-[96px] text-right">Status</span>
+							<span className="hidden sm:block w-32 text-right">Date</span>
+							<span aria-hidden="true" />
 						</div>
 						{deployments.map((deployment, _index) => {
 							const titleText = deployment?.title?.trim() || "";
@@ -417,10 +417,8 @@ export const ShowDeployments = ({
 							return (
 								<div
 									key={deployment.deploymentId}
-									className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 items-center px-4 py-3 border-b last:border-b-0 hover:bg-muted/30 transition-colors"
+									className="group grid grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] gap-3 items-center px-4 py-3 border-b last:border-b-0 hover:bg-muted/30 transition-colors"
 								>
-									<DeploymentStatus status={deployment.status || "idle"} />
-
 									<div className="flex flex-col gap-0.5 min-w-0">
 										<div className="flex items-center gap-2">
 											<span className="font-medium text-sm truncate">
@@ -428,19 +426,6 @@ export const ShowDeployments = ({
 													? titleText
 													: truncateDescription(titleText)}
 											</span>
-											<StatusBadge
-												status={
-													deployment.status === "done"
-														? "success"
-														: deployment.status === "running"
-															? "running"
-															: deployment.status === "error"
-																? "failed"
-																: "idle"
-												}
-											>
-												{deployment.status}
-											</StatusBadge>
 											{deployment.environment && (
 												<Badge
 													variant="secondary"
@@ -508,112 +493,105 @@ export const ShowDeployments = ({
 										)}
 									</div>
 
-									<div className="w-20 text-right">
-										<StatusBadge
-											status={
-												deployment.status === "done"
-													? "success"
-													: deployment.status === "running"
-														? "running"
-														: deployment.status === "error"
-															? "failed"
-															: "idle"
-											}
-										>
-											{deployment.status}
-										</StatusBadge>
+									<div className="min-w-[96px] flex justify-end">
+										<DeploymentStatus status={deployment.status || "idle"} />
 									</div>
 
-									<div className="flex items-center gap-2 w-32 justify-end">
+									<div className="hidden sm:flex items-center w-32 justify-end">
 										<DateTooltip date={deployment.createdAt} />
-										<div className="flex items-center gap-1">
-											{deployment.pid && deployment.status === "running" && (
-												<DialogAction
-													title="Kill Process"
-													description="Are you sure you want to kill the process?"
-													type="default"
-													onClick={async () => {
-														await killProcess({
-															deploymentId: deployment.deploymentId,
+									</div>
+
+									<div className="flex items-center justify-end gap-0.5 opacity-100 transition-opacity duration-150 focus-within:opacity-100 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
+										{deployment.pid && deployment.status === "running" && (
+											<DialogAction
+												title="Kill Process"
+												description="Are you sure you want to kill the process?"
+												type="default"
+												onClick={async () => {
+													await killProcess({
+														deploymentId: deployment.deploymentId,
+													})
+														.then(() => {
+															toast.success("Process killed successfully");
 														})
-															.then(() => {
-																toast.success("Process killed successfully");
-															})
-															.catch(() => {
-																toast.error("Error killing process");
-															});
-													}}
-												>
-													<Button
-														variant="ghost"
-														size="sm"
-														isLoading={isKillingProcess}
-														className="h-7 px-2"
-													>
-														Kill
-													</Button>
-												</DialogAction>
-											)}
-											<Button
-												variant="ghost"
-												size="sm"
-												onClick={() => setActiveLog(deployment)}
-												className="h-7 px-2"
+														.catch(() => {
+															toast.error("Error killing process");
+														});
+												}}
 											>
-												View
-											</Button>
-											{(type === "application" || type === "compose") && (
 												<Button
 													variant="ghost"
 													size="sm"
-													onClick={() =>
-														setDetailDeploymentId(deployment.deploymentId)
-													}
-													className="h-7 px-2"
+													isLoading={isKillingProcess}
+													className="h-7 w-7 p-0"
+													title="Kill build"
 												>
-													Detail
+													<Scissors className="size-3.5" />
 												</Button>
-											)}
-											{canDelete && (
-												<DialogAction
-													title="Delete Deployment"
-													description="Are you sure you want to delete this deployment? This action cannot be undone."
-													type="default"
-													onClick={async () => {
+											</DialogAction>
+										)}
+										<Button
+											variant="ghost"
+											size="sm"
+											onClick={() => setActiveLog(deployment)}
+											className="h-7 w-7 p-0"
+											title="View logs"
+										>
+											<Eye className="size-3.5" />
+										</Button>
+										{(type === "application" || type === "compose") && (
+											<Button
+												variant="ghost"
+												size="sm"
+												onClick={() =>
+													setDetailDeploymentId(deployment.deploymentId)
+												}
+												className="h-7 w-7 p-0"
+												title="View deployment detail"
+											>
+												<Info className="size-3.5" />
+											</Button>
+										)}
+										{canDelete && (
+											<DialogAction
+												title="Delete Deployment"
+												description="Are you sure you want to delete this deployment? This action cannot be undone."
+												type="default"
+												onClick={async () => {
+													setRemovingDeploymentIds((prev) => {
+														const next = new Set(prev);
+														next.add(deployment.deploymentId);
+														return next;
+													});
+													try {
+														await removeDeployment({
+															deploymentId: deployment.deploymentId,
+														});
+														toast.success("Deployment deleted");
+													} catch {
+														toast.error("Error deleting deployment");
+													} finally {
 														setRemovingDeploymentIds((prev) => {
 															const next = new Set(prev);
-															next.add(deployment.deploymentId);
+															next.delete(deployment.deploymentId);
 															return next;
 														});
-														try {
-															await removeDeployment({
-																deploymentId: deployment.deploymentId,
-															});
-															toast.success("Deployment deleted");
-														} catch {
-															toast.error("Error deleting deployment");
-														} finally {
-															setRemovingDeploymentIds((prev) => {
-																const next = new Set(prev);
-																next.delete(deployment.deploymentId);
-																return next;
-															});
-														}
-													}}
+													}
+												}}
+											>
+												<Button
+													variant="ghost"
+													size="sm"
+													isLoading={removingDeploymentIds.has(
+														deployment.deploymentId,
+													)}
+													className="h-7 w-7 p-0"
+													title="Delete deployment"
 												>
-													<Button
-														variant="ghost"
-														size="sm"
-														isLoading={removingDeploymentIds.has(
-															deployment.deploymentId,
-														)}
-														className="h-7 px-2"
-													>
-														<Trash2 className="size-3" />
-													</Button>
-												</DialogAction>
-											)}
-										</div>
+													<Trash2 className="size-3.5" />
+												</Button>
+											</DialogAction>
+										)}
 									</div>
 								</div>
 							);

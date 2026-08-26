@@ -4,12 +4,15 @@ import {
 	ExternalLink,
 	GitBranch,
 	GitCommitHorizontal,
+	Search,
 	User,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { DeploymentStatus } from "@/components/shared/status-indicator";
 import { DateTooltip } from "@/components/shared/date-tooltip";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonCard } from "@/components/shared/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,26 +51,19 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 
 	if (isPending) {
 		return (
-			<div className="flex items-center justify-center min-h-[40vh]">
-				<div className="flex flex-col items-center gap-3">
-					<div className="size-8 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
-					<span className="text-sm text-muted-foreground">
-						Loading deployment...
-					</span>
-				</div>
+			<div className="flex flex-col gap-4 max-w-3xl">
+				<SkeletonCard />
 			</div>
 		);
 	}
 
 	if (!deployment) {
 		return (
-			<div className="flex flex-col items-center gap-3 min-h-[40vh] justify-center">
-				<span className="text-muted-foreground">Deployment not found</span>
-				<Button variant="outline" onClick={onBack}>
-					<ArrowLeft className="size-4 mr-2" />
-					Back
-				</Button>
-			</div>
+			<EmptyState
+				icon={<Search />}
+				title="Deployment not found"
+				description="This deployment may have been deleted."
+			/>
 		);
 	}
 
@@ -111,14 +107,14 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 						</CardContent>
 					</Card>
 
-					{deployment.logPath && (
+					{deployment.errorMessage && (
 						<Card>
 							<CardHeader>
 								<CardTitle className="text-base">Build Logs</CardTitle>
 							</CardHeader>
 							<CardContent>
 								<pre className="text-xs font-mono bg-muted/50 rounded-lg p-4 max-h-[400px] overflow-auto whitespace-pre-wrap">
-									{deployment.errorMessage || "Logs will appear here..."}
+									{deployment.errorMessage}
 								</pre>
 							</CardContent>
 						</Card>

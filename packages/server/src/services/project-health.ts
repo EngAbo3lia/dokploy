@@ -137,6 +137,8 @@ const deriveRuntime = (
 	appName: string | null,
 	composeType: string | null | undefined,
 	containers: Containers,
+	serviceStatus: string | null,
+	deployments: HealthDeployment[] | null,
 ): RuntimeState => {
 	if (composeType === "stack" || !appName || !containers) {
 		return "unknown";
@@ -144,25 +146,56 @@ const deriveRuntime = (
 	const serviceContainers = containers.filter((c) =>
 		matchesAppName(c.name, appName),
 	);
-	if (serviceContainers.length === 0) return "unknown";
+	const lastDeploymentIsError = (deployments || []).some((d) =>
+		["error", "failed"].includes(d.status || ""),
+	);
+	if (serviceContainers.length === 0) {
+		if (lastDeploymentIsError || serviceStatus === "error") return "failed";
+		return "unknown";
+	}
 
-	if (serviceContainers.some((c) => c.status.includes("(unhealthy)"))) {
-		return "degraded";
-	}
-	if (serviceContainers.some((c) => c.state === "restarting")) {
-		return "degraded";
-	}
-	if (serviceContainers.some((c) => c.state === "running")) {
-		return "healthy";
-	}
-	const allExitedCleanly = serviceContainers.every((c) => {
+	const runningCount = serviceContainers.filter(
+		(c) => c.state === "running",
+	).length;
+	const unhealthy = serviceContainers.some((c) =>
+		c.status.includes("(unhealthy)"),
+	);
+	const restarting = serviceContainers.some(
+		(c) => c.state === "restarting",
+	);
+	const failedContainers = serviceContainers.filter((c) => {
+		if (c.state === "running") return false;
+		const exitMatch = c.status.match(/Exited \((\d+)\)/);
+		return exitMatch && exitMatch[1] !== "0";
+	});
+	const exitedCleanly = serviceContainers.filter((c) => {
 		const exitMatch = c.status.match(/Exited \((\d+)\)/);
 		return exitMatch && exitMatch[1] === "0";
 	});
-	if (allExitedCleanly) {
+
+	if (unhealthy || restarting || failedContainers.length > 0) {
+		if (
+			failedContainers.length > 0 &&
+			runningCount === 0 &&
+			exitedCleanly.length === 0
+		) {
+			return "failed";
+		}
+		return "degraded";
+	}
+	if (runningCount === serviceContainers.length) {
+		return "healthy";
+	}
+	if (
+		runningCount === 0 &&
+		exitedCleanly.length === serviceContainers.length
+	) {
 		return "stopped";
 	}
-	return "failed";
+	if (runningCount === 0) {
+		return "failed";
+	}
+	return "degraded";
 };
 
 const deployTimestamp = (deployment: HealthDeployment | null): string | null => {
@@ -213,7 +246,13 @@ const buildServiceRow = (
 	containersPerServer: Map<string | null, Containers>,
 ): HealthServiceRow => {
 	const containers = containersPerServer.get(item.serverId) || [];
-	const runtime = deriveRuntime(item.appName, item.composeType, containers);
+	const runtime = deriveRuntime(
+		item.appName,
+		item.composeType,
+		containers,
+		item.status,
+		item.deployments || null,
+	);
 	const isDeploying = ["running", "queued"].includes(item.status || "");
 	return {
 		serviceId: item.serviceId,

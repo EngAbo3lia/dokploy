@@ -20,13 +20,6 @@ interface Props {
 	children?: React.ReactNode;
 }
 
-export const formatDuration = (seconds: number) => {
-	if (seconds < 60) return `${seconds}s`;
-	const minutes = Math.floor(seconds / 60);
-	const remainingSeconds = seconds % 60;
-	return `${minutes}m ${remainingSeconds}s`;
-};
-
 export const ShowDeploymentsModal = ({
 	id,
 	type,

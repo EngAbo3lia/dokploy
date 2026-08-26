@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { ShowImport } from "@/components/dashboard/application/advanced/import/show-import";
 import { ShowVolumes } from "@/components/dashboard/application/advanced/volumes/show-volumes";
 import { ShowDomains } from "@/components/dashboard/application/domains/show-domains";
@@ -14,7 +14,8 @@ import { ShowBackups } from "@/components/dashboard/database/backups/show-backup
 import { ComposeFreeMonitoring } from "@/components/dashboard/monitoring/free/container/show-free-compose-monitoring";
 import { ComposePaidMonitoring } from "@/components/dashboard/monitoring/paid/container/show-paid-compose-monitoring";
 import { AssignComposeNetworks } from "@/components/dashboard/networks/assign-compose-networks";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ServiceTabsList } from "@/components/dashboard/service/service-tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { api } from "@/utils/api";
 
 type ServerConfig = {
@@ -118,117 +119,110 @@ export const ComposeConfigurationTabs = ({
 
 	const visibleSubTabs = subTabs.filter((item) => item.show);
 
+	const content: Record<SubTab, ReactNode> = {
+		general: (
+			<div className="flex flex-col gap-4 pt-2.5">
+				<ShowGeneralCompose composeId={composeId} />
+			</div>
+		),
+		environment: (
+			<div className="flex flex-col gap-4 pt-2.5">
+				<ShowEnvironment id={composeId} type="compose" />
+			</div>
+		),
+		domains: (
+			<div className="flex flex-col gap-4 pt-2.5">
+				<ShowDomains id={composeId} type="compose" />
+			</div>
+		),
+		containers: (
+			<div className="flex flex-col gap-4 pt-2.5">
+				<ShowComposeContainers
+					serverId={serverId || undefined}
+					appName={appName}
+					appType={composeType || "docker-compose"}
+					serviceId={composeId}
+				/>
+			</div>
+		),
+		backups: (
+			<div className="flex flex-col gap-4 pt-2.5">
+				<ShowBackups id={composeId} backupType="compose" />
+			</div>
+		),
+		schedules: (
+			<div className="flex flex-col gap-4 pt-2.5">
+				<ShowSchedules id={composeId} scheduleType="compose" />
+			</div>
+		),
+		volumeBackups: (
+			<div className="flex flex-col gap-4 pt-2.5">
+				<ShowVolumeBackups
+					id={composeId}
+					type="compose"
+					serverId={serverId || ""}
+				/>
+			</div>
+		),
+		patches: (
+			<div className="flex flex-col gap-4 pt-2.5">
+				<ShowPatches id={composeId} type="compose" />
+			</div>
+		),
+		monitoring: (
+			<div className="pt-2.5">
+				<div className="flex flex-col border rounded-lg">
+					{serverId && isCloud ? (
+						<ComposePaidMonitoring
+							serverId={serverId || ""}
+							baseUrl={`http://${server?.ipAddress}:${server?.metricsConfig?.server?.port}`}
+							appName={appName}
+							token={server?.metricsConfig?.server?.token || ""}
+							appType={composeType || "docker-compose"}
+						/>
+					) : (
+						<ComposeFreeMonitoring
+							serverId={serverId || ""}
+							appName={appName}
+							appType={composeType || "docker-compose"}
+						/>
+					)}
+				</div>
+			</div>
+		),
+		advanced: (
+			<div className="flex flex-col gap-4 pt-2.5">
+				<AddCommandCompose composeId={composeId} />
+				<ShowVolumes id={composeId} type="compose" />
+				<ShowImport composeId={composeId} />
+				<AssignComposeNetworks composeId={composeId} />
+				<IsolatedDeploymentTab composeId={composeId} />
+			</div>
+		),
+	};
+
 	return (
 		<Tabs
 			value={tab}
 			onValueChange={(value) => setTab(value as SubTab)}
 			className="w-full"
 		>
-			<TabsList className="flex flex-wrap gap-2">
-				{visibleSubTabs.map((item) => (
-					<TabsTrigger key={item.value} value={item.value}>
-						{item.label}
-					</TabsTrigger>
-				))}
-			</TabsList>
+			<ServiceTabsList
+				tabs={visibleSubTabs.map((item) => ({
+					value: item.value,
+					label: item.label,
+				}))}
+			/>
 
-			<TabsContent value="general">
-				<div className="flex flex-col gap-4 pt-2.5">
-					<ShowGeneralCompose composeId={composeId} />
-				</div>
-			</TabsContent>
-			{permissions?.envVars?.read && (
-				<TabsContent value="environment">
-					<div className="flex flex-col gap-4 pt-2.5">
-						<ShowEnvironment id={composeId} type="compose" />
-					</div>
+			{visibleSubTabs.map((item) => (
+				<TabsContent
+					key={item.value}
+					value={item.value}
+					className={item.value === "monitoring" ? undefined : "w-full"}
+				>
+					{content[item.value]}
 				</TabsContent>
-			)}
-			{permissions?.domain?.read && (
-				<TabsContent value="domains">
-					<div className="flex flex-col gap-4 pt-2.5">
-						<ShowDomains id={composeId} type="compose" />
-					</div>
-				</TabsContent>
-			)}
-			{permissions?.service?.read && (
-				<TabsContent value="containers">
-					<div className="flex flex-col gap-4 pt-2.5">
-						<ShowComposeContainers
-							serverId={serverId || undefined}
-							appName={appName}
-							appType={composeType || "docker-compose"}
-							serviceId={composeId}
-						/>
-					</div>
-				</TabsContent>
-			)}
-			{permissions?.service?.create && (
-				<TabsContent value="backups">
-					<div className="flex flex-col gap-4 pt-2.5">
-						<ShowBackups id={composeId} backupType="compose" />
-					</div>
-				</TabsContent>
-			)}
-			{permissions?.schedule?.read && (
-				<TabsContent value="schedules">
-					<div className="flex flex-col gap-4 pt-2.5">
-						<ShowSchedules id={composeId} scheduleType="compose" />
-					</div>
-				</TabsContent>
-			)}
-			{permissions?.volumeBackup?.read && (
-				<TabsContent value="volumeBackups">
-					<div className="flex flex-col gap-4 pt-2.5">
-						<ShowVolumeBackups
-							id={composeId}
-							type="compose"
-							serverId={serverId || ""}
-						/>
-					</div>
-				</TabsContent>
-			)}
-			{sourceType !== "raw" && (
-				<TabsContent value="patches" className="w-full">
-					<div className="flex flex-col gap-4 pt-2.5">
-						<ShowPatches id={composeId} type="compose" />
-					</div>
-				</TabsContent>
-			)}
-			{permissions?.monitoring?.read && (
-				<TabsContent value="monitoring">
-					<div className="pt-2.5">
-						<div className="flex flex-col border rounded-lg">
-							{serverId && isCloud ? (
-								<ComposePaidMonitoring
-									serverId={serverId || ""}
-									baseUrl={`http://${server?.ipAddress}:${server?.metricsConfig?.server?.port}`}
-									appName={appName}
-									token={server?.metricsConfig?.server?.token || ""}
-									appType={composeType || "docker-compose"}
-								/>
-							) : (
-								<ComposeFreeMonitoring
-									serverId={serverId || ""}
-									appName={appName}
-									appType={composeType || "docker-compose"}
-								/>
-							)}
-						</div>
-					</div>
-				</TabsContent>
-			)}
-			{permissions?.service?.create && (
-				<TabsContent value="advanced">
-					<div className="flex flex-col gap-4 pt-2.5">
-						<AddCommandCompose composeId={composeId} />
-						<ShowVolumes id={composeId} type="compose" />
-						<ShowImport composeId={composeId} />
-						<AssignComposeNetworks composeId={composeId} />
-						<IsolatedDeploymentTab composeId={composeId} />
-					</div>
-				</TabsContent>
-			)}
+			))}
 		</Tabs>
 	);
 };

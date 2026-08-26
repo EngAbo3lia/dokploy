@@ -25,6 +25,7 @@ import {
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { DeploymentStatus } from "@/components/shared/status-indicator";
+import { DateTooltip } from "@/components/shared/date-tooltip";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonTable } from "@/components/shared/skeleton-card";
@@ -83,6 +84,15 @@ function getServiceInfo(d: DeploymentRow) {
 	return null;
 }
 
+function getServerName(d: DeploymentRow) {
+	return (
+		d.server?.name ??
+		d.application?.server?.name ??
+		d.compose?.server?.name ??
+		""
+	);
+}
+
 export function ShowDeploymentsTable() {
 	const [sorting, setSorting] = useState<SortingState>([
 		{ id: "createdAt", desc: true },
@@ -116,11 +126,7 @@ export function ShowDeploymentsTable() {
 			const q = globalFilter.toLowerCase();
 			list = list.filter((d) => {
 				const info = getServiceInfo(d);
-				const serverName =
-					d.server?.name ??
-					d.application?.server?.name ??
-					d.compose?.server?.name ??
-					"";
+				const serverName = getServerName(d);
 				const buildServerName =
 					d.buildServer?.name ?? d.application?.buildServer?.name ?? "";
 				if (!info) return false;
@@ -247,11 +253,7 @@ export function ShowDeploymentsTable() {
 			},
 			{
 				id: "serverName",
-				accessorFn: (row: DeploymentRow) =>
-					row.server?.name ??
-					row.application?.server?.name ??
-					row.compose?.server?.name ??
-					"",
+				accessorFn: (row: DeploymentRow) => getServerName(row),
 				header: ({
 					column,
 				}: {
@@ -271,11 +273,7 @@ export function ShowDeploymentsTable() {
 				),
 				cell: ({ row }: { row: { original: DeploymentRow } }) => {
 					const d = row.original;
-					const serverName =
-						d.server?.name ??
-						d.application?.server?.name ??
-						d.compose?.server?.name ??
-						null;
+					const serverName = getServerName(d);
 					const serverType =
 						d.server?.serverType ??
 						d.application?.server?.serverType ??
@@ -396,9 +394,11 @@ export function ShowDeploymentsTable() {
 				),
 				cell: ({ row }: { row: { original: DeploymentRow } }) => (
 					<span className="text-muted-foreground text-sm whitespace-nowrap">
-						{row.original.createdAt
-							? new Date(row.original.createdAt).toLocaleString()
-							: "—"}
+						{row.original.createdAt ? (
+							<DateTooltip date={row.original.createdAt} />
+						) : (
+							"—"
+						)}
 					</span>
 				),
 			},

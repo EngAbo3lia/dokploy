@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { DateTooltip } from "@/components/shared/date-tooltip";
 import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
+import { DeploymentStatus } from "@/components/shared/status-indicator";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -32,15 +34,15 @@ const deployDate = (item: DeployItem) =>
 const STATUS_ICON = {
 	done: {
 		icon: CheckCircle2,
-		className: "text-emerald-600 dark:text-emerald-400",
+		className: "text-success",
 	},
 	error: {
 		icon: XCircle,
-		className: "text-red-600 dark:text-red-400",
+		className: "text-destructive",
 	},
 	running: {
 		icon: Loader2,
-		className: "text-blue-600 dark:text-blue-400 animate-spin",
+		className: "text-info animate-spin",
 	},
 	cancelled: {
 		icon: XCircle,
@@ -149,27 +151,16 @@ export const ProjectDeployments = ({
 	}
 
 	if (!items) {
-		return (
-			<div className="space-y-2">
-				{Array.from({ length: 5 }).map((_, index) => (
-					<div
-						key={index}
-						className="h-14 w-full animate-pulse rounded-lg border bg-muted/40"
-					/>
-				))}
-			</div>
-		);
+		return <SkeletonTable rows={5} />;
 	}
 
 	if (items.length === 0) {
 		return (
-			<Card>
-				<EmptyState
-					icon={<History className="size-8 text-muted-foreground/60" />}
-					title="No deployments yet"
-					description="Deployments will appear here after your first deploy."
-				/>
-			</Card>
+			<EmptyState
+				icon={<History className="size-8 text-muted-foreground/60" />}
+				title="No deployments yet"
+				description="Deployments will appear here after your first deploy."
+			/>
 		);
 	}
 
@@ -225,11 +216,7 @@ export const ProjectDeployments = ({
 											{item.serviceName}
 										</span>
 										{" · "}
-										{item.status === "error"
-											? "Failed"
-											: item.status === "done"
-												? "Successful"
-												: item.status}
+										<DeploymentStatus status={item.status} />
 									</p>
 								</div>
 							</div>
