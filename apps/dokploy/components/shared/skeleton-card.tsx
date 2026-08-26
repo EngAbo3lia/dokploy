@@ -4,10 +4,7 @@ function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
 			data-slot="skeleton"
-			className={cn(
-				"rounded-lg bg-muted animate-pulse",
-				className,
-			)}
+			className={cn("rounded-lg bg-muted animate-pulse", className)}
 			{...props}
 		/>
 	);
@@ -56,7 +53,11 @@ function SkeletonStat({ className, ...props }: React.ComponentProps<"div">) {
 	);
 }
 
-function SkeletonTable({ rows = 5, className, ...props }: React.ComponentProps<"div"> & { rows?: number }) {
+function SkeletonTable({
+	rows = 5,
+	className,
+	...props
+}: React.ComponentProps<"div"> & { rows?: number }) {
 	return (
 		<div
 			data-slot="skeleton-table"
@@ -88,7 +89,10 @@ function SkeletonTable({ rows = 5, className, ...props }: React.ComponentProps<"
 	);
 }
 
-function SkeletonProjectCard({ className, ...props }: React.ComponentProps<"div">) {
+function SkeletonProjectCard({
+	className,
+	...props
+}: React.ComponentProps<"div">) {
 	return (
 		<div
 			data-slot="skeleton-project-card"
@@ -115,4 +119,10 @@ function SkeletonProjectCard({ className, ...props }: React.ComponentProps<"div"
 	);
 }
 
-export { Skeleton, SkeletonCard, SkeletonStat, SkeletonTable, SkeletonProjectCard };
+export {
+	Skeleton,
+	SkeletonCard,
+	SkeletonProjectCard,
+	SkeletonStat,
+	SkeletonTable,
+};

@@ -8,7 +8,13 @@ interface EmptyStateProps {
 	className?: string;
 }
 
-function EmptyState({ icon, title, description, action, className }: EmptyStateProps) {
+function EmptyState({
+	icon,
+	title,
+	description,
+	action,
+	className,
+}: EmptyStateProps) {
 	return (
 		<div
 			data-slot="empty-state"

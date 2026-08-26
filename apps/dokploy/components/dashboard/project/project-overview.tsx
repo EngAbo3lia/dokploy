@@ -9,6 +9,7 @@ import {
 	TriangleAlert,
 } from "lucide-react";
 import Link from "next/link";
+import { DateTooltip } from "@/components/shared/date-tooltip";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -17,7 +18,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { DateTooltip } from "@/components/shared/date-tooltip";
 import { STATUS_META } from "./health-status";
 
 type StatTile = {
@@ -70,14 +70,10 @@ export const ProjectOverview = ({
 	const services = health.services;
 	const meta = STATUS_META[health.status];
 	const serverNames = [
-		...new Set(
-			services.map((s) => s.serverName).filter(Boolean),
-		),
+		...new Set(services.map((s) => s.serverName).filter(Boolean)),
 	];
 	const serverLabel =
-		serverNames.length > 0
-			? serverNames.join(" + ")
-			: "Dokploy Server (local)";
+		serverNames.length > 0 ? serverNames.join(" + ") : "Dokploy Server (local)";
 	const domains = services.flatMap((s) => s.domains);
 	const deployDates = services
 		.map((s) =>
@@ -116,10 +112,13 @@ export const ProjectOverview = ({
 	const recent = services
 		.filter((s) => s.lastDeployment)
 		.sort((a, b) =>
-			((b.lastDeployment?.finishedAt || b.lastDeployment?.createdAt) || "")
-				.localeCompare(
-					(a.lastDeployment?.finishedAt || a.lastDeployment?.createdAt) || "",
-				),
+			(
+				b.lastDeployment?.finishedAt ||
+				b.lastDeployment?.createdAt ||
+				""
+			).localeCompare(
+				a.lastDeployment?.finishedAt || a.lastDeployment?.createdAt || "",
+			),
 		)
 		.slice(0, 6);
 
@@ -145,8 +144,7 @@ export const ProjectOverview = ({
 						</span>
 						<span className="text-sm text-muted-foreground">
 							{services.length} services ·{" "}
-							{services.filter((s) => s.runtime === "healthy").length}{" "}
-							running ·{" "}
+							{services.filter((s) => s.runtime === "healthy").length} running ·{" "}
 							{services.filter((s) => s.runtime === "failed").length} failed ·{" "}
 							{services.filter((s) => s.runtime === "stopped").length} stopped
 						</span>
@@ -219,9 +217,7 @@ export const ProjectOverview = ({
 										</span>
 										{service.lastDeployment &&
 											service.lastDeployment.finishedAt && (
-												<DateTooltip
-													date={service.lastDeployment.finishedAt}
-												>
+												<DateTooltip date={service.lastDeployment.finishedAt}>
 													<span className="text-xs text-muted-foreground">
 														Deployed
 													</span>
@@ -278,9 +274,7 @@ export const ProjectOverview = ({
 											: "Successful"}
 									</span>
 									{service.lastDeployment?.finishedAt && (
-										<DateTooltip
-											date={service.lastDeployment.finishedAt}
-										>
+										<DateTooltip date={service.lastDeployment.finishedAt}>
 											<span className="text-xs text-muted-foreground">
 												When
 											</span>

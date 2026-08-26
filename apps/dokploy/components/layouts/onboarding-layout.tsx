@@ -44,13 +44,19 @@ export const OnboardingLayout = ({ children, leftPanel }: Props) => {
 					{children}
 				</div>
 				<div className="mx-auto flex w-full max-w-lg items-center justify-center gap-1 pb-6 text-muted-foreground sm:justify-end">
-					<Button variant="ghost" size="icon">
-						<Link href="https://github.com/dokploy/dokploy">
+					<Button variant="ghost" size="icon" asChild>
+						<Link
+							href="https://github.com/dokploy/dokploy"
+							aria-label="Dokploy GitHub"
+						>
 							<GithubIcon />
 						</Link>
 					</Button>
-					<Button variant="ghost" size="icon">
-						<Link href="https://x.com/getdokploy">
+					<Button variant="ghost" size="icon" asChild>
+						<Link
+							href="https://x.com/getdokploy"
+							aria-label="Dokploy X (Twitter)"
+						>
 							<svg
 								stroke="currentColor"
 								fill="currentColor"
@@ -63,8 +69,11 @@ export const OnboardingLayout = ({ children, leftPanel }: Props) => {
 							</svg>
 						</Link>
 					</Button>
-					<Button variant="ghost" size="icon">
-						<Link href="https://discord.com/invite/2tBnJ3jDJc">
+					<Button variant="ghost" size="icon" asChild>
+						<Link
+							href="https://discord.com/invite/2tBnJ3jDJc"
+							aria-label="Dokploy Discord"
+						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 48 48"

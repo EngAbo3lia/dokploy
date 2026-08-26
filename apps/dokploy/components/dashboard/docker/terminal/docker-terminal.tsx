@@ -55,7 +55,7 @@ export const DockerTerminal: React.FC<Props> = ({
 				lineHeight: 1.4,
 				convertEol: true,
 				theme: {
-					cursor: resolvedTheme === "light" ? "#000000" : "transparent",
+					cursor: resolvedTheme === "light" ? "#000000" : "#ffffff",
 					background: "rgba(0, 0, 0, 0)",
 					foreground: "currentColor",
 				},

@@ -633,7 +633,9 @@ export const ShowDomains = ({ id, type }: Props) => {
 																	}
 																	onClick={async () => {
 																		try {
-																			await verifyDns({ domainId: item.domainId });
+																			await verifyDns({
+																				domainId: item.domainId,
+																			});
 																			refetch();
 																			toast.success("DNS verification updated");
 																		} catch {
@@ -648,11 +650,16 @@ export const ShowDomains = ({ id, type }: Props) => {
 																	) : (
 																		<XCircle className="size-3 mr-1" />
 																	)}
-																	DNS: {item.dnsVerified ? "Verified" : "Unverified"}
+																	DNS:{" "}
+																	{item.dnsVerified ? "Verified" : "Unverified"}
 																</Badge>
 															</TooltipTrigger>
 															<TooltipContent>
-																<p>{item.dnsVerified ? `Verified ${item.dnsVerifiedAt ? `at ${new Date(item.dnsVerifiedAt).toLocaleString()}` : ""}` : "Click badge to verify DNS"}</p>
+																<p>
+																	{item.dnsVerified
+																		? `Verified ${item.dnsVerifiedAt ? `at ${new Date(item.dnsVerifiedAt).toLocaleString()}` : ""}`
+																		: "Click badge to verify DNS"}
+																</p>
 															</TooltipContent>
 														</Tooltip>
 													</TooltipProvider>
@@ -672,7 +679,9 @@ export const ShowDomains = ({ id, type }: Props) => {
 																		}
 																		onClick={async () => {
 																			try {
-																				await checkSsl({ domainId: item.domainId });
+																				await checkSsl({
+																					domainId: item.domainId,
+																				});
 																				refetch();
 																				toast.success("SSL status updated");
 																			} catch {
@@ -693,7 +702,11 @@ export const ShowDomains = ({ id, type }: Props) => {
 																	</Badge>
 																</TooltipTrigger>
 																<TooltipContent>
-																	<p>{item.sslCheckedAt ? `Last checked: ${new Date(item.sslCheckedAt).toLocaleString()}` : "Click to check SSL status"}</p>
+																	<p>
+																		{item.sslCheckedAt
+																			? `Last checked: ${new Date(item.sslCheckedAt).toLocaleString()}`
+																			: "Click to check SSL status"}
+																	</p>
 																</TooltipContent>
 															</Tooltip>
 														</TooltipProvider>

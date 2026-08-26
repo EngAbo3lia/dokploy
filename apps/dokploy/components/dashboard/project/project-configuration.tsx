@@ -7,6 +7,8 @@ import {
 	Settings2,
 } from "lucide-react";
 import Link from "next/link";
+import { EnvironmentVariables } from "@/components/dashboard/project/environment-variables";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -15,8 +17,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { EnvironmentVariables } from "@/components/dashboard/project/environment-variables";
 
 type Props = {
 	projectId: string;

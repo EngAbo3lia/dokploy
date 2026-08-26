@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";import { ShowImport } from "@/components/dashboard/application/advanced/import/show-import";
+import { useEffect, useState } from "react";
+import { ShowImport } from "@/components/dashboard/application/advanced/import/show-import";
 import { ShowVolumes } from "@/components/dashboard/application/advanced/volumes/show-volumes";
 import { ShowDomains } from "@/components/dashboard/application/domains/show-domains";
 import { ShowEnvironment } from "@/components/dashboard/application/environment/show-environment";
@@ -74,12 +75,32 @@ export const ComposeConfigurationTabs = ({
 
 	const subTabs: { value: SubTab; label: string; show: boolean }[] = [
 		{ value: "general", label: "General", show: true },
-		{ value: "environment", label: "Environment", show: !!permissions?.envVars?.read },
+		{
+			value: "environment",
+			label: "Environment",
+			show: !!permissions?.envVars?.read,
+		},
 		{ value: "domains", label: "Domains", show: !!permissions?.domain?.read },
-		{ value: "containers", label: "Containers", show: !!permissions?.service?.read },
-		{ value: "backups", label: "Backups", show: !!permissions?.service?.create },
-		{ value: "schedules", label: "Schedules", show: !!permissions?.schedule?.read },
-		{ value: "volumeBackups", label: "Volume Backups", show: !!permissions?.volumeBackup?.read },
+		{
+			value: "containers",
+			label: "Containers",
+			show: !!permissions?.service?.read,
+		},
+		{
+			value: "backups",
+			label: "Backups",
+			show: !!permissions?.service?.create,
+		},
+		{
+			value: "schedules",
+			label: "Schedules",
+			show: !!permissions?.schedule?.read,
+		},
+		{
+			value: "volumeBackups",
+			label: "Volume Backups",
+			show: !!permissions?.volumeBackup?.read,
+		},
 		{ value: "patches", label: "Patches", show: sourceType !== "raw" },
 		{
 			value: "monitoring",
@@ -88,7 +109,11 @@ export const ComposeConfigurationTabs = ({
 				!!permissions?.monitoring?.read &&
 				Boolean((serverId && isCloud) || !server),
 		},
-		{ value: "advanced", label: "Advanced", show: !!permissions?.service?.create },
+		{
+			value: "advanced",
+			label: "Advanced",
+			show: !!permissions?.service?.create,
+		},
 	];
 
 	const visibleSubTabs = subTabs.filter((item) => item.show);

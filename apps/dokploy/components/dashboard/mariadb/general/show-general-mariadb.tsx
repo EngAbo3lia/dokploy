@@ -74,128 +74,104 @@ export const ShowGeneralMariadb = ({ mariadbId }: Props) => {
 						<CardTitle className="text-xl">Deploy Settings</CardTitle>
 					</CardHeader>
 					<CardContent className="flex flex-row gap-4 flex-wrap">
-						{canDeploy && (
-							<TooltipProvider delayDuration={0}>
-								<DialogAction
-									title="Deploy Mariadb"
-									description="Are you sure you want to deploy this mariadb?"
-									type="default"
-									onClick={async () => {
-										setIsDeploying(true);
-										await new Promise((resolve) => setTimeout(resolve, 1000));
-										refetch();
-									}}
-								>
-									<Button
-										variant="default"
-										isLoading={data?.applicationStatus === "running"}
-										className="flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-offset-2"
-									>
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<div className="flex items-center">
-													<Rocket className="size-4 mr-1" />
-													Deploy
-												</div>
-											</TooltipTrigger>
-											<TooltipPrimitive.Portal>
-												<TooltipContent sideOffset={5} className="z-60">
-													<p>Downloads and sets up the MariaDB database</p>
-												</TooltipContent>
-											</TooltipPrimitive.Portal>
-										</Tooltip>
-									</Button>
-								</DialogAction>
-							</TooltipProvider>
-						)}
-						{canDeploy && (
-							<TooltipProvider delayDuration={0}>
-								<DialogAction
-									title="Reload Mariadb"
-									description="Are you sure you want to reload this mariadb?"
-									type="default"
-									onClick={async () => {
-										await reload({
-											mariadbId: mariadbId,
-											appName: data?.appName || "",
-										})
-											.then(() => {
-												toast.success("Mariadb reloaded successfully");
+						<TooltipProvider delayDuration={0}>
+							{canDeploy && (
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<Button
+											variant="default"
+											isLoading={isDeploying}
+											className="flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-offset-2"
+											onClick={async () => {
+												setIsDeploying(true);
+												await new Promise((resolve) =>
+													setTimeout(resolve, 1000),
+												);
 												refetch();
-											})
-											.catch(() => {
-												toast.error("Error reloading Mariadb");
-											});
-									}}
-								>
-									<Button
-										variant="secondary"
-										isLoading={isReloading}
-										className="flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-offset-2"
-									>
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<div className="flex items-center">
-													<RefreshCcw className="size-4 mr-1" />
-													Reload
-												</div>
-											</TooltipTrigger>
-											<TooltipPrimitive.Portal>
-												<TooltipContent sideOffset={5} className="z-60">
-													<p>Restart the MariaDB service without rebuilding</p>
-												</TooltipContent>
-											</TooltipPrimitive.Portal>
-										</Tooltip>
-									</Button>
-								</DialogAction>
-							</TooltipProvider>
-						)}
-						{canDeploy &&
-							(data?.applicationStatus === "idle" ? (
-								<TooltipProvider delayDuration={0}>
-									<DialogAction
-										title="Start Mariadb"
-										description="Are you sure you want to start this mariadb?"
-										type="default"
-										onClick={async () => {
-											await start({
-												mariadbId: mariadbId,
-											})
-												.then(() => {
-													toast.success("Mariadb started successfully");
-													refetch();
-												})
-												.catch(() => {
-													toast.error("Error starting Mariadb");
-												});
-										}}
-									>
+											}}
+										>
+											<Rocket className="size-4 mr-1" />
+											Deploy
+										</Button>
+									</TooltipTrigger>
+									<TooltipPrimitive.Portal>
+										<TooltipContent sideOffset={5} className="z-60">
+											<p>Downloads and sets up the MariaDB database</p>
+										</TooltipContent>
+									</TooltipPrimitive.Portal>
+								</Tooltip>
+							)}
+							{canDeploy && (
+								<Tooltip>
+									<TooltipTrigger asChild>
 										<Button
 											variant="secondary"
-											isLoading={isStarting}
+											isLoading={isReloading}
 											className="flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-offset-2"
+											onClick={async () => {
+												await reload({
+													mariadbId: mariadbId,
+													appName: data?.appName || "",
+												})
+													.then(() => {
+														toast.success("Mariadb reloaded successfully");
+														refetch();
+													})
+													.catch((error) => {
+														toast.error(
+															error?.message || "Error reloading Mariadb",
+														);
+													});
+											}}
 										>
-											<Tooltip>
-												<TooltipTrigger asChild>
-													<div className="flex items-center">
-														<CheckCircle2 className="size-4 mr-1" />
-														Start
-													</div>
-												</TooltipTrigger>
-												<TooltipPrimitive.Portal>
-													<TooltipContent sideOffset={5} className="z-60">
-														<p>
-															Start the MariaDB database (requires a previous
-															successful setup)
-														</p>
-													</TooltipContent>
-												</TooltipPrimitive.Portal>
-											</Tooltip>
+											<RefreshCcw className="size-4 mr-1" />
+											Reload
 										</Button>
-									</DialogAction>
-								</TooltipProvider>
-							) : (
-								<TooltipProvider delayDuration={0}>
+									</TooltipTrigger>
+									<TooltipPrimitive.Portal>
+										<TooltipContent sideOffset={5} className="z-60">
+											<p>Restart the MariaDB service without rebuilding</p>
+										</TooltipContent>
+									</TooltipPrimitive.Portal>
+								</Tooltip>
+							)}
+							{canDeploy &&
+								(data?.applicationStatus === "idle" ? (
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<Button
+												variant="secondary"
+												isLoading={isStarting}
+												className="flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-offset-2"
+												onClick={async () => {
+													await start({
+														mariadbId: mariadbId,
+													})
+														.then(() => {
+															toast.success("Mariadb started successfully");
+															refetch();
+														})
+														.catch((error) => {
+															toast.error(
+																error?.message || "Error starting Mariadb",
+															);
+														});
+												}}
+											>
+												<CheckCircle2 className="size-4 mr-1" />
+												Start
+											</Button>
+										</TooltipTrigger>
+										<TooltipPrimitive.Portal>
+											<TooltipContent sideOffset={5} className="z-60">
+												<p>
+													Start the MariaDB database (requires a previous
+													successful setup)
+												</p>
+											</TooltipContent>
+										</TooltipPrimitive.Portal>
+									</Tooltip>
+								) : (
 									<DialogAction
 										title="Stop Mariadb"
 										description="Are you sure you want to stop this mariadb?"
@@ -207,8 +183,10 @@ export const ShowGeneralMariadb = ({ mariadbId }: Props) => {
 													toast.success("Mariadb stopped successfully");
 													refetch();
 												})
-												.catch(() => {
-													toast.error("Error stopping Mariadb");
+												.catch((error) => {
+													toast.error(
+														error?.message || "Error stopping Mariadb",
+													);
 												});
 										}}
 									>
@@ -232,8 +210,8 @@ export const ShowGeneralMariadb = ({ mariadbId }: Props) => {
 											</Tooltip>
 										</Button>
 									</DialogAction>
-								</TooltipProvider>
-							))}
+								))}
+						</TooltipProvider>
 						<DockerTerminalModal
 							appName={data?.appName || ""}
 							serviceId={data?.mariadbId}

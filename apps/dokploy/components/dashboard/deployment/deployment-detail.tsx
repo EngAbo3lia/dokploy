@@ -11,12 +11,7 @@ import { toast } from "sonner";
 import { DateTooltip } from "@/components/shared/date-tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/utils/api";
 import { DeploymentTimeline } from "./deployment-timeline";
 
@@ -62,7 +57,9 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 			<div className="flex items-center justify-center min-h-[40vh]">
 				<div className="flex flex-col items-center gap-3">
 					<div className="size-8 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
-					<span className="text-sm text-muted-foreground">Loading deployment...</span>
+					<span className="text-sm text-muted-foreground">
+						Loading deployment...
+					</span>
 				</div>
 			</div>
 		);
@@ -103,7 +100,10 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 					Back
 				</Button>
 				<h2 className="text-lg font-semibold">{deployment.title}</h2>
-				<Badge variant="outline" className={STATUS_STYLES[deployment.status || ""] || ""}>
+				<Badge
+					variant="outline"
+					className={STATUS_STYLES[deployment.status || ""] || ""}
+				>
 					{deployment.status}
 				</Badge>
 				{deployment.environment && (
@@ -154,13 +154,17 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 							)}
 							{deployment.finishedAt && (
 								<div className="flex flex-col gap-1.5">
-									<span className="text-xs text-muted-foreground">Finished</span>
+									<span className="text-xs text-muted-foreground">
+										Finished
+									</span>
 									<DateTooltip date={deployment.finishedAt} />
 								</div>
 							)}
 							{duration !== null && (
 								<div className="flex flex-col gap-1.5">
-									<span className="text-xs text-muted-foreground">Duration</span>
+									<span className="text-xs text-muted-foreground">
+										Duration
+									</span>
 									<span className="text-sm">{formatDuration(duration)}</span>
 								</div>
 							)}
@@ -230,16 +234,17 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 					)}
 
 					<div className="flex flex-col gap-2">
-						{deployment.status === "done" && deployment.environment !== "production" && (
-							<Button
-								onClick={handlePromote}
-								disabled={isPromoting}
-								className="w-full"
-							>
-								<ArrowBigUp className="size-4 mr-2" />
-								{isPromoting ? "Promoting..." : "Promote to Production"}
-							</Button>
-						)}
+						{deployment.status === "done" &&
+							deployment.environment !== "production" && (
+								<Button
+									onClick={handlePromote}
+									disabled={isPromoting}
+									className="w-full"
+								>
+									<ArrowBigUp className="size-4 mr-2" />
+									{isPromoting ? "Promoting..." : "Promote to Production"}
+								</Button>
+							)}
 					</div>
 				</div>
 			</div>

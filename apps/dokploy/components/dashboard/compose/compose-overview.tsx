@@ -60,7 +60,10 @@ const latestPerContainer = (samples: ContainerMetricSample[]) => {
 	const byId = new Map<string, ContainerMetricSample>();
 	for (const sample of samples) {
 		const existing = byId.get(sample.ID);
-		if (!existing || (sample.timestamp || "").localeCompare(existing.timestamp) >= 0) {
+		if (
+			!existing ||
+			(sample.timestamp || "").localeCompare(existing.timestamp) >= 0
+		) {
 			byId.set(sample.ID, sample);
 		}
 	}
@@ -104,8 +107,9 @@ export const ComposeOverview = ({
 
 	const loadContainers = useCallback(async () => {
 		try {
-			const all = (await utils.docker.getContainers.fetch({})) as unknown as
-				ContainerItem[];
+			const all = (await utils.docker.getContainers.fetch(
+				{},
+			)) as unknown as ContainerItem[];
 			const prefix = appName.toLowerCase();
 			setContainers(
 				(all || []).filter((c) => c.name.toLowerCase().startsWith(prefix)),
@@ -127,8 +131,8 @@ export const ComposeOverview = ({
 			metricsToken?.serverIp && port
 				? `http://${metricsToken.serverIp}:${port}`
 				: "http://localhost:4500";
-		utils.user
-			.getContainerMetrics.fetch({
+		utils.user.getContainerMetrics
+			.fetch({
 				url,
 				token,
 				appName,
@@ -154,28 +158,53 @@ export const ComposeOverview = ({
 
 	const lastDeployment = [...(deployments || [])]
 		.sort((a, b) =>
-			((b.finishedAt || b.createdAt) || "").localeCompare(
-				(a.finishedAt || a.createdAt) || "",
+			(b.finishedAt || b.createdAt || "").localeCompare(
+				a.finishedAt || a.createdAt || "",
 			),
 		)
 		.at(0);
 
 	const running = containers.filter((c) => c.state === "running").length;
-	const healthy = containers.filter((c) => c.status.includes("(healthy)")).length;
+	const healthy = containers.filter((c) =>
+		c.status.includes("(healthy)"),
+	).length;
 	const degraded = containers.some(
 		(c) => c.status.includes("(unhealthy)") || c.state === "restarting",
 	);
 
 	const runtimeBadge =
 		containers.length === 0
-			? { label: "Unknown", className: "border-border bg-muted/40 text-muted-foreground", dot: "bg-muted-foreground/40" }
+			? {
+					label: "Unknown",
+					className: "border-border bg-muted/40 text-muted-foreground",
+					dot: "bg-muted-foreground/40",
+				}
 			: degraded
-				? { label: "Degraded", className: "border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400", dot: "bg-amber-500" }
+				? {
+						label: "Degraded",
+						className:
+							"border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+						dot: "bg-amber-500",
+					}
 				: running === containers.length
-					? { label: "Running", className: "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400", dot: "bg-emerald-500" }
+					? {
+							label: "Running",
+							className:
+								"border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+							dot: "bg-emerald-500",
+						}
 					: running > 0
-						? { label: "Degraded", className: "border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400", dot: "bg-amber-500" }
-						: { label: "Stopped", className: "border-border bg-muted/40 text-muted-foreground", dot: "bg-muted-foreground/50" };
+						? {
+								label: "Degraded",
+								className:
+									"border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+								dot: "bg-amber-500",
+							}
+						: {
+								label: "Stopped",
+								className: "border-border bg-muted/40 text-muted-foreground",
+								dot: "bg-muted-foreground/50",
+							};
 
 	const domains = composeData?.domains || [];
 
@@ -191,8 +220,8 @@ export const ComposeOverview = ({
 							{runtimeBadge.label}
 						</span>
 						<span className="text-sm text-muted-foreground">
-							{containers.length} containers · {running} running ·{" "}
-							{healthy} healthy
+							{containers.length} containers · {running} running · {healthy}{" "}
+							healthy
 							{degraded && (
 								<span className="ml-2 text-amber-600 dark:text-amber-400">
 									⚠ some containers restarting/unhealthy
@@ -251,7 +280,9 @@ export const ComposeOverview = ({
 				<Card>
 					<CardHeader>
 						<CardTitle className="text-base">Information</CardTitle>
-						<CardDescription>Infrastructure facts about this service</CardDescription>
+						<CardDescription>
+							Infrastructure facts about this service
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-3">
 						<div className="flex items-center gap-2 text-sm">
@@ -278,9 +309,7 @@ export const ComposeOverview = ({
 						{canReadDeployments && lastDeployment && (
 							<div className="flex items-center gap-2 text-sm">
 								<RefreshCw className="size-4 text-muted-foreground" />
-								<span className="text-muted-foreground">
-									Last deployment
-								</span>
+								<span className="text-muted-foreground">Last deployment</span>
 								<DateTooltip
 									date={lastDeployment.finishedAt || lastDeployment.createdAt}
 								>
@@ -360,8 +389,8 @@ export const ComposeOverview = ({
 						</div>
 						{metrics?.cpu === null && (
 							<p className="mt-4 text-xs text-muted-foreground">
-								Monitoring service unreachable or not configured — no
-								metrics available.
+								Monitoring service unreachable or not configured — no metrics
+								available.
 							</p>
 						)}
 						<div className="mt-4 flex flex-wrap gap-2">

@@ -1,0 +1,1313 @@
+﻿  severity_local: 'NOTICE',
+  severity: 'NOTICE',
+  code: '42P07',
+  message: 'relation "__drizzle_migrations" already exists, skipping',
+  file: 'parse_utilcmd.c',
+  line: '207',
+  routine: 'transformCreateStmt'
+}
+Migration complete
+docker : file:///app/dist/server.mjs:253
+At line:1 char:1
++ docker logs dokploy-test --tail 50 2>&1 | Out-File C:\Aboalia\Dokploy ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (file:///app/dist/server.mjs:253:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[wait-for-postgres] Waiting for postgres at postgres:5432 (timeout 120000ms)
+[wait-for-postgres] Postgres is reachable Γ£à
+Using Docker socket (Standard Docker socket): /var/run/docker.sock
+{
+  severity_local: 'NOTICE',
+  severity: 'NOTICE',
+  code: '42P06',
+  message: 'schema "drizzle" already exists, skipping',
+  file: 'schemacmds.c',
+  line: '132',
+  routine: 'CreateSchemaCommand'
+}
+{
+  severity_local: 'NOTICE',
+  severity: 'NOTICE',
+  code: '42P07',
+  message: 'relation "__drizzle_migrations" already exists, skipping',
+  file: 'parse_utilcmd.c',
+  line: '207',
+  routine: 'transformCreateStmt'
+}
+Migration complete
+`)}),p.mounts&&p.mounts.length>0)for(let u of p.mounts)await fS({filePath:u.filePath,mountPath:"",content:u.content,ser
+viceId:t.composeId,serviceType:"compose",type:"file"});if(p.domains&&p.domains.length>0)for(let u of p.domains)await 
+gS({...u,domainType:"compose",certificateType:"none",composeId:t.composeId,host:u.host||""});return await c(r,{action:"
+update",resourceType:"compose",resourceId:e.composeId,resourceName:t.appName}),{success:!0,message:"Template imported 
+successfully"}}catch(t){throw new Pt({code:"BAD_REQUEST",message:`Error importing template: ${t instanceof 
+Error?t.message:t}`})}}),cancelDeployment:s.input(ar).mutation(async({input:e,ctx:r})=>{await 
+m(r,e.composeId,{deployment:["cancel"]});let t=await Tt(e.composeId);if(Hs&&t.serverId)try{return await 
+Vs(e.composeId,{composeStatus:"idle"}),t.deployments[0]&&await EB(t.deployments[0].deploymentId,"done"),await 
+qp({composeId:e.composeId,applicationType:"compose"}),await 
+c(r,{action:"stop",resourceType:"compose",resourceId:e.composeId,resourceName:t.name}),{success:!0,message:"Deployment 
+cancellation requested"}}catch(o){throw new Pt({code:"INTERNAL_SERVER_ERROR",message:o instanceof 
+Error?o.message:"Failed to cancel deployment"})}throw new Pt({code:"BAD_REQUEST",message:"Deployment cancellation only 
+available in cloud version"})}),search:s.input(ge.object({q:ge.string().optional(),name:ge.string().optional(),appName:
+ge.string().optional(),description:ge.string().optional(),projectId:ge.string().optional(),environmentId:ge.string().op
+tional(),limit:ge.number().min(1).max(100).default(20),offset:ge.number().min(0).default(0)})).query(async({ctx:e,input
+:r})=>{let t=[mn(E.organizationId,e.session.activeOrganizationId)];if(r.projectId&&t.push(mn(v.projectId,r.projectId)),
+r.environmentId&&t.push(mn(x.environmentId,r.environmentId)),r.q?.trim()){let l=`%${r.q.trim()}%`;t.push(CB(Ks(x.name,l
+),Ks(x.appName,l),Ks(x.description??"",l)))}r.name?.trim()&&t.push(Ks(x.name,`%${r.name.trim()}%`)),r.appName?.trim()&&
+t.push(Ks(x.appName,`%${r.appName.trim()}%`)),r.description?.trim()&&t.push(Ks(x.description??"",`%${r.description.trim
+()}%`));let{accessedServices:o}=await 
+W(e.user.id,e.session.activeOrganizationId);if(o.length===0)return{items:[],total:0};t.push(_d`${x.composeId} IN 
+(${_d.join(o.map(l=>_d`${l}`),_d`, `)})`);let a=RB(...t),[n,i]=await Promise.all([d.select({composeId:x.composeId,name:
+x.name,appName:x.appName,description:x.description,environmentId:x.environmentId,composeStatus:x.composeStatus,sourceTy
+pe:x.sourceType,createdAt:x.createdAt}).from(x).innerJoin(v,mn(x.environmentId,v.environmentId)).innerJoin(E,mn(v.proje
+ctId,E.projectId)).where(a).orderBy(DB(x.createdAt)).limit(r.limit).offset(r.offset),d.select({count:_d`count(*)::int`}
+).from(x).innerJoin(v,mn(x.environmentId,v.environmentId)).innerJoin(E,mn(v.projectId,E.projectId)).where(a)]);return{i
+tems:n,total:i[0]?.count??0}}),readLogs:s.input(ar.extend({containerId:ge.string().min(1).regex(/^[a-zA-Z0-9.\-_]+$/,"I
+nvalid container 
+id."),tail:ge.number().int().min(1).max(1e4).default(100),since:ge.string().regex(/^(all|\d+[smhd])$/,"Invalid since 
+format").default("all"),search:ge.string().regex(/^[a-zA-Z0-9 
+._-]{0,500}$/).optional()})).query(async({input:e,ctx:r})=>{await ce(r,e.composeId,"read");let t=await 
+Tt(e.composeId);if(t.environment.project.organizationId!==r.session.activeOrganizationId)throw new 
+Pt({code:"UNAUTHORIZED",message:"You are not authorized to access this compose"});return await 
+wB(e.containerId,e.tail,e.since,e.search,t.serverId,!0)})});N();import{execAsync as vS,execAsyncRemote as 
+IS,findAllDeploymentsByApplicationId as OB,findAllDeploymentsByComposeId as _B,findAllDeploymentsByServerId as 
+BB,findAllDeploymentsCentralized as UB,findDeploymentById as mh,findDeploymentDetailById as bS,findDeploymentsFiltered 
+as zB,findScheduleById as qB,IS_CLOUD as kS,promoteDeployment as FB,removeDeployment as jB,resolveServicePath as 
+MB,updateDeploymentStatus as LB}from"@dokploy/server";cr();import{TRPCError as Gs}from"@trpc/server";import{desc as 
+HB,eq as SS}from"drizzle-orm";import{z as _t}from"zod";ts();var 
+TS=S({all:s.input(Nc).query(async({input:e,ctx:r})=>(await m(r,e.applicationId,{deployment:["read"]}),await 
+OB(e.applicationId))),allByCompose:s.input($g).query(async({input:e,ctx:r})=>(await 
+m(r,e.composeId,{deployment:["read"]}),await 
+_B(e.composeId))),allByServer:g("deployment","read").input(Og).query(async({input:e,ctx:r})=>{if((await 
+Me(e.serverId)).organizationId!==r.session.activeOrganizationId)throw new Gs({code:"UNAUTHORIZED",message:"You don't 
+have access to this server."});return await 
+BB(e.serverId)}),allCentralized:g("deployment","read").query(async({ctx:e})=>{let 
+r=e.session.activeOrganizationId,t=e.user.role!=="owner"&&e.user.role!=="admin"?(await 
+W(e.user.id,r)).accessedServices:null;return 
+t!==null&&t.length===0?[]:UB(r,t)}),queueList:g("deployment","read").query(async({ctx:e})=>{let 
+r=e.session.activeOrganizationId,t;if(kS){let o=await 
+d.query.server.findMany({where:SS(k.organizationId,r),columns:{serverId:!0}});t=(await 
+Promise.all(o.map(({serverId:n})=>Lk(n)))).flat(),t.sort((n,i)=>(i.timestamp??0)-(n.timestamp??0))}else{let o=await 
+Ot.getJobs(),a=await Promise.all(o.map(async n=>{let i=await n.getState();return{id:String(n.id),name:n.name??void 0,da
+ta:n.data,timestamp:n.timestamp,processedOn:n.processedOn,finishedOn:n.finishedOn,failedReason:n.failedReason??void 
+0,state:i}}));a.sort((n,i)=>(i.timestamp??0)-(n.timestamp??0)),t=a}return Promise.all(t.map(async 
+o=>({...o,servicePath:await 
+MB(r,o.data??{})})))}),allByType:s.input(_g).query(async({input:e,ctx:r})=>{if(e.type==="schedule"){let o=await 
+qB(e.id),a=o.applicationId||o.composeId;if(a)await m(r,a,{deployment:["read"]});else if(o.serverId&&(await 
+Me(o.serverId)).organizationId!==r.session.activeOrganizationId)throw new Gs({code:"UNAUTHORIZED",message:"You don't 
+have access to this schedule."})}else await m(r,e.id,{deployment:["read"]});return await d.query.deployments.findMany({
+where:SS(J[`${e.type}Id`],e.id),orderBy:HB(J.createdAt),with:{rollback:!0}})}),killProcess:s.input(_t.object({deploymen
+tId:_t.string().min(1)})).mutation(async({input:e,ctx:r})=>{let t=await 
+mh(e.deploymentId),o=t.applicationId||t.composeId;if(o)await m(r,o,{deployment:["cancel"]});else 
+if(t.schedule?.serverId&&(await Me(t.schedule.serverId)).organizationId!==r.session.activeOrganizationId)throw new 
+Gs({code:"UNAUTHORIZED",message:"You don't have access to this deployment."});if(!t.pid)throw new 
+Gs({code:"BAD_REQUEST",message:"Deployment is not running"});let a=`kill -9 ${t.pid}`;t.schedule?.serverId?await 
+IS(t.schedule.serverId,a):await vS(a),await LB(t.deploymentId,"error"),await c(r,{action:"cancel",resourceType:"deploym
+ent",resourceId:t.deploymentId})}),removeDeployment:s.input(_t.object({deploymentId:_t.string().min(1)})).mutation(asyn
+c({input:e,ctx:r})=>{let t=await mh(e.deploymentId),o=t.applicationId||t.composeId;if(o)await 
+m(r,o,{deployment:["cancel"]});else if(t.schedule?.serverId&&(await 
+Me(t.schedule.serverId)).organizationId!==r.session.activeOrganizationId)throw new 
+Gs({code:"UNAUTHORIZED",message:"You don't have access to this deployment."});let a=await jB(e.deploymentId);return 
+await c(r,{action:"delete",resourceType:"deployment",resourceId:t.deploymentId}),a}),readLogs:s.input(_t.object({deploy
+mentId:_t.string().min(1),tail:_t.number().int().min(1).max(1e4).default(100)})).query(async({input:e,ctx:r})=>{let 
+t=await mh(e.deploymentId),o=t.applicationId||t.composeId;if(o)await m(r,o,{deployment:["read"]});else 
+if(t.schedule?.serverId&&(await Me(t.schedule.serverId)).organizationId!==r.session.activeOrganizationId)throw new 
+Gs({code:"UNAUTHORIZED",message:"You don't have access to this deployment."});if(!t.logPath)return"";let a=`tail -n 
+${e.tail} "${t.logPath}" 2>/dev/null || echo 
+""`,n=t.serverId||t.schedule?.serverId||t.application?.serverId||t.compose?.serverId;if(n){let{stdout:l}=await 
+IS(n,a);return l}if(kS)return"";let{stdout:i}=await vS(a);return 
+i}),detail:s.input(_t.object({deploymentId:_t.string().min(1)})).query(async({input:e,ctx:r})=>{let t=await 
+bS(e.deploymentId),o=t.applicationId||t.composeId;return o&&await m(r,o,{deployment:["read"]}),t}),promote:s.input(_t.o
+bject({deploymentId:_t.string().min(1)})).mutation(async({input:e,ctx:r})=>{let t=await 
+bS(e.deploymentId),o=t.applicationId||t.composeId;o&&await m(r,o,{deployment:["create"]});let a=await 
+FB(e.deploymentId,r.user.id);return await 
+c(r,{action:"update",resourceType:"deployment",resourceId:t.deploymentId,resourceName:`${t.title} promoted to productio
+n`}),a}),filteredList:s.input(_t.object({id:_t.string().min(1),type:_t.enum(["application","compose"]),status:_t.string
+().optional(),environment:_t.string().optional(),search:_t.string().optional(),page:_t.number().int().min(1).default(1)
+,pageSize:_t.number().int().min(1).max(100).default(20)})).query(async({input:e,ctx:r})=>(await m(r,e.id,{deployment:["
+read"]}),zB(e.id,e.type,{status:e.status,environment:e.environment,search:e.search,page:e.page,pageSize:e.pageSize})))}
+);N();import{createDestination as VB,execAsync as KB,execAsyncRemote as GB,findDestinationById as uh,IS_CLOUD as 
+PS,removeDestinationById as QB,updateDestinationById as YB}from"@dokploy/server";import{TRPCError as 
+ns}from"@trpc/server";import{desc as WB,eq as JB}from"drizzle-orm";import{quote as Qs}from"shell-quote";var 
+NS=S({create:g("destination","create").input(yl).mutation(async({input:e,ctx:r})=>{try{let t=await 
+VB(e,r.session.activeOrganizationId);return await 
+c(r,{action:"create",resourceType:"destination",resourceId:t.destinationId,resourceName:e.name}),t}catch(t){throw new 
+ns({code:"BAD_REQUEST",message:"Error creating the destination",cause:t})}}),testConnection:g("destination","create").i
+nput(yl).mutation(async({input:e})=>{let{secretAccessKey:r,bucket:t,region:o,endpoint:a,accessKey:n,provider:i,addition
+alFlags:l}=e;try{let p=[`--s3-access-key-id=${Qs([n])}`,`--s3-secret-access-key=${Qs([r])}`,`--s3-region=${Qs([o])}`,`-
+-s3-endpoint=${Qs([a])}`,"--s3-no-check-bucket","--s3-force-path-style","--retries 1","--low-level-retries 
+1","--timeout 10s","--contimeout 5s"];i&&p.unshift(`--s3-provider=${Qs([i])}`),l?.length&&p.push(...l);let 
+u=`:s3:${t}`,y=`rclone ls ${p.join(" ")} ${Qs([u])}`;if(PS&&!e.serverId)throw new ns({code:"NOT_FOUND",message:"Server 
+not found"});PS?await GB(e.serverId||"",y):await KB(y)}catch(p){throw new ns({code:"BAD_REQUEST",message:p instanceof 
+Error?p?.message:"Error connecting to 
+bucket",cause:p})}}),one:g("destination","read").input(vu).query(async({input:e,ctx:r})=>{let t=await 
+uh(e.destinationId);if(t.organizationId!==r.session.activeOrganizationId)throw new 
+ns({code:"UNAUTHORIZED",message:"You are not allowed to access this destination"});return 
+t}),all:g("destination","read").query(async({ctx:e})=>await d.query.destinations.findMany({where:JB(qt.organizationId,e
+.session.activeOrganizationId),orderBy:[WB(qt.createdAt)]})),remove:g("destination","delete").input(Iu).mutation(async(
+{input:e,ctx:r})=>{try{let t=await uh(e.destinationId);if(t.organizationId!==r.session.activeOrganizationId)throw new 
+ns({code:"UNAUTHORIZED",message:"You are not allowed to delete this destination"});let o=await 
+QB(e.destinationId,r.session.activeOrganizationId);return await 
+c(r,{action:"delete",resourceType:"destination",resourceId:e.destinationId,resourceName:t.name}),o}catch(t){throw 
+t}}),update:g("destination","create").input(bu).mutation(async({input:e,ctx:r})=>{try{if((await 
+uh(e.destinationId)).organizationId!==r.session.activeOrganizationId)throw new ns({code:"UNAUTHORIZED",message:"You 
+are not allowed to update this destination"});let o=await 
+YB(e.destinationId,{...e,organizationId:r.session.activeOrganizationId});return await 
+c(r,{action:"update",resourceType:"destination",resourceId:e.destinationId,resourceName:e.name}),o}catch(t){throw new 
+ns({code:"BAD_REQUEST",message:t instanceof Error?t?.message:"Error connecting to 
+bucket",cause:t})}})});import{createDnsProvider as ZB,createDnsProviderRecord as XB,deleteDnsProviderRecord as 
+eU,findDnsProviderInOrganization as un,findDnsProvidersByOrganizationId as tU,listDnsProviderRecords as 
+rU,listDnsProviderZones as oU,maskDnsProviderConfig as em,mergeDnsProviderConfig as aU,removeDnsProvider as 
+nU,testDnsProviderConnection as iU,updateDnsProvider as sU,updateDnsProviderRecord as 
+cU}from"@dokploy/server";import{TRPCError as dU}from"@trpc/server";var 
+ES=S({create:g("dnsProvider","create").input(gy).mutation(async({ctx:e,input:r})=>{let t=await 
+ZB(r,e.session.activeOrganizationId);return await c(e,{action:"create",resourceType:"dnsProvider",resourceId:t.dnsProvi
+derId,resourceName:t.name}),{...t,config:em(t.config)}}),update:g("dnsProvider","update").input(fy).mutation(async({ctx
+:e,input:r})=>{await un(r.dnsProviderId,e.session.activeOrganizationId);let t=await 
+sU(r.dnsProviderId,r.name,r.config);return await c(e,{action:"update",resourceType:"dnsProvider",resourceId:t.dnsProvid
+erId,resourceName:t.name}),{...t,config:em(t.config)}}),remove:g("dnsProvider","delete").input(wy).mutation(async({ctx:
+e,input:r})=>{let t=await un(r.dnsProviderId,e.session.activeOrganizationId);return await 
+c(e,{action:"delete",resourceType:"dnsProvider",resourceId:t.dnsProviderId,resourceName:t.name}),await 
+nU(r.dnsProviderId),!0}),all:g("dnsProvider","read").query(async({ctx:e})=>(await tU(e.session.activeOrganizationId)).m
+ap(t=>({...t,config:em(t.config)}))),one:g("dnsProvider","read").input(yy).query(async({ctx:e,input:r})=>{let t=await u
+n(r.dnsProviderId,e.session.activeOrganizationId);return{...t,config:em(t.config)}}),testConnection:g("dnsProvider","cr
+eate").input(hy).mutation(async({ctx:e,input:r})=>{if(!r.config&&!r.dnsProviderId)throw new 
+dU({code:"BAD_REQUEST",message:"Provide a config or a dnsProviderId to test"});let t=r.config;if(r.dnsProviderId){let 
+o=await un(r.dnsProviderId,e.session.activeOrganizationId);t=t?aU(t,o.config):o.config}return await 
+iU(t),!0}),listZones:g("dnsProvider","read").input(vy).query(async({ctx:e,input:r})=>{let t=await 
+un(r.dnsProviderId,e.session.activeOrganizationId);return await 
+oU(t.config)}),listRecords:g("dnsProvider","read").input(Iy).query(async({ctx:e,input:r})=>{let t=await 
+un(r.dnsProviderId,e.session.activeOrganizationId);return await 
+rU(t.config,r.zoneId)}),createRecord:g("dnsProvider","update").input(by).mutation(async({ctx:e,input:r})=>{let t=await 
+un(r.dnsProviderId,e.session.activeOrganizationId),o=await 
+XB(t.config,{zoneId:r.zoneId,type:r.type,name:r.name,content:r.content,ttl:r.ttl});return await c(e,{action:"create",re
+sourceType:"dnsProvider",resourceId:o.id,resourceName:r.name}),o}),updateRecord:g("dnsProvider","update").input(ky).mut
+ation(async({ctx:e,input:r})=>{let t=await un(r.dnsProviderId,e.session.activeOrganizationId),o=await 
+cU(t.config,r.zoneId,r.recordId,{type:r.type,name:r.name,content:r.content,ttl:r.ttl});return await c(e,{action:"update
+",resourceType:"dnsProvider",resourceId:o.id,resourceName:r.name}),o}),deleteRecord:g("dnsProvider","delete").input(Sy)
+.mutation(async({ctx:e,input:r})=>{let t=await un(r.dnsProviderId,e.session.activeOrganizationId);return await 
+eU(t.config,r.zoneId,r.recordId),await c(e,{action:"delete",resourceType:"dnsProvider",resourceId:r.recordId,resourceNa
+me:r.zoneId}),!0})});import{containerKill as lU,containerRemove as pU,containerRestart as mU,containerStart as 
+uU,containerStop as gU,deleteContainerFile as fU,findServerById as Lt,getConfig as yU,getContainers as 
+wU,getContainersByAppLabel as hU,getContainersByAppNameMatch as vU,getDockerEvents as IU,getServerHealth as 
+bU,getServiceContainersByAppName as kU,getStackContainersByAppName as SU,listContainerFiles as TU,readContainerFile as 
+PU,uploadFileToContainer as NU,writeContainerFile as EU}from"@dokploy/server";import{TRPCError as 
+Bt}from"@trpc/server";import{z as oe}from"zod";import{z as Bd}from"zod";import{zfd as tm}from"zod-form-data";typeof 
+window>"u"&&(async()=>{let e=await import("undici");globalThis.File=e.File,globalThis.FileList=e.FileList})();var SDe=t
+m.formData({applicationId:Bd.string().optional(),zip:tm.file(),dropBuildPath:Bd.string().optional()}),RS=tm.formData({c
+ontainerId:Bd.string().min(1).regex(/^[a-zA-Z0-9.\-_]+$/,"Invalid container 
+ID"),file:tm.file(),destinationPath:Bd.string().min(1).regex(/^[a-zA-Z0-9.\-_/]+$/,"Invalid destination path: only 
+alphanumeric characters, dots, dashes, underscores, and forward slashes are 
+allowed"),serverId:Bd.string().optional()});var 
+Er=/^[a-zA-Z0-9.\-_]+$/,rm=oe.string().min(1).max(4096).refine(e=>e.startsWith("/")&&!e.includes("\0"),"Path must be ab
+solute."),DS=S({getContainers:g("docker","read").input(oe.object({serverId:oe.string().optional()})).query(async({input
+:e,ctx:r})=>{if(e.serverId&&(await Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new 
+Bt({code:"UNAUTHORIZED"});return await wU(e.serverId)}),getServerHealth:s.input(oe.object({serverId:oe.string().optiona
+l(),sinceHours:oe.number().int().min(1).max(168).optional()})).query(async({input:e,ctx:r})=>{if(await 
+We(r,{docker:["read"],server:["read"]}),e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await bU(r.
+session.activeOrganizationId,e.serverId,e.sinceHours)}),restartContainer:g("docker","read").input(oe.object({containerI
+d:oe.string().min(1).regex(Er,"Invalid container 
+id."),serverId:oe.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});await 
+mU(e.containerId,e.serverId),await c(r,{action:"start",resourceType:"docker",resourceId:e.containerId,resourceName:e.co
+ntainerId})}),startContainer:g("docker","read").input(oe.object({containerId:oe.string().min(1).regex(Er,"Invalid 
+container id."),serverId:oe.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});await 
+uU(e.containerId,e.serverId),await c(r,{action:"start",resourceType:"docker",resourceId:e.containerId,resourceName:e.co
+ntainerId})}),stopContainer:g("docker","read").input(oe.object({containerId:oe.string().min(1).regex(Er,"Invalid 
+container id."),serverId:oe.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});await 
+gU(e.containerId,e.serverId),await c(r,{action:"stop",resourceType:"docker",resourceId:e.containerId,resourceName:e.con
+tainerId})}),killContainer:g("docker","read").input(oe.object({containerId:oe.string().min(1).regex(Er,"Invalid 
+container id."),serverId:oe.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});await 
+lU(e.containerId,e.serverId),await c(r,{action:"stop",resourceType:"docker",resourceId:e.containerId,resourceName:e.con
+tainerId})}),removeContainer:g("docker","read").input(oe.object({containerId:oe.string().min(1).regex(Er,"Invalid 
+container id."),serverId:oe.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});await 
+pU(e.containerId,e.serverId),await c(r,{action:"delete",resourceType:"docker",resourceId:e.containerId,resourceName:e.c
+ontainerId})}),getConfig:g("docker","read").input(oe.object({containerId:oe.string().min(1).regex(Er,"Invalid 
+container id."),serverId:oe.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await yU(e.
+containerId,e.serverId)}),getContainersByAppNameMatch:g("service","read").input(oe.object({appType:oe.enum(["stack","do
+cker-compose"]).optional(),appName:oe.string().min(1).regex(Er,"Invalid app 
+name."),serverId:oe.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await vU(e.
+appName,e.appType,e.serverId)}),getContainersByAppLabel:g("docker","read").input(oe.object({appName:oe.string().min(1).
+regex(Er,"Invalid app name."),serverId:oe.string().optional(),type:oe.enum(["standalone","swarm"])})).query(async({inpu
+t:e,ctx:r})=>{if(e.serverId&&(await Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new 
+Bt({code:"UNAUTHORIZED"});return await hU(e.appName,e.type,e.serverId)}),getStackContainersByAppName:g("docker","read")
+.input(oe.object({appName:oe.string().min(1).regex(Er,"Invalid app 
+name."),serverId:oe.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await SU(e.
+appName,e.serverId)}),getServiceContainersByAppName:g("docker","read").input(oe.object({appName:oe.string().min(1).rege
+x(Er,"Invalid app name."),serverId:oe.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await kU(e.
+appName,e.serverId)}),uploadFileToContainer:g("docker","read").input(RS).mutation(async({input:e,ctx:r})=>{if(e.serverI
+d&&(await Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});let 
+t=e.file;if(!(t instanceof File))throw new Bt({code:"BAD_REQUEST",message:"Invalid file provided"});let o=await 
+t.arrayBuffer(),a=Buffer.from(o);return await 
+NU(e.containerId,a,t.name,e.destinationPath,e.serverId||null),{success:!0,message:"File uploaded successfully"}}),listC
+ontainerFiles:g("docker","read").input(oe.object({containerId:oe.string().min(1).regex(Er,"Invalid container 
+id."),path:rm,serverId:oe.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await TU(e.
+containerId,e.path,e.serverId)}),readContainerFile:g("docker","read").input(oe.object({containerId:oe.string().min(1).r
+egex(Er,"Invalid container 
+id."),path:rm,serverId:oe.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await PU(e.
+containerId,e.path,e.serverId)}),writeContainerFile:g("docker","read").input(oe.object({containerId:oe.string().min(1).
+regex(Er,"Invalid container id."),path:rm,content:oe.string(),serverId:oe.string().optional()})).mutation(async({input:
+e,ctx:r})=>{if(e.serverId&&(await Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new 
+Bt({code:"UNAUTHORIZED"});await EU(e.containerId,e.path,e.content,e.serverId),await c(r,{action:"update",resourceType:"
+docker",resourceId:e.containerId,resourceName:`${e.containerId}:${e.path}`})}),deleteContainerFile:g("docker","read").i
+nput(oe.object({containerId:oe.string().min(1).regex(Er,"Invalid container id."),path:rm.refine(e=>e!=="/","Cannot 
+delete the container 
+root."),serverId:oe.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});await 
+fU(e.containerId,e.path,e.serverId),await c(r,{action:"delete",resourceType:"docker",resourceId:e.containerId,resourceN
+ame:`${e.containerId}:${e.path}`})}),getEvents:g("docker","read").input(oe.object({serverId:oe.string().optional(),minu
+tes:oe.number().min(1).max(1440).default(15)})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await 
+IU(e.serverId,e.minutes)})});import{cleanupBuilders as RU,findServerById as gh,getBuildCache as DU,getDockerDiskUsage 
+as CU}from"@dokploy/server";import{TRPCError as fh}from"@trpc/server";import{z as Ys}from"zod";var CS=S({getDiskUsage:g
+("docker","read").input(Ys.object({serverId:Ys.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(aw
+ait gh(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new fh({code:"UNAUTHORIZED"});return await C
+U(e.serverId)}),getBuildCache:g("docker","read").input(Ys.object({serverId:Ys.string().optional()})).query(async({input
+:e,ctx:r})=>{if(e.serverId&&(await gh(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new 
+fh({code:"UNAUTHORIZED"});return await DU(e.serverId)}),pruneBuildCache:g("docker","read").input(Ys.object({serverId:Ys
+.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+gh(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new fh({code:"UNAUTHORIZED"});await 
+RU(e.serverId),await c(r,{action:"delete",resourceType:"docker",resourceId:"build-cache",resourceName:"Docker build 
+cache"})})});import{findServerById as yh,getImageConfig as xU,getImages as AU,removeImage as 
+$U}from"@dokploy/server";import{TRPCError as wh}from"@trpc/server";import{z as Yo}from"zod";var xS=S({getImages:g("dock
+er","read").input(Yo.object({serverId:Yo.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+yh(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new wh({code:"UNAUTHORIZED"});return await AU(e.
+serverId)}),getImageConfig:g("docker","read").input(Yo.object({imageRef:Yo.string().min(1),serverId:Yo.string().optiona
+l()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+yh(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new wh({code:"UNAUTHORIZED"});return await xU(e.
+imageRef,e.serverId)}),removeImage:g("docker","read").input(Yo.object({repository:Yo.string(),tag:Yo.string(),id:Yo.str
+ing().min(1),force:Yo.boolean().optional(),serverId:Yo.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.se
+rverId&&(await yh(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new 
+wh({code:"UNAUTHORIZED"});await $U({repository:e.repository,tag:e.tag,id:e.id,force:e.force},e.serverId),await c(r,{act
+ion:"delete",resourceType:"docker",resourceId:e.id,resourceName:e.repository!=="<none>"&&e.tag!=="<none>"?`${e.reposito
+ry}:${e.tag}`:e.id})})});import{deleteVolumeFile as OU,findServerById as Gn,getVolumeConfig as _U,getVolumes as 
+BU,getVolumesSize as UU,listVolumeFiles as zU,readVolumeFile as qU,removeVolume as FU,writeVolumeFile as 
+jU}from"@dokploy/server";import{TRPCError as Qn}from"@trpc/server";import{z as at}from"zod";var 
+Ws=/^[a-zA-Z0-9.\-_]+$/,om=at.string().min(1).max(4096).refine(e=>e.startsWith("/")&&!e.includes("\0"),"Path must be ab
+solute."),AS=S({getVolumes:g("docker","read").input(at.object({serverId:at.string().optional()})).query(async({input:e,
+ctx:r})=>{if(e.serverId&&(await Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new 
+Qn({code:"UNAUTHORIZED"});return await BU(e.serverId)}),getVolumesSize:g("docker","read").input(at.object({serverId:at.
+string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Qn({code:"UNAUTHORIZED"});return await 
+UU(e.serverId)}),listVolumeFiles:g("docker","read").input(at.object({volumeName:at.string().min(1).regex(Ws,"Invalid 
+volume name."),path:om,serverId:at.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Qn({code:"UNAUTHORIZED"});return await zU(e.
+volumeName,e.path,e.serverId)}),readVolumeFile:g("docker","read").input(at.object({volumeName:at.string().min(1).regex(
+Ws,"Invalid volume 
+name."),path:om,serverId:at.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Qn({code:"UNAUTHORIZED"});return await qU(e.
+volumeName,e.path,e.serverId)}),writeVolumeFile:g("docker","read").input(at.object({volumeName:at.string().min(1).regex
+(Ws,"Invalid volume name."),path:om,content:at.string(),serverId:at.string().optional()})).mutation(async({input:e,ctx:
+r})=>{if(e.serverId&&(await Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new 
+Qn({code:"UNAUTHORIZED"});await jU(e.volumeName,e.path,e.content,e.serverId),await c(r,{action:"update",resourceType:"d
+ocker",resourceId:e.volumeName,resourceName:`${e.volumeName}:${e.path}`})}),deleteVolumeFile:g("docker","read").input(a
+t.object({volumeName:at.string().min(1).regex(Ws,"Invalid volume name."),path:om.refine(e=>e!=="/","Cannot delete the 
+volume root."),serverId:at.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Qn({code:"UNAUTHORIZED"});await 
+OU(e.volumeName,e.path,e.serverId),await c(r,{action:"delete",resourceType:"docker",resourceId:e.volumeName,resourceNam
+e:`${e.volumeName}:${e.path}`})}),getVolumeConfig:g("docker","read").input(at.object({volumeName:at.string().min(1).reg
+ex(Ws,"Invalid volume name."),serverId:at.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Qn({code:"UNAUTHORIZED"});return await _U(e.
+volumeName,e.serverId)}),removeVolume:g("docker","read").input(at.object({volumeName:at.string().min(1).regex(Ws,"Inval
+id volume name."),serverId:at.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Qn({code:"UNAUTHORIZED"});await 
+FU(e.volumeName,e.serverId),await 
+c(r,{action:"delete",resourceType:"docker",resourceId:e.volumeName,resourceName:e.volumeName})})});import{createDomain 
+as MU,checkDomainSsl as LU,findApplicationById as Ud,findDomainById as Yn,findDomainsByApplicationId as 
+HU,findDomainsByComposeId as VU,findDomainsFiltered as KU,findPreviewDeploymentById as Js,findServerById as 
+GU,generateTraefikMeDomain as QU,getWebServerSettings as YU,manageDomain as am,removeDomain as WU,removeDomainById as 
+JU,updateDomainById as $S,validateDomain as ZU,verifyDomainDns as XU}from"@dokploy/server";import{TRPCError as 
+ez}from"@trpc/server";import{z as Ht}from"zod";var 
+OS=S({create:s.input(iu).mutation(async({input:e,ctx:r})=>{try{e.domainType==="compose"&&e.composeId?await 
+m(r,e.composeId,{domain:["create"]}):e.domainType==="application"&&e.applicationId&&await 
+m(r,e.applicationId,{domain:["create"]});let t=await MU(e);return await 
+c(r,{action:"create",resourceType:"domain",resourceId:t.domainId,resourceName:t.host}),t}catch(t){throw new 
+ez({code:"BAD_REQUEST",message:t instanceof Error?t.message:"Error creating the 
+domain",cause:t})}}),byApplicationId:s.input(ir).query(async({input:e,ctx:r})=>(await 
+m(r,e.applicationId,{domain:["read"]}),await 
+HU(e.applicationId))),byComposeId:s.input(ar).query(async({input:e,ctx:r})=>(await 
+m(r,e.composeId,{domain:["read"]}),await VU(e.composeId))),generateDomain:g("domain","create").input(Ht.object({appName
+:Ht.string(),serverId:Ht.string().optional()})).mutation(async({input:e,ctx:r})=>QU(e.appName,r.user.ownerId,e.serverId
+)),canGenerateTraefikMeDomains:g("domain","read").input(Ht.object({serverId:Ht.string()})).query(async({input:e})=>e.se
+rverId?(await GU(e.serverId)).ipAddress:(await 
+YU())?.serverIp||""),update:s.input(su).mutation(async({input:e,ctx:r})=>{let t=await 
+Yn(e.domainId),o=t.applicationId||t.composeId;if(o)await m(r,o,{domain:["create"]});else if(t.previewDeploymentId){let 
+i=await Js(t.previewDeploymentId);await m(r,i.applicationId,{domain:["create"]})}let a=await $S(e.domainId,e),n=await 
+Yn(e.domainId);if(await 
+c(r,{action:"update",resourceType:"domain",resourceId:n.domainId,resourceName:n.host}),n.applicationId){let i=await 
+Ud(n.applicationId);await am(i,n)}else if(n.previewDeploymentId){let i=await Js(n.previewDeploymentId),l=await 
+Ud(i.applicationId);l.appName=i.appName,await am(l,n)}return 
+a}),toggleEnable:s.input(fc).mutation(async({input:e,ctx:r})=>{let t=await 
+Yn(e.domainId),o=t.applicationId||t.composeId;if(o)await m(r,o,{domain:["create"]});else if(t.previewDeploymentId){let 
+i=await Js(t.previewDeploymentId);await m(r,i.applicationId,{domain:["create"]})}let a=await 
+$S(e.domainId,{enabled:!t.enabled}),n=await Yn(e.domainId);if(await 
+c(r,{action:"update",resourceType:"domain",resourceId:n.domainId,resourceName:n.host}),n.applicationId){let i=await 
+Ud(n.applicationId);await am(i,n)}else if(n.previewDeploymentId){let i=await Js(n.previewDeploymentId),l=await 
+Ud(i.applicationId);l.appName=i.appName,await 
+am(l,n)}return{...a,requiresRedeploy:n.domainType==="compose"}}),one:s.input(fc).query(async({input:e,ctx:r})=>{let 
+t=await Yn(e.domainId),o=t.applicationId||t.composeId;if(o)await m(r,o,{domain:["read"]});else 
+if(t.previewDeploymentId){let a=await Js(t.previewDeploymentId);await m(r,a.applicationId,{domain:["read"]})}return 
+t}),delete:s.input(fc).mutation(async({input:e,ctx:r})=>{let t=await 
+Yn(e.domainId),o=t.applicationId||t.composeId;if(o)await m(r,o,{domain:["delete"]});else if(t.previewDeploymentId){let 
+n=await Js(t.previewDeploymentId);await m(r,n.applicationId,{domain:["delete"]})}let a=await JU(e.domainId);if(await 
+c(r,{action:"delete",resourceType:"domain",resourceId:t.domainId,resourceName:t.host}),t.applicationId){let n=await 
+Ud(t.applicationId);await WU(n,t.uniqueConfigKey)}return a}),validateDomain:g("domain","read").input(Ht.object({domain:
+Ht.string(),serverIp:Ht.string().optional()})).mutation(async({input:e})=>ZU(e.domain,e.serverIp)),verifyDns:s.input(Ht
+.object({domainId:Ht.string().min(1)})).mutation(async({input:e,ctx:r})=>{let t=await 
+Yn(e.domainId),o=t.applicationId||t.composeId;return o&&await m(r,o,{domain:["read"]}),XU(e.domainId)}),checkSsl:s.inpu
+t(Ht.object({domainId:Ht.string().min(1)})).mutation(async({input:e,ctx:r})=>{let t=await 
+Yn(e.domainId),o=t.applicationId||t.composeId;return o&&await m(r,o,{domain:["read"]}),LU(e.domainId)}),filteredList:s.
+input(Ht.object({id:Ht.string().min(1),type:Ht.enum(["application","compose"]),environment:Ht.string().optional(),verif
+ied:Ht.string().optional(),search:Ht.string().optional()})).query(async({input:e,ctx:r})=>(await m(r,e.id,{domain:["rea
+d"]}),KU(e.id,e.type,{environment:e.environment,verified:e.verified,search:e.search})))});N();import{createEnvironment 
+as tz,deleteEnvironment as rz,duplicateEnvironment as oz,filterEnvironmentServices as _S,findEnvironmentById as 
+nm,findEnvironmentsByProjectId as az,IS_CLOUD as nz,updateEnvironmentById as iz}from"@dokploy/server";import{TRPCError 
+as Vt}from"@trpc/server";import{and as sz,desc as cz,eq as im,ilike as sm,or as dz,sql as 
+zd}from"drizzle-orm";import{z as gn}from"zod";var 
+BS=S({create:s.input(vg).mutation(async({input:e,ctx:r})=>{try{if(await ob(r,e.projectId),nz&&await 
+Xk(r.session.activeOrganizationId,e.projectId),e.name==="production")throw new Vt({code:"BAD_REQUEST",message:"You 
+cannot create a environment with the name 'production'"});let t=await tz(e);return await dp(r,t.environmentId),await 
+c(r,{action:"create",resourceType:"environment",resourceId:t.environmentId,resourceName:t.name}),t}catch(t){throw t 
+instanceof Vt?t:new Vt({code:"BAD_REQUEST",message:`Error creating the environment: ${t instanceof 
+Error?t.message:t}`,cause:t})}}),one:s.input(Ig).query(async({input:e,ctx:r})=>{let t=await 
+nm(e.environmentId);if(t.project.organizationId!==r.session.activeOrganizationId)throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to access this 
+environment"});if(r.user.role!=="owner"&&r.user.role!=="admin"){let{accessedEnvironments:o,accessedServices:a}=await 
+W(r.user.id,r.session.activeOrganizationId);if(!o.includes(t.environmentId))throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to access this environment"});return _S(t,a)}return 
+t}),byProjectId:s.input(gn.object({projectId:gn.string()})).query(async({input:e,ctx:r})=>{try{let t=await 
+az(e.projectId);if(t.some(o=>o.project.organizationId!==r.session.activeOrganizationId))throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to access this 
+environment"});if(r.user.role!=="owner"&&r.user.role!=="admin"){let{accessedEnvironments:o,accessedServices:a}=await 
+W(r.user.id,r.session.activeOrganizationId);return t.filter(i=>o.includes(i.environmentId)).map(i=>_S(i,a))}return 
+t}catch(t){throw console.log(t),new Vt({code:"BAD_REQUEST",message:`Error fetching environments: ${t instanceof 
+Error?t.message:t}`})}}),remove:s.input(bg).mutation(async({input:e,ctx:r})=>{try{let t=await 
+nm(e.environmentId);if(t.project.organizationId!==r.session.activeOrganizationId)throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to access this environment"});if(t.isDefault)throw new 
+Vt({code:"BAD_REQUEST",message:"You cannot delete the default environment"});await ab(r,t.projectId),await 
+cp(r,e.environmentId,"read");let o=await rz(e.environmentId);return await 
+c(r,{action:"delete",resourceType:"environment",resourceId:o?.environmentId,resourceName:o?.name}),o}catch(t){throw t 
+instanceof Vt?t:new Vt({code:"BAD_REQUEST",message:`Error deleting the environment: ${t instanceof Error?t.message:t}`,
+cause:t})}}),update:s.input(kg).mutation(async({input:e,ctx:r})=>{try{let{environmentId:t,...o}=e;await 
+cp(r,t,"read"),o.env!==void 0&&await We(r,{environmentEnvVars:["write"]});let a=await 
+nm(t);if(a.isDefault&&o.name!==void 0)throw new Vt({code:"BAD_REQUEST",message:"You cannot rename the default 
+environment"});if(a.project.organizationId!==r.session.activeOrganizationId)throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to access this 
+environment"});if(r.user.role!=="owner"&&r.user.role!=="admin"){let{accessedEnvironments:i}=await 
+W(r.user.id,r.session.activeOrganizationId);if(!i.includes(a.environmentId))throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to update this environment"})}let n=await iz(t,o);return n&&await 
+c(r,{action:"update",resourceType:"environment",resourceId:n.environmentId,resourceName:n.name}),n}catch(t){throw new 
+Vt({code:"BAD_REQUEST",message:`Error updating the environment: ${t instanceof 
+Error?t.message:t}`})}}),duplicate:s.input(Sg).mutation(async({input:e,ctx:r})=>{try{await 
+cp(r,e.environmentId,"read");let t=await 
+nm(e.environmentId);if(t.project.organizationId!==r.session.activeOrganizationId)throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to access this 
+environment"});if(r.user.role!=="owner"&&r.user.role!=="admin"){let{accessedEnvironments:a}=await 
+W(r.user.id,r.session.activeOrganizationId);if(!a.includes(t.environmentId))throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to duplicate this environment"})}let o=await oz(e);return await c(r,{
+action:"create",resourceType:"environment",resourceId:o.environmentId,resourceName:o.name,metadata:{duplicatedFrom:e.en
+vironmentId}}),o}catch(t){throw new Vt({code:"BAD_REQUEST",message:`Error duplicating the environment: ${t instanceof E
+rror?t.message:t}`})}}),search:s.input(gn.object({q:gn.string().optional(),name:gn.string().optional(),description:gn.s
+tring().optional(),projectId:gn.string().optional(),limit:gn.number().min(1).max(100).default(20),offset:gn.number().mi
+n(0).default(0)})).query(async({ctx:e,input:r})=>{let t=[im(E.organizationId,e.session.activeOrganizationId)];if(r.proj
+ectId&&t.push(im(v.projectId,r.projectId)),r.q?.trim()){let i=`%${r.q.trim()}%`;t.push(dz(sm(v.name,i),sm(v.description
+??"",i)))}if(r.name?.trim()&&t.push(sm(v.name,`%${r.name.trim()}%`)),r.description?.trim()&&t.push(sm(v.description??""
+,`%${r.description.trim()}%`)),e.user.role!=="owner"&&e.user.role!=="admin"){let{accessedEnvironments:i}=await 
+W(e.user.id,e.session.activeOrganizationId);if(i.length===0)return{items:[],total:0};t.push(zd`${v.environmentId} IN 
+(${zd.join(i.map(l=>zd`${l}`),zd`, `)})`)}let o=sz(...t),[a,n]=await Promise.all([d.select({environmentId:v.environment
+Id,name:v.name,description:v.description,createdAt:v.createdAt,env:v.env,projectId:v.projectId,isDefault:v.isDefault}).
+from(v).innerJoin(E,im(v.projectId,E.projectId)).where(o).orderBy(cz(v.createdAt)).limit(r.limit).offset(r.offset),d.se
+lect({count:zd`count(*)::int`}).from(v).innerJoin(E,im(v.projectId,E.projectId)).where(o)]);return{items:a,total:n[0]?.
+count??0}})});N();import{findGitProviderById as US,getAccessibleGitProviderIds as lz,removeGitProvider as 
+pz,updateGitProvider as mz}from"@dokploy/server";Po();import{TRPCError as qd}from"@trpc/server";import{desc as zS,eq 
+as uz,inArray as gz}from"drizzle-orm";var qS=S({getAll:s.query(async({ctx:e})=>{let r=await lz(e.session);return 
+r.size===0?[]:(await d.query.gitProvider.findMany({with:{gitlab:!0,bitbucket:!0,github:!0,gitea:!0},orderBy:zS(ye.creat
+edAt),where:gz(ye.gitProviderId,[...r])})).map(o=>({...o,isOwner:o.userId===e.session.userId,github:o.github?{githubId:
+o.github.githubId,githubAppName:o.github.githubAppName,githubAppId:o.github.githubAppId,githubInstallationId:o.github.g
+ithubInstallationId,githubUrl:o.github.githubUrl,isConfigured:!!(o.github.githubPrivateKey&&o.github.githubAppId&&o.git
+hub.githubInstallationId)}:null,gitlab:o.gitlab?{gitlabId:o.gitlab.gitlabId,applicationId:o.gitlab.applicationId,gitlab
+Url:o.gitlab.gitlabUrl,isConfigured:!!(o.gitlab.accessToken&&o.gitlab.refreshToken)}:null,bitbucket:o.bitbucket?{bitbuc
+ketId:o.bitbucket.bitbucketId,bitbucketUsername:o.bitbucket.bitbucketUsername,isConfigured:!1,isDeprecated:!!(o.bitbuck
+et.appPassword&&!o.bitbucket.apiToken)}:null,gitea:o.gitea?{giteaId:o.gitea.giteaId,giteaUrl:o.gitea.giteaUrl,clientId:
+o.gitea.clientId,isConfigured:!!(o.gitea.accessToken&&o.gitea.refreshToken)}:null}))}),toggleShare:s.input(ff).mutation
+(async({input:e,ctx:r})=>{let t=await 
+US(e.gitProviderId);if(t.userId!==r.session.userId||t.organizationId!==r.session.activeOrganizationId)throw new 
+qd({code:"UNAUTHORIZED",message:"Only the owner can share this provider"});return await c(r,{action:"update",resourceTy
+pe:"gitProvider",resourceId:t.gitProviderId,resourceName:t.name??t.gitProviderId}),await mz(e.gitProviderId,{sharedWith
+Organization:e.sharedWithOrganization})}),allForPermissions:g("member","update").use(async({ctx:e,next:r})=>{if(!await 
+wt(e.session.activeOrganizationId))throw new qd({code:"FORBIDDEN",message:"Valid enterprise license required"});return 
+r()}).query(async({ctx:e})=>await d.query.gitProvider.findMany({columns:{gitProviderId:!0,name:!0,providerType:!0},orde
+rBy:zS(ye.createdAt),where:uz(ye.organizationId,e.session.activeOrganizationId)})),remove:g("gitProviders","delete").in
+put(gf).mutation(async({input:e,ctx:r})=>{try{let t=await 
+US(e.gitProviderId);if(t.organizationId!==r.session.activeOrganizationId)throw new 
+qd({code:"UNAUTHORIZED",message:"You are not allowed to delete this Git provider"});let o=await W(r.user.id,r.session.a
+ctiveOrganizationId);if(!(o.role==="owner"||o.role==="admin")&&t.userId!==r.session.userId)throw new 
+qd({code:"UNAUTHORIZED",message:"You can only delete your own Git providers"});return await c(r,{action:"delete",resour
+ceType:"gitProvider",resourceId:t.gitProviderId,resourceName:t.name??t.gitProviderId}),await 
+pz(e.gitProviderId)}catch(t){let o=t instanceof Error?t.message:"Error deleting this Git provider";throw new 
+qd({code:"BAD_REQUEST",message:o})}})});N();import{assertGitProviderAccess as cm,createGitea as fz,findGiteaById as 
+Fd,getAccessibleGitProviderIds as yz,getGiteaBranches as wz,getGiteaRepositories as hz,haveGiteaRequirements as 
+vz,testGiteaConnection as Iz,updateGitea as FS,updateGitProvider as bz}from"@dokploy/server";import{TRPCError as 
+is}from"@trpc/server";var jS=S({create:g("gitProviders","create").input(Lm).mutation(async({input:e,ctx:r})=>{try{let 
+t=await fz(e,r.session.activeOrganizationId,r.session.userId);return await 
+c(r,{action:"create",resourceType:"gitProvider",resourceId:t.giteaId,resourceName:e.name}),t}catch(t){throw new 
+is({code:"BAD_REQUEST",message:"Error creating this Gitea 
+provider",cause:t})}}),one:s.input(cc).query(async({input:e,ctx:r})=>{let t=await Fd(e.giteaId);return await 
+cm(r.session,t.gitProvider),t}),giteaProviders:s.query(async({ctx:e})=>{let r=await yz(e.session),t=await 
+d.query.gitea.findMany({with:{gitProvider:!0}});return t=t.filter(a=>a.gitProvider.organizationId===e.session.activeOrg
+anizationId&&r.has(a.gitProvider.gitProviderId)),t.filter(a=>vz(a)).map(a=>({giteaId:a.giteaId,gitProvider:{...a.gitPro
+vider}}))}),getGiteaRepositories:s.input(cc).query(async({input:e,ctx:r})=>{let{giteaId:t}=e;if(!t)throw new 
+is({code:"BAD_REQUEST",message:"Gitea provider ID is required."});let o=await Fd(t);await 
+cm(r.session,o.gitProvider);try{return await hz(t)}catch(a){throw console.error("Error fetching Gitea 
+repositories:",a),new is({code:"BAD_REQUEST",message:a instanceof Error?a.message:String(a)})}}),getGiteaBranches:s.inp
+ut(Vm).query(async({input:e,ctx:r})=>{let{giteaId:t,owner:o,repositoryName:a}=e;if(!t||!o||!a)throw new 
+is({code:"BAD_REQUEST",message:"Gitea provider ID, owner, and repository name are required."});let n=await Fd(t);await 
+cm(r.session,n.gitProvider);try{return await wz({giteaId:t,owner:o,repo:a})}catch(i){throw console.error("Error 
+fetching Gitea branches:",i),new is({code:"BAD_REQUEST",message:i instanceof 
+Error?i.message:String(i)})}}),testConnection:s.input(Hm).mutation(async({input:e,ctx:r})=>{let 
+t=e.giteaId??"",o=await Fd(t);await cm(r.session,o.gitProvider);try{return`Found ${await Iz({giteaId:t})} 
+repositories`}catch(a){throw console.error("Gitea connection test error:",a),new is({code:"BAD_REQUEST",message:a 
+instanceof Error?a.message:String(a)})}}),update:g("gitProviders","create").input(Km).mutation(async({input:e,ctx:r})=>
+(e.name?(await bz(e.gitProviderId,{name:e.name,organizationId:r.session.activeOrganizationId}),await 
+FS(e.giteaId,{...e})):await FS(e.giteaId,{...e}),await c(r,{action:"update",resourceType:"gitProvider",resourceId:e.git
+eaId,resourceName:e.name}),{success:!0})),getGiteaUrl:s.input(cc).query(async({input:e})=>{let{giteaId:r}=e;if(!r)throw
+ new is({code:"BAD_REQUEST",message:"Gitea provider ID is required."});return(await 
+Fd(r)).giteaUrl})});N();import{assertGitProviderAccess as dm,findGithubById as lm,getAccessibleGitProviderIds as 
+kz,getGithubBranches as Sz,getGithubRepositories as MS,haveGithubRequirements as Tz,updateGithub as 
+Pz,updateGitProvider as Nz}from"@dokploy/server";import{TRPCError as Ez}from"@trpc/server";var 
+LS=S({one:s.input(lc).query(async({input:e,ctx:r})=>{let t=await lm(e.githubId);return await 
+dm(r.session,t.gitProvider),t}),getGithubRepositories:s.input(lc).query(async({input:e,ctx:r})=>{let t=await 
+lm(e.githubId);return await dm(r.session,t.gitProvider),await 
+MS(e.githubId)}),getGithubBranches:s.input(Gm).query(async({input:e,ctx:r})=>{if(e.githubId){let t=await 
+lm(e.githubId);await dm(r.session,t.gitProvider)}return await Sz(e)}),githubProviders:s.query(async({ctx:e})=>{let 
+r=await kz(e.session),t=await d.query.github.findMany({with:{gitProvider:!0}});return t=t.filter(a=>a.gitProvider.organ
+izationId===e.session.activeOrganizationId&&r.has(a.gitProvider.gitProviderId)),t.filter(a=>Tz(a)).map(a=>({githubId:a.
+githubId,githubUrl:a.githubUrl,gitProvider:{...a.gitProvider}}))}),testConnection:s.input(lc).mutation(async({input:e,c
+tx:r})=>{try{let t=await lm(e.githubId);return await dm(r.session,t.gitProvider),`Found ${(await 
+MS(e.githubId)).length} repositories`}catch(t){throw new Ez({code:"BAD_REQUEST",message:t instanceof 
+Error?t?.message:`Error: 
+${t}`})}}),update:g("gitProviders","create").input(Qm).mutation(async({input:e,ctx:r})=>{await 
+Nz(e.gitProviderId,{name:e.name,organizationId:r.session.activeOrganizationId}),await Pz(e.githubId,{...e}),await c(r,{
+action:"update",resourceType:"gitProvider",resourceId:e.gitProviderId,resourceName:e.name})})});N();import{assertGitPro
+viderAccess as pm,createGitlab as Rz,findGitlabById as mm,getAccessibleGitProviderIds as Dz,getGitlabBranches as 
+Cz,getGitlabRepositories as xz,haveGitlabRequirements as Az,testGitlabConnection as $z,updateGitlab as 
+HS,updateGitProvider as Oz}from"@dokploy/server";import{TRPCError as VS}from"@trpc/server";var 
+KS=S({create:g("gitProviders","create").input(Ym).mutation(async({input:e,ctx:r})=>{try{let t=await 
+Rz(e,r.session.activeOrganizationId,r.session.userId);return await 
+c(r,{action:"create",resourceType:"gitProvider",resourceName:e.name}),t}catch(t){throw new 
+VS({code:"BAD_REQUEST",message:"Error creating this Gitlab 
+provider",cause:t})}}),one:s.input(tl).query(async({input:e,ctx:r})=>{let t=await mm(e.gitlabId);return await 
+pm(r.session,t.gitProvider),t}),gitlabProviders:s.query(async({ctx:e})=>{let r=await Dz(e.session),t=await 
+d.query.gitlab.findMany({with:{gitProvider:!0}});return t=t.filter(a=>a.gitProvider.organizationId===e.session.activeOr
+ganizationId&&r.has(a.gitProvider.gitProviderId)),t.filter(a=>Az(a)).map(a=>({gitlabId:a.gitlabId,gitProvider:{...a.git
+Provider},gitlabUrl:a.gitlabUrl}))}),getGitlabRepositories:s.input(tl).query(async({input:e,ctx:r})=>{let t=await 
+mm(e.gitlabId);return await pm(r.session,t.gitProvider),await 
+xz(e.gitlabId)}),getGitlabBranches:s.input(Jm).query(async({input:e,ctx:r})=>{if(e.gitlabId){let t=await 
+mm(e.gitlabId);await pm(r.session,t.gitProvider)}return await 
+Cz(e)}),testConnection:s.input(Wm).mutation(async({input:e,ctx:r})=>{try{let t=await mm(e.gitlabId);return await 
+pm(r.session,t.gitProvider),`Found ${await $z(e)} repositories`}catch(t){throw new VS({code:"BAD_REQUEST",message:t 
+instanceof Error?t?.message:`Error: 
+${t}`})}}),update:g("gitProviders","create").input(Zm).mutation(async({input:e,ctx:r})=>{e.name?(await 
+Oz(e.gitProviderId,{name:e.name,organizationId:r.session.activeOrganizationId}),await HS(e.gitlabId,{...e})):await 
+HS(e.gitlabId,{...e}),await c(r,{action:"update",resourceType:"gitProvider",resourceId:e.gitProviderId,resourceName:e.n
+ame})})});import{checkPortInUse as _z,createLibsql as Bz,createMount as Uz,deployLibsql as Ih,findEnvironmentById as 
+zz,findLibsqlById as fn,findProjectById as qz,getAccessibleServerIds as Fz,getContainerLogs as jz,getWebServerSettings 
+as Mz,IS_CLOUD as Lz,rebuildDatabase as Hz,removeLibsqlById as Vz,removeService as Kz,startService as 
+YS,startServiceRemote as WS,stopService as JS,stopServiceRemote as ZS,updateLibsqlById as 
+Wn}from"@dokploy/server";import{TRPCError as Wo}from"@trpc/server";import{eq as Gz}from"drizzle-orm";import{z as 
+Zs}from"zod";ls();A();import{and as YCe,eq as WCe}from"drizzle-orm";import{drizzle as 
+GS}from"drizzle-orm/postgres-js";import QS from"postgres";var hh=globalThis,vh;process.env.NODE_ENV==="production"?vh=G
+S(QS(Ua),{schema:Un}):(hh.db||(hh.db=GS(QS(Ua),{schema:Un})),vh=hh.db);var vt=vh;var 
+XS=S({create:s.input(Tg).mutation(async({input:e,ctx:r})=>{try{let t=await zz(e.environmentId),o=await 
+qz(t.projectId);await ce(r,o.projectId,"create");let a=await Mz();if((Lz||a?.remoteServersOnly)&&!e.serverId)throw new 
+Wo({code:"UNAUTHORIZED",message:"You need to use a server to create a 
+Libsql"});if(o.organizationId!==r.session.activeOrganizationId)throw new Wo({code:"UNAUTHORIZED",message:"You are not 
+authorized to access this project"});if(e.serverId&&!(await Fz(r.session)).has(e.serverId))throw new 
+Wo({code:"UNAUTHORIZED",message:"You are not authorized to access this server"});let n=await Bz({...e});return await 
+$t(r,n.libsqlId),await Uz({serviceId:n.libsqlId,serviceType:"libsql",volumeName:`${n.appName}-data`,mountPath:"/var/lib
+/sqld",type:"volume"}),await 
+c(r,{action:"create",resourceType:"service",resourceId:n.libsqlId,resourceName:n.appName}),!0}catch(t){throw 
+t}}),one:s.input(ki).query(async({input:e,ctx:r})=>{await ce(r,e.libsqlId,"read");let t=await 
+fn(e.libsqlId);if(t.environment.project.organizationId!==r.session.activeOrganizationId)throw new 
+Wo({code:"UNAUTHORIZED",message:"You are not authorized to access this Libsql"});return 
+t}),start:s.input(ki).mutation(async({input:e,ctx:r})=>{await m(r,e.libsqlId,{deployment:["create"]});let t=await 
+fn(e.libsqlId);return t.serverId?await WS(t.serverId,t.appName):await YS(t.appName),await 
+Wn(e.libsqlId,{applicationStatus:"done"}),await c(r,{action:"start",resourceType:"service",resourceId:t.libsqlId,resour
+ceName:t.appName}),t}),stop:s.input(ki).mutation(async({input:e,ctx:r})=>{await 
+m(r,e.libsqlId,{deployment:["create"]});let t=await fn(e.libsqlId);return t.serverId?await 
+ZS(t.serverId,t.appName):await JS(t.appName),await Wn(e.libsqlId,{applicationStatus:"idle"}),await c(r,{action:"stop",r
+esourceType:"service",resourceId:t.libsqlId,resourceName:t.appName}),t}),saveExternalPorts:s.input(Eg).mutation(async({
+input:e,ctx:r})=>{await m(r,e.libsqlId,{service:["create"]});let t=await 
+fn(e.libsqlId);if(t.sqldNode==="replica"&&e.externalGRPCPort!==null)throw new 
+Wo({code:"BAD_REQUEST",message:"externalGRPCPort cannot be set when sqldNode is 'replica'"});let o=[{port:e.externalPor
+t,name:"externalPort",current:t.externalPort},{port:e.externalGRPCPort,name:"externalGRPCPort",current:t.externalGRPCPo
+rt},{port:e.externalAdminPort,name:"externalAdminPort",current:t.externalAdminPort}];for(let{port:a,name:n,current:i}of
+ o)if(a&&a!==i){let l=await _z(a,t.serverId||void 0);if(l.isInUse)throw new Wo({code:"CONFLICT",message:`Port ${a} 
+(${n}) is already in use by ${l.conflictingContainer}`})}return await Wn(e.libsqlId,{externalPort:e.externalPort,extern
+alGRPCPort:e.externalGRPCPort,externalAdminPort:e.externalAdminPort}),await Ih(e.libsqlId),await c(r,{action:"update",r
+esourceType:"service",resourceId:t.libsqlId,resourceName:t.appName}),t}),deploy:s.input(Nl).mutation(async({input:e,ctx
+:r})=>{await m(r,e.libsqlId,{deployment:["create"]});let t=await fn(e.libsqlId);return await c(r,{action:"deploy",resou
+rceType:"service",resourceId:t.libsqlId,resourceName:t.appName}),Ih(e.libsqlId)}),deployWithLogs:s.meta({openapi:{path:
+"/deploy/libsql-with-logs",method:"POST",override:!0,enabled:!1}}).input(Nl).subscription(async 
+function*({input:e,ctx:r,signal:t}){await m(r,e.libsqlId,{deployment:["create"]});let 
+o=[],a=!1;for(Ih(e.libsqlId,n=>{o.push(n)}).catch(()=>{}).finally(()=>{a=!0});!a||o.length>0;)if(o.length>0?yield 
+o.shift():await new 
+Promise(n=>setTimeout(n,50)),t?.aborted)return}),changeStatus:s.input(Pg).mutation(async({input:e,ctx:r})=>{await 
+m(r,e.libsqlId,{deployment:["create"]});let t=await fn(e.libsqlId);return await 
+Wn(e.libsqlId,{applicationStatus:e.applicationStatus}),await c(r,{action:"update",resourceType:"service",resourceId:t.l
+ibsqlId,resourceName:t.appName}),t}),remove:s.input(ki).mutation(async({input:e,ctx:r})=>{await 
+ce(r,e.libsqlId,"delete");let t=await 
+fn(e.libsqlId);if(t.environment.project.organizationId!==r.session.activeOrganizationId)throw new 
+Wo({code:"UNAUTHORIZED",message:"You are not authorized to delete this Libsql"});await 
+c(r,{action:"delete",resourceType:"service",resourceId:t.libsqlId,resourceName:t.appName});let o=[async()=>await 
+Kz(t?.appName,t.serverId),async()=>await Vz(e.libsqlId)];for(let a of o)try{await a()}catch{}return 
+t}),saveEnvironment:s.input(Ng).mutation(async({input:e,ctx:r})=>{if(await m(r,e.libsqlId,{envVars:["write"]}),!await 
+Wn(e.libsqlId,{env:e.env}))throw new Wo({code:"BAD_REQUEST",message:"Error adding environment variables"});return 
+await c(r,{action:"update",resourceType:"service",resourceId:e.libsqlId}),!0}),reload:s.input(Rg).mutation(async({input
+:e,ctx:r})=>{await m(r,e.libsqlId,{deployment:["create"]});let t=await fn(e.libsqlId);return t.serverId?await 
+ZS(t.serverId,t.appName):await JS(t.appName),await Wn(e.libsqlId,{applicationStatus:"idle"}),t.serverId?await 
+WS(t.serverId,t.appName):await YS(t.appName),await Wn(e.libsqlId,{applicationStatus:"done"}),await c(r,{action:"reload"
+,resourceType:"service",resourceId:t.libsqlId,resourceName:t.appName}),!0}),update:s.input(Dg).mutation(async({input:e,
+ctx:r})=>{let{libsqlId:t,...o}=e;await m(r,t,{service:["create"]});let a=await Wn(t,{...o});if(!a)throw new 
+Wo({code:"BAD_REQUEST",message:"Error updating Libsql"});return await c(r,{action:"update",resourceType:"service",resou
+rceId:t,resourceName:a.appName}),!0}),move:s.input(Zs.object({libsqlId:Zs.string(),targetEnvironmentId:Zs.string()})).m
+utation(async({input:e,ctx:r})=>{await m(r,e.libsqlId,{service:["create"]});let t=await vt.update(Se).set({environmentI
+d:e.targetEnvironmentId}).where(Gz(Se.libsqlId,e.libsqlId)).returning().then(o=>o[0]);if(!t)throw new 
+Wo({code:"INTERNAL_SERVER_ERROR",message:"Failed to move libsql"});return await c(r,{action:"move",resourceType:"servic
+e",resourceId:t.libsqlId,resourceName:t.appName}),t}),rebuild:s.input(Cg).mutation(async({input:e,ctx:r})=>(await 
+m(r,e.libsqlId,{deployment:["create"]}),await Hz(e.libsqlId,"libsql"),await c(r,{action:"rebuild",resourceType:"service
+",resourceId:e.libsqlId}),!0)),readLogs:s.input(ki.extend({tail:Zs.number().int().min(1).max(1e4).default(100),since:Zs
+.string().regex(/^(all|\d+[smhd])$/,"Invalid since format").default("all"),search:Zs.string().regex(/^[a-zA-Z0-9 
+._-]{0,500}$/).optional()})).query(async({input:e,ctx:r})=>{await ce(r,e.libsqlId,"read");let t=await 
+fn(e.libsqlId);if(t.environment.project.organizationId!==r.session.activeOrganizationId)throw new 
+Wo({code:"UNAUTHORIZED",message:"You are not authorized to access this LibSQL"});return await 
+jz(t.appName,e.tail,e.since,e.search,t.serverId)})});N();import{checkPortInUse as Qz,createMariadb as Yz,createMount 
+as Wz,deployMariadb as bh,execAsync as Jz,execAsyncRemote as Zz,findBackupsByDbId as Xz,findEnvironmentById as 
+eq,findMariadbById as Pa,findProjectById as tq,getAccessibleServerIds as rq,getContainerLogs as oq,getServiceContainer 
+as aq,getWebServerSettings as nq,IS_CLOUD as iq,rebuildDatabase as sq,removeMariadbById as cq,removeService as 
+dq,startService as eT,startServiceRemote as tT,stopService as rT,stopServiceRemote as oT,updateMariadbById as 
+Jn}from"@dokploy/server";import{TRPCError as xo}from"@trpc/server";import{observable as 
+lq}from"@trpc/server/observable";import{and as pq,desc as mq,eq as yn,ilike as Xs,or as uq,sql as 
+jd}from"drizzle-orm";import{z as Ut}from"zod";var aT=S({create:s.input(rg).mutation(async({input:e,ctx:r})=>{try{let 
+t=await eq(e.environmentId),o=await tq(t.projectId);await ce(r,o.projectId,"create");let a=await 
+nq();if((iq||a?.remoteServersOnly)&&!e.serverId)throw new xo({code:"UNAUTHORIZED",message:"You need to use a server to 
+create a Mariadb"});if(o.organizationId!==r.session.activeOrganizationId)throw new 
+xo({code:"UNAUTHORIZED",message:"You are not authorized to access this project"});if(e.serverId&&!(await 
+rq(r.session)).has(e.serverId))throw new xo({code:"UNAUTHORIZED",message:"You are not authorized to access this 
+server"});let n=await Yz({...e});return await $t(r,n.mariadbId),await Wz({serviceId:n.mariadbId,serviceType:"mariadb",v
+olumeName:`${n.appName}-data`,mountPath:"/var/lib/mysql",type:"volume"}),await 
+c(r,{action:"create",resourceType:"service",resourceId:n.mariadbId,resourceName:n.appName}),n}catch(t){throw t 
+instanceof xo,t}}),one:s.input(Ii).query(async({input:e,ctx:r})=>{await ce(r,e.mariadbId,"read");let t=await 
+Pa(e.mariadbId);if(t.environment.project.organizationId!==r.session.activeOrganizationId)throw new 
+xo({code:"UNAUTHORIZED",message:"You are not authorized to access this Mariadb"});return 
+t}),start:s.input(Ii).mutation(async({input:e,ctx:r})=>{await m(r,e.mariadbId,{deployment:["create"]});let t=await 
+Pa(e.mariadbId);return t.serverId?await tT(t.serverId,t.appName):await eT(t.appName),await 
+Jn(e.mariadbId,{applicationStatus:"done"}),await c(r,{action:"start",resourceType:"service",resourceId:t.mariadbId,reso
+urceName:t.appName}),t}),stop:s.input(Ii).mutation(async({input:e,ctx:r})=>{await 
+m(r,e.mariadbId,{deployment:["create"]});let t=await Pa(e.mariadbId);return t.serverId?await 
+oT(t.serverId,t.appName):await rT(t.appName),await Jn(e.mariadbId,{applicationStatus:"idle"}),await c(r,{action:"stop",
+resourceType:"service",resourceId:t.mariadbId,resourceName:t.appName}),t}),saveExternalPort:s.input(ng).mutation(async(
+{input:e,ctx:r})=>{await m(r,e.mariadbId,{service:["create"]});let t=await Pa(e.mariadbId);if(e.externalPort){let 
+o=await Qz(e.externalPort,t.serverId||void 0);if(o.isInUse)throw new xo({code:"CONFLICT",message:`Port 
+${e.externalPort} is already in use by ${o.conflictingContainer}`})}return await 
+Jn(e.mariadbId,{externalPort:e.externalPort}),await bh(e.mariadbId),await c(r,{action:"update",resourceType:"service",r
+esourceId:t.mariadbId,resourceName:t.appName}),t}),deploy:s.input(Sl).mutation(async({input:e,ctx:r})=>{await 
+m(r,e.mariadbId,{deployment:["create"]});let t=await Pa(e.mariadbId);return await c(r,{action:"deploy",resourceType:"se
+rvice",resourceId:t.mariadbId,resourceName:t.appName}),bh(e.mariadbId)}),deployWithLogs:s.meta({openapi:{path:"/deploy/
+mariadb-with-logs",method:"POST",override:!0,enabled:!1}}).input(Sl).subscription(async({input:e,ctx:r})=>(await m(r,e.
+mariadbId,{deployment:["create"]}),lq(t=>{bh(e.mariadbId,o=>{t.next(o)})}))),changeStatus:s.input(og).mutation(async({i
+nput:e,ctx:r})=>{await m(r,e.mariadbId,{deployment:["create"]});let t=await Pa(e.mariadbId);return await 
+Jn(e.mariadbId,{applicationStatus:e.applicationStatus}),await c(r,{action:"update",resourceType:"service",resourceId:t.
+mariadbId,resourceName:t.appName}),t}),remove:s.input(Ii).mutation(async({input:e,ctx:r})=>{await 
+ce(r,e.mariadbId,"delete");let t=await 
+Pa(e.mariadbId);if(t.environment.project.organizationId!==r.session.activeOrganizationId)throw new 
+xo({code:"UNAUTHORIZED",message:"You are not authorized to delete this Mariadb"});await 
+c(r,{action:"delete",resourceType:"service",resourceId:t.mariadbId,resourceName:t.appName});let o=await 
+Xz(e.mariadbId,"mariadb"),a=[async()=>await dq(t?.appName,t.serverId),async()=>await Kn(o),async()=>await 
+cq(e.mariadbId)];for(let n of a)try{await n()}catch{}return 
+t}),saveEnvironment:s.input(ag).mutation(async({input:e,ctx:r})=>{if(await m(r,e.mariadbId,{envVars:["write"]}),!await 
+Jn(e.mariadbId,{env:e.env}))throw new xo({code:"BAD_REQUEST",message:"Error adding environment variables"});return 
+await c(r,{action:"update",resourceType:"service",resourceId:e.mariadbId}),!0}),reload:s.input(ig).mutation(async({inpu
+t:e,ctx:r})=>{await m(r,e.mariadbId,{deployment:["create"]});let t=await Pa(e.mariadbId);return t.serverId?await 
+oT(t.serverId,t.appName):await rT(t.appName),await Jn(e.mariadbId,{applicationStatus:"idle"}),t.serverId?await 
+tT(t.serverId,t.appName):await eT(t.appName),await Jn(e.mariadbId,{applicationStatus:"done"}),await c(r,{action:"reload
+",resourceType:"service",resourceId:t.mariadbId,resourceName:t.appName}),!0}),update:s.input(sg).mutation(async({input:
+e,ctx:r})=>{let{mariadbId:t,...o}=e;await m(r,t,{service:["create"]});let a=await Jn(t,{...o});if(!a)throw new 
+xo({code:"BAD_REQUEST",message:"Update: Error updating Mariadb"});return await c(r,{action:"update",resourceType:"servi
+ce",resourceId:t,resourceName:a.appName}),!0}),changePassword:s.input(Ut.object({mariadbId:Ut.string().min(1),password:
+Ut.string().min(1).regex(nt,{message:it}),type:Ut.enum(["user","root"]).default("user")})).mutation(async({input:e,ctx:
+r})=>{let{mariadbId:t,password:o,type:a}=e;await m(r,t,{service:["create"]});let n=await 
+Pa(t),{appName:i,serverId:l,databaseUser:p,databaseRootPassword:u}=n,y=await aq(i,l);if(!y)throw new 
+xo({code:"BAD_REQUEST",message:`No running container found for ${i}`});let f=a==="root"?"root":p,w=`docker exec 
+${y.Id} mariadb -u root -p'${u}' -e "ALTER USER '${f}'@'%' IDENTIFIED BY '${o}'; FLUSH PRIVILEGES;"`;return await 
+d.transaction(async C=>{let O=a==="root"?{databaseRootPassword:o}:{databasePassword:o};await 
+C.update(Y).set(O).where(yn(Y.mariadbId,t)),l?await Zz(l,w):await Jz(w,{shell:"/bin/bash"})}),await c(r,{action:"update
+",resourceType:"service",resourceId:t,resourceName:i}),!0}),move:s.input(Ut.object({mariadbId:Ut.string(),targetEnviron
+mentId:Ut.string()})).mutation(async({input:e,ctx:r})=>{await m(r,e.mariadbId,{service:["create"]});let t=await d.updat
+e(Y).set({environmentId:e.targetEnvironmentId}).where(yn(Y.mariadbId,e.mariadbId)).returning().then(o=>o[0]);if(!t)thro
+w new xo({code:"INTERNAL_SERVER_ERROR",message:"Failed to move mariadb"});return await c(r,{action:"move",resourceType:
+"service",resourceId:t.mariadbId,resourceName:t.appName}),t}),rebuild:s.input(cg).mutation(async({input:e,ctx:r})=>(awa
+it m(r,e.mariadbId,{deployment:["create"]}),await sq(e.mariadbId,"mariadb"),await c(r,{action:"rebuild",resourceType:"s
+ervice",resourceId:e.mariadbId}),!0)),search:s.input(Ut.object({q:Ut.string().optional(),name:Ut.string().optional(),ap
+pName:Ut.string().optional(),description:Ut.string().optional(),projectId:Ut.string().optional(),environmentId:Ut.strin
+g().optional(),limit:Ut.number().min(1).max(100).default(20),offset:Ut.number().min(0).default(0)})).query(async({ctx:e
+,input:r})=>{let t=[yn(E.organizationId,e.session.activeOrganizationId)];if(r.projectId&&t.push(yn(v.projectId,r.projec
+tId)),r.environmentId&&t.push(yn(Y.environmentId,r.environmentId)),r.q?.trim()){let l=`%${r.q.trim()}%`;t.push(uq(Xs(Y.
+name,l),Xs(Y.appName,l),Xs(Y.description??"",l)))}r.name?.trim()&&t.push(Xs(Y.name,`%${r.name.trim()}%`)),r.appName?.tr
+im()&&t.push(Xs(Y.appName,`%${r.appName.trim()}%`)),r.description?.trim()&&t.push(Xs(Y.description??"",`%${r.descriptio
+n.trim()}%`));let{accessedServices:o}=await 
+W(e.user.id,e.session.activeOrganizationId);if(o.length===0)return{items:[],total:0};t.push(jd`${Y.mariadbId} IN 
+(${jd.join(o.map(l=>jd`${l}`),jd`, `)})`);let a=pq(...t),[n,i]=await Promise.all([d.
+ΓÜá∩╕Å  [DEPRECATED AUTH CONFIG]
+BETTER_AUTH_SECRET is not set via environment variable or Docker secret.
+Falling back to the insecure hardcoded default ΓÇö this is a CRITICAL SECURITY RISK.
+This mode WILL BE REMOVED in a future release.
+
+Please migrate to Docker Secrets:
+  curl -sSL https://dokploy.com/security/0.29.3.sh | bash
+
+file:///app/dist/server.mjs:253
+`)}),p.mounts&&p.mounts.length>0)for(let u of p.mounts)await fS({filePath:u.filePath,mountPath:"",content:u.content,ser
+viceId:t.composeId,serviceType:"compose",type:"file"});if(p.domains&&p.domains.length>0)for(let u of p.domains)await 
+gS({...u,domainType:"compose",certificateType:"none",composeId:t.composeId,host:u.host||""});return await c(r,{action:"
+update",resourceType:"compose",resourceId:e.composeId,resourceName:t.appName}),{success:!0,message:"Template imported 
+successfully"}}catch(t){throw new Pt({code:"BAD_REQUEST",message:`Error importing template: ${t instanceof 
+Error?t.message:t}`})}}),cancelDeployment:s.input(ar).mutation(async({input:e,ctx:r})=>{await 
+m(r,e.composeId,{deployment:["cancel"]});let t=await Tt(e.composeId);if(Hs&&t.serverId)try{return await 
+Vs(e.composeId,{composeStatus:"idle"}),t.deployments[0]&&await EB(t.deployments[0].deploymentId,"done"),await 
+qp({composeId:e.composeId,applicationType:"compose"}),await 
+c(r,{action:"stop",resourceType:"compose",resourceId:e.composeId,resourceName:t.name}),{success:!0,message:"Deployment 
+cancellation requested"}}catch(o){throw new Pt({code:"INTERNAL_SERVER_ERROR",message:o instanceof 
+Error?o.message:"Failed to cancel deployment"})}throw new Pt({code:"BAD_REQUEST",message:"Deployment cancellation only 
+available in cloud version"})}),search:s.input(ge.object({q:ge.string().optional(),name:ge.string().optional(),appName:
+ge.string().optional(),description:ge.string().optional(),projectId:ge.string().optional(),environmentId:ge.string().op
+tional(),limit:ge.number().min(1).max(100).default(20),offset:ge.number().min(0).default(0)})).query(async({ctx:e,input
+:r})=>{let t=[mn(E.organizationId,e.session.activeOrganizationId)];if(r.projectId&&t.push(mn(v.projectId,r.projectId)),
+r.environmentId&&t.push(mn(x.environmentId,r.environmentId)),r.q?.trim()){let l=`%${r.q.trim()}%`;t.push(CB(Ks(x.name,l
+),Ks(x.appName,l),Ks(x.description??"",l)))}r.name?.trim()&&t.push(Ks(x.name,`%${r.name.trim()}%`)),r.appName?.trim()&&
+t.push(Ks(x.appName,`%${r.appName.trim()}%`)),r.description?.trim()&&t.push(Ks(x.description??"",`%${r.description.trim
+()}%`));let{accessedServices:o}=await 
+W(e.user.id,e.session.activeOrganizationId);if(o.length===0)return{items:[],total:0};t.push(_d`${x.composeId} IN 
+(${_d.join(o.map(l=>_d`${l}`),_d`, `)})`);let a=RB(...t),[n,i]=await Promise.all([d.select({composeId:x.composeId,name:
+x.name,appName:x.appName,description:x.description,environmentId:x.environmentId,composeStatus:x.composeStatus,sourceTy
+pe:x.sourceType,createdAt:x.createdAt}).from(x).innerJoin(v,mn(x.environmentId,v.environmentId)).innerJoin(E,mn(v.proje
+ctId,E.projectId)).where(a).orderBy(DB(x.createdAt)).limit(r.limit).offset(r.offset),d.select({count:_d`count(*)::int`}
+).from(x).innerJoin(v,mn(x.environmentId,v.environmentId)).innerJoin(E,mn(v.projectId,E.projectId)).where(a)]);return{i
+tems:n,total:i[0]?.count??0}}),readLogs:s.input(ar.extend({containerId:ge.string().min(1).regex(/^[a-zA-Z0-9.\-_]+$/,"I
+nvalid container 
+id."),tail:ge.number().int().min(1).max(1e4).default(100),since:ge.string().regex(/^(all|\d+[smhd])$/,"Invalid since 
+format").default("all"),search:ge.string().regex(/^[a-zA-Z0-9 
+._-]{0,500}$/).optional()})).query(async({input:e,ctx:r})=>{await ce(r,e.composeId,"read");let t=await 
+Tt(e.composeId);if(t.environment.project.organizationId!==r.session.activeOrganizationId)throw new 
+Pt({code:"UNAUTHORIZED",message:"You are not authorized to access this compose"});return await 
+wB(e.containerId,e.tail,e.since,e.search,t.serverId,!0)})});N();import{execAsync as vS,execAsyncRemote as 
+IS,findAllDeploymentsByApplicationId as OB,findAllDeploymentsByComposeId as _B,findAllDeploymentsByServerId as 
+BB,findAllDeploymentsCentralized as UB,findDeploymentById as mh,findDeploymentDetailById as bS,findDeploymentsFiltered 
+as zB,findScheduleById as qB,IS_CLOUD as kS,promoteDeployment as FB,removeDeployment as jB,resolveServicePath as 
+MB,updateDeploymentStatus as LB}from"@dokploy/server";cr();import{TRPCError as Gs}from"@trpc/server";import{desc as 
+HB,eq as SS}from"drizzle-orm";import{z as _t}from"zod";ts();var 
+TS=S({all:s.input(Nc).query(async({input:e,ctx:r})=>(await m(r,e.applicationId,{deployment:["read"]}),await 
+OB(e.applicationId))),allByCompose:s.input($g).query(async({input:e,ctx:r})=>(await 
+m(r,e.composeId,{deployment:["read"]}),await 
+_B(e.composeId))),allByServer:g("deployment","read").input(Og).query(async({input:e,ctx:r})=>{if((await 
+Me(e.serverId)).organizationId!==r.session.activeOrganizationId)throw new Gs({code:"UNAUTHORIZED",message:"You don't 
+have access to this server."});return await 
+BB(e.serverId)}),allCentralized:g("deployment","read").query(async({ctx:e})=>{let 
+r=e.session.activeOrganizationId,t=e.user.role!=="owner"&&e.user.role!=="admin"?(await 
+W(e.user.id,r)).accessedServices:null;return 
+t!==null&&t.length===0?[]:UB(r,t)}),queueList:g("deployment","read").query(async({ctx:e})=>{let 
+r=e.session.activeOrganizationId,t;if(kS){let o=await 
+d.query.server.findMany({where:SS(k.organizationId,r),columns:{serverId:!0}});t=(await 
+Promise.all(o.map(({serverId:n})=>Lk(n)))).flat(),t.sort((n,i)=>(i.timestamp??0)-(n.timestamp??0))}else{let o=await 
+Ot.getJobs(),a=await Promise.all(o.map(async n=>{let i=await n.getState();return{id:String(n.id),name:n.name??void 0,da
+ta:n.data,timestamp:n.timestamp,processedOn:n.processedOn,finishedOn:n.finishedOn,failedReason:n.failedReason??void 
+0,state:i}}));a.sort((n,i)=>(i.timestamp??0)-(n.timestamp??0)),t=a}return Promise.all(t.map(async 
+o=>({...o,servicePath:await 
+MB(r,o.data??{})})))}),allByType:s.input(_g).query(async({input:e,ctx:r})=>{if(e.type==="schedule"){let o=await 
+qB(e.id),a=o.applicationId||o.composeId;if(a)await m(r,a,{deployment:["read"]});else if(o.serverId&&(await 
+Me(o.serverId)).organizationId!==r.session.activeOrganizationId)throw new Gs({code:"UNAUTHORIZED",message:"You don't 
+have access to this schedule."})}else await m(r,e.id,{deployment:["read"]});return await d.query.deployments.findMany({
+where:SS(J[`${e.type}Id`],e.id),orderBy:HB(J.createdAt),with:{rollback:!0}})}),killProcess:s.input(_t.object({deploymen
+tId:_t.string().min(1)})).mutation(async({input:e,ctx:r})=>{let t=await 
+mh(e.deploymentId),o=t.applicationId||t.composeId;if(o)await m(r,o,{deployment:["cancel"]});else 
+if(t.schedule?.serverId&&(await Me(t.schedule.serverId)).organizationId!==r.session.activeOrganizationId)throw new 
+Gs({code:"UNAUTHORIZED",message:"You don't have access to this deployment."});if(!t.pid)throw new 
+Gs({code:"BAD_REQUEST",message:"Deployment is not running"});let a=`kill -9 ${t.pid}`;t.schedule?.serverId?await 
+IS(t.schedule.serverId,a):await vS(a),await LB(t.deploymentId,"error"),await c(r,{action:"cancel",resourceType:"deploym
+ent",resourceId:t.deploymentId})}),removeDeployment:s.input(_t.object({deploymentId:_t.string().min(1)})).mutation(asyn
+c({input:e,ctx:r})=>{let t=await mh(e.deploymentId),o=t.applicationId||t.composeId;if(o)await 
+m(r,o,{deployment:["cancel"]});else if(t.schedule?.serverId&&(await 
+Me(t.schedule.serverId)).organizationId!==r.session.activeOrganizationId)throw new 
+Gs({code:"UNAUTHORIZED",message:"You don't have access to this deployment."});let a=await jB(e.deploymentId);return 
+await c(r,{action:"delete",resourceType:"deployment",resourceId:t.deploymentId}),a}),readLogs:s.input(_t.object({deploy
+mentId:_t.string().min(1),tail:_t.number().int().min(1).max(1e4).default(100)})).query(async({input:e,ctx:r})=>{let 
+t=await mh(e.deploymentId),o=t.applicationId||t.composeId;if(o)await m(r,o,{deployment:["read"]});else 
+if(t.schedule?.serverId&&(await Me(t.schedule.serverId)).organizationId!==r.session.activeOrganizationId)throw new 
+Gs({code:"UNAUTHORIZED",message:"You don't have access to this deployment."});if(!t.logPath)return"";let a=`tail -n 
+${e.tail} "${t.logPath}" 2>/dev/null || echo 
+""`,n=t.serverId||t.schedule?.serverId||t.application?.serverId||t.compose?.serverId;if(n){let{stdout:l}=await 
+IS(n,a);return l}if(kS)return"";let{stdout:i}=await vS(a);return 
+i}),detail:s.input(_t.object({deploymentId:_t.string().min(1)})).query(async({input:e,ctx:r})=>{let t=await 
+bS(e.deploymentId),o=t.applicationId||t.composeId;return o&&await m(r,o,{deployment:["read"]}),t}),promote:s.input(_t.o
+bject({deploymentId:_t.string().min(1)})).mutation(async({input:e,ctx:r})=>{let t=await 
+bS(e.deploymentId),o=t.applicationId||t.composeId;o&&await m(r,o,{deployment:["create"]});let a=await 
+FB(e.deploymentId,r.user.id);return await 
+c(r,{action:"update",resourceType:"deployment",resourceId:t.deploymentId,resourceName:`${t.title} promoted to productio
+n`}),a}),filteredList:s.input(_t.object({id:_t.string().min(1),type:_t.enum(["application","compose"]),status:_t.string
+().optional(),environment:_t.string().optional(),search:_t.string().optional(),page:_t.number().int().min(1).default(1)
+,pageSize:_t.number().int().min(1).max(100).default(20)})).query(async({input:e,ctx:r})=>(await m(r,e.id,{deployment:["
+read"]}),zB(e.id,e.type,{status:e.status,environment:e.environment,search:e.search,page:e.page,pageSize:e.pageSize})))}
+);N();import{createDestination as VB,execAsync as KB,execAsyncRemote as GB,findDestinationById as uh,IS_CLOUD as 
+PS,removeDestinationById as QB,updateDestinationById as YB}from"@dokploy/server";import{TRPCError as 
+ns}from"@trpc/server";import{desc as WB,eq as JB}from"drizzle-orm";import{quote as Qs}from"shell-quote";var 
+NS=S({create:g("destination","create").input(yl).mutation(async({input:e,ctx:r})=>{try{let t=await 
+VB(e,r.session.activeOrganizationId);return await 
+c(r,{action:"create",resourceType:"destination",resourceId:t.destinationId,resourceName:e.name}),t}catch(t){throw new 
+ns({code:"BAD_REQUEST",message:"Error creating the destination",cause:t})}}),testConnection:g("destination","create").i
+nput(yl).mutation(async({input:e})=>{let{secretAccessKey:r,bucket:t,region:o,endpoint:a,accessKey:n,provider:i,addition
+alFlags:l}=e;try{let p=[`--s3-access-key-id=${Qs([n])}`,`--s3-secret-access-key=${Qs([r])}`,`--s3-region=${Qs([o])}`,`-
+-s3-endpoint=${Qs([a])}`,"--s3-no-check-bucket","--s3-force-path-style","--retries 1","--low-level-retries 
+1","--timeout 10s","--contimeout 5s"];i&&p.unshift(`--s3-provider=${Qs([i])}`),l?.length&&p.push(...l);let 
+u=`:s3:${t}`,y=`rclone ls ${p.join(" ")} ${Qs([u])}`;if(PS&&!e.serverId)throw new ns({code:"NOT_FOUND",message:"Server 
+not found"});PS?await GB(e.serverId||"",y):await KB(y)}catch(p){throw new ns({code:"BAD_REQUEST",message:p instanceof 
+Error?p?.message:"Error connecting to 
+bucket",cause:p})}}),one:g("destination","read").input(vu).query(async({input:e,ctx:r})=>{let t=await 
+uh(e.destinationId);if(t.organizationId!==r.session.activeOrganizationId)throw new 
+ns({code:"UNAUTHORIZED",message:"You are not allowed to access this destination"});return 
+t}),all:g("destination","read").query(async({ctx:e})=>await d.query.destinations.findMany({where:JB(qt.organizationId,e
+.session.activeOrganizationId),orderBy:[WB(qt.createdAt)]})),remove:g("destination","delete").input(Iu).mutation(async(
+{input:e,ctx:r})=>{try{let t=await uh(e.destinationId);if(t.organizationId!==r.session.activeOrganizationId)throw new 
+ns({code:"UNAUTHORIZED",message:"You are not allowed to delete this destination"});let o=await 
+QB(e.destinationId,r.session.activeOrganizationId);return await 
+c(r,{action:"delete",resourceType:"destination",resourceId:e.destinationId,resourceName:t.name}),o}catch(t){throw 
+t}}),update:g("destination","create").input(bu).mutation(async({input:e,ctx:r})=>{try{if((await 
+uh(e.destinationId)).organizationId!==r.session.activeOrganizationId)throw new ns({code:"UNAUTHORIZED",message:"You 
+are not allowed to update this destination"});let o=await 
+YB(e.destinationId,{...e,organizationId:r.session.activeOrganizationId});return await 
+c(r,{action:"update",resourceType:"destination",resourceId:e.destinationId,resourceName:e.name}),o}catch(t){throw new 
+ns({code:"BAD_REQUEST",message:t instanceof Error?t?.message:"Error connecting to 
+bucket",cause:t})}})});import{createDnsProvider as ZB,createDnsProviderRecord as XB,deleteDnsProviderRecord as 
+eU,findDnsProviderInOrganization as un,findDnsProvidersByOrganizationId as tU,listDnsProviderRecords as 
+rU,listDnsProviderZones as oU,maskDnsProviderConfig as em,mergeDnsProviderConfig as aU,removeDnsProvider as 
+nU,testDnsProviderConnection as iU,updateDnsProvider as sU,updateDnsProviderRecord as 
+cU}from"@dokploy/server";import{TRPCError as dU}from"@trpc/server";var 
+ES=S({create:g("dnsProvider","create").input(gy).mutation(async({ctx:e,input:r})=>{let t=await 
+ZB(r,e.session.activeOrganizationId);return await c(e,{action:"create",resourceType:"dnsProvider",resourceId:t.dnsProvi
+derId,resourceName:t.name}),{...t,config:em(t.config)}}),update:g("dnsProvider","update").input(fy).mutation(async({ctx
+:e,input:r})=>{await un(r.dnsProviderId,e.session.activeOrganizationId);let t=await 
+sU(r.dnsProviderId,r.name,r.config);return await c(e,{action:"update",resourceType:"dnsProvider",resourceId:t.dnsProvid
+erId,resourceName:t.name}),{...t,config:em(t.config)}}),remove:g("dnsProvider","delete").input(wy).mutation(async({ctx:
+e,input:r})=>{let t=await un(r.dnsProviderId,e.session.activeOrganizationId);return await 
+c(e,{action:"delete",resourceType:"dnsProvider",resourceId:t.dnsProviderId,resourceName:t.name}),await 
+nU(r.dnsProviderId),!0}),all:g("dnsProvider","read").query(async({ctx:e})=>(await tU(e.session.activeOrganizationId)).m
+ap(t=>({...t,config:em(t.config)}))),one:g("dnsProvider","read").input(yy).query(async({ctx:e,input:r})=>{let t=await u
+n(r.dnsProviderId,e.session.activeOrganizationId);return{...t,config:em(t.config)}}),testConnection:g("dnsProvider","cr
+eate").input(hy).mutation(async({ctx:e,input:r})=>{if(!r.config&&!r.dnsProviderId)throw new 
+dU({code:"BAD_REQUEST",message:"Provide a config or a dnsProviderId to test"});let t=r.config;if(r.dnsProviderId){let 
+o=await un(r.dnsProviderId,e.session.activeOrganizationId);t=t?aU(t,o.config):o.config}return await 
+iU(t),!0}),listZones:g("dnsProvider","read").input(vy).query(async({ctx:e,input:r})=>{let t=await 
+un(r.dnsProviderId,e.session.activeOrganizationId);return await 
+oU(t.config)}),listRecords:g("dnsProvider","read").input(Iy).query(async({ctx:e,input:r})=>{let t=await 
+un(r.dnsProviderId,e.session.activeOrganizationId);return await 
+rU(t.config,r.zoneId)}),createRecord:g("dnsProvider","update").input(by).mutation(async({ctx:e,input:r})=>{let t=await 
+un(r.dnsProviderId,e.session.activeOrganizationId),o=await 
+XB(t.config,{zoneId:r.zoneId,type:r.type,name:r.name,content:r.content,ttl:r.ttl});return await c(e,{action:"create",re
+sourceType:"dnsProvider",resourceId:o.id,resourceName:r.name}),o}),updateRecord:g("dnsProvider","update").input(ky).mut
+ation(async({ctx:e,input:r})=>{let t=await un(r.dnsProviderId,e.session.activeOrganizationId),o=await 
+cU(t.config,r.zoneId,r.recordId,{type:r.type,name:r.name,content:r.content,ttl:r.ttl});return await c(e,{action:"update
+",resourceType:"dnsProvider",resourceId:o.id,resourceName:r.name}),o}),deleteRecord:g("dnsProvider","delete").input(Sy)
+.mutation(async({ctx:e,input:r})=>{let t=await un(r.dnsProviderId,e.session.activeOrganizationId);return await 
+eU(t.config,r.zoneId,r.recordId),await c(e,{action:"delete",resourceType:"dnsProvider",resourceId:r.recordId,resourceNa
+me:r.zoneId}),!0})});import{containerKill as lU,containerRemove as pU,containerRestart as mU,containerStart as 
+uU,containerStop as gU,deleteContainerFile as fU,findServerById as Lt,getConfig as yU,getContainers as 
+wU,getContainersByAppLabel as hU,getContainersByAppNameMatch as vU,getDockerEvents as IU,getServerHealth as 
+bU,getServiceContainersByAppName as kU,getStackContainersByAppName as SU,listContainerFiles as TU,readContainerFile as 
+PU,uploadFileToContainer as NU,writeContainerFile as EU}from"@dokploy/server";import{TRPCError as 
+Bt}from"@trpc/server";import{z as oe}from"zod";import{z as Bd}from"zod";import{zfd as tm}from"zod-form-data";typeof 
+window>"u"&&(async()=>{let e=await import("undici");globalThis.File=e.File,globalThis.FileList=e.FileList})();var SDe=t
+m.formData({applicationId:Bd.string().optional(),zip:tm.file(),dropBuildPath:Bd.string().optional()}),RS=tm.formData({c
+ontainerId:Bd.string().min(1).regex(/^[a-zA-Z0-9.\-_]+$/,"Invalid container 
+ID"),file:tm.file(),destinationPath:Bd.string().min(1).regex(/^[a-zA-Z0-9.\-_/]+$/,"Invalid destination path: only 
+alphanumeric characters, dots, dashes, underscores, and forward slashes are 
+allowed"),serverId:Bd.string().optional()});var 
+Er=/^[a-zA-Z0-9.\-_]+$/,rm=oe.string().min(1).max(4096).refine(e=>e.startsWith("/")&&!e.includes("\0"),"Path must be ab
+solute."),DS=S({getContainers:g("docker","read").input(oe.object({serverId:oe.string().optional()})).query(async({input
+:e,ctx:r})=>{if(e.serverId&&(await Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new 
+Bt({code:"UNAUTHORIZED"});return await wU(e.serverId)}),getServerHealth:s.input(oe.object({serverId:oe.string().optiona
+l(),sinceHours:oe.number().int().min(1).max(168).optional()})).query(async({input:e,ctx:r})=>{if(await 
+We(r,{docker:["read"],server:["read"]}),e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await bU(r.
+session.activeOrganizationId,e.serverId,e.sinceHours)}),restartContainer:g("docker","read").input(oe.object({containerI
+d:oe.string().min(1).regex(Er,"Invalid container 
+id."),serverId:oe.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});await 
+mU(e.containerId,e.serverId),await c(r,{action:"start",resourceType:"docker",resourceId:e.containerId,resourceName:e.co
+ntainerId})}),startContainer:g("docker","read").input(oe.object({containerId:oe.string().min(1).regex(Er,"Invalid 
+container id."),serverId:oe.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});await 
+uU(e.containerId,e.serverId),await c(r,{action:"start",resourceType:"docker",resourceId:e.containerId,resourceName:e.co
+ntainerId})}),stopContainer:g("docker","read").input(oe.object({containerId:oe.string().min(1).regex(Er,"Invalid 
+container id."),serverId:oe.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});await 
+gU(e.containerId,e.serverId),await c(r,{action:"stop",resourceType:"docker",resourceId:e.containerId,resourceName:e.con
+tainerId})}),killContainer:g("docker","read").input(oe.object({containerId:oe.string().min(1).regex(Er,"Invalid 
+container id."),serverId:oe.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});await 
+lU(e.containerId,e.serverId),await c(r,{action:"stop",resourceType:"docker",resourceId:e.containerId,resourceName:e.con
+tainerId})}),removeContainer:g("docker","read").input(oe.object({containerId:oe.string().min(1).regex(Er,"Invalid 
+container id."),serverId:oe.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});await 
+pU(e.containerId,e.serverId),await c(r,{action:"delete",resourceType:"docker",resourceId:e.containerId,resourceName:e.c
+ontainerId})}),getConfig:g("docker","read").input(oe.object({containerId:oe.string().min(1).regex(Er,"Invalid 
+container id."),serverId:oe.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await yU(e.
+containerId,e.serverId)}),getContainersByAppNameMatch:g("service","read").input(oe.object({appType:oe.enum(["stack","do
+cker-compose"]).optional(),appName:oe.string().min(1).regex(Er,"Invalid app 
+name."),serverId:oe.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await vU(e.
+appName,e.appType,e.serverId)}),getContainersByAppLabel:g("docker","read").input(oe.object({appName:oe.string().min(1).
+regex(Er,"Invalid app name."),serverId:oe.string().optional(),type:oe.enum(["standalone","swarm"])})).query(async({inpu
+t:e,ctx:r})=>{if(e.serverId&&(await Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new 
+Bt({code:"UNAUTHORIZED"});return await hU(e.appName,e.type,e.serverId)}),getStackContainersByAppName:g("docker","read")
+.input(oe.object({appName:oe.string().min(1).regex(Er,"Invalid app 
+name."),serverId:oe.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await SU(e.
+appName,e.serverId)}),getServiceContainersByAppName:g("docker","read").input(oe.object({appName:oe.string().min(1).rege
+x(Er,"Invalid app name."),serverId:oe.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await kU(e.
+appName,e.serverId)}),uploadFileToContainer:g("docker","read").input(RS).mutation(async({input:e,ctx:r})=>{if(e.serverI
+d&&(await Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});let 
+t=e.file;if(!(t instanceof File))throw new Bt({code:"BAD_REQUEST",message:"Invalid file provided"});let o=await 
+t.arrayBuffer(),a=Buffer.from(o);return await 
+NU(e.containerId,a,t.name,e.destinationPath,e.serverId||null),{success:!0,message:"File uploaded successfully"}}),listC
+ontainerFiles:g("docker","read").input(oe.object({containerId:oe.string().min(1).regex(Er,"Invalid container 
+id."),path:rm,serverId:oe.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await TU(e.
+containerId,e.path,e.serverId)}),readContainerFile:g("docker","read").input(oe.object({containerId:oe.string().min(1).r
+egex(Er,"Invalid container 
+id."),path:rm,serverId:oe.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await PU(e.
+containerId,e.path,e.serverId)}),writeContainerFile:g("docker","read").input(oe.object({containerId:oe.string().min(1).
+regex(Er,"Invalid container id."),path:rm,content:oe.string(),serverId:oe.string().optional()})).mutation(async({input:
+e,ctx:r})=>{if(e.serverId&&(await Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new 
+Bt({code:"UNAUTHORIZED"});await EU(e.containerId,e.path,e.content,e.serverId),await c(r,{action:"update",resourceType:"
+docker",resourceId:e.containerId,resourceName:`${e.containerId}:${e.path}`})}),deleteContainerFile:g("docker","read").i
+nput(oe.object({containerId:oe.string().min(1).regex(Er,"Invalid container id."),path:rm.refine(e=>e!=="/","Cannot 
+delete the container 
+root."),serverId:oe.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});await 
+fU(e.containerId,e.path,e.serverId),await c(r,{action:"delete",resourceType:"docker",resourceId:e.containerId,resourceN
+ame:`${e.containerId}:${e.path}`})}),getEvents:g("docker","read").input(oe.object({serverId:oe.string().optional(),minu
+tes:oe.number().min(1).max(1440).default(15)})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Lt(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Bt({code:"UNAUTHORIZED"});return await 
+IU(e.serverId,e.minutes)})});import{cleanupBuilders as RU,findServerById as gh,getBuildCache as DU,getDockerDiskUsage 
+as CU}from"@dokploy/server";import{TRPCError as fh}from"@trpc/server";import{z as Ys}from"zod";var CS=S({getDiskUsage:g
+("docker","read").input(Ys.object({serverId:Ys.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(aw
+ait gh(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new fh({code:"UNAUTHORIZED"});return await C
+U(e.serverId)}),getBuildCache:g("docker","read").input(Ys.object({serverId:Ys.string().optional()})).query(async({input
+:e,ctx:r})=>{if(e.serverId&&(await gh(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new 
+fh({code:"UNAUTHORIZED"});return await DU(e.serverId)}),pruneBuildCache:g("docker","read").input(Ys.object({serverId:Ys
+.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+gh(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new fh({code:"UNAUTHORIZED"});await 
+RU(e.serverId),await c(r,{action:"delete",resourceType:"docker",resourceId:"build-cache",resourceName:"Docker build 
+cache"})})});import{findServerById as yh,getImageConfig as xU,getImages as AU,removeImage as 
+$U}from"@dokploy/server";import{TRPCError as wh}from"@trpc/server";import{z as Yo}from"zod";var xS=S({getImages:g("dock
+er","read").input(Yo.object({serverId:Yo.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+yh(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new wh({code:"UNAUTHORIZED"});return await AU(e.
+serverId)}),getImageConfig:g("docker","read").input(Yo.object({imageRef:Yo.string().min(1),serverId:Yo.string().optiona
+l()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+yh(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new wh({code:"UNAUTHORIZED"});return await xU(e.
+imageRef,e.serverId)}),removeImage:g("docker","read").input(Yo.object({repository:Yo.string(),tag:Yo.string(),id:Yo.str
+ing().min(1),force:Yo.boolean().optional(),serverId:Yo.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.se
+rverId&&(await yh(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new 
+wh({code:"UNAUTHORIZED"});await $U({repository:e.repository,tag:e.tag,id:e.id,force:e.force},e.serverId),await c(r,{act
+ion:"delete",resourceType:"docker",resourceId:e.id,resourceName:e.repository!=="<none>"&&e.tag!=="<none>"?`${e.reposito
+ry}:${e.tag}`:e.id})})});import{deleteVolumeFile as OU,findServerById as Gn,getVolumeConfig as _U,getVolumes as 
+BU,getVolumesSize as UU,listVolumeFiles as zU,readVolumeFile as qU,removeVolume as FU,writeVolumeFile as 
+jU}from"@dokploy/server";import{TRPCError as Qn}from"@trpc/server";import{z as at}from"zod";var 
+Ws=/^[a-zA-Z0-9.\-_]+$/,om=at.string().min(1).max(4096).refine(e=>e.startsWith("/")&&!e.includes("\0"),"Path must be ab
+solute."),AS=S({getVolumes:g("docker","read").input(at.object({serverId:at.string().optional()})).query(async({input:e,
+ctx:r})=>{if(e.serverId&&(await Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new 
+Qn({code:"UNAUTHORIZED"});return await BU(e.serverId)}),getVolumesSize:g("docker","read").input(at.object({serverId:at.
+string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Qn({code:"UNAUTHORIZED"});return await 
+UU(e.serverId)}),listVolumeFiles:g("docker","read").input(at.object({volumeName:at.string().min(1).regex(Ws,"Invalid 
+volume name."),path:om,serverId:at.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Qn({code:"UNAUTHORIZED"});return await zU(e.
+volumeName,e.path,e.serverId)}),readVolumeFile:g("docker","read").input(at.object({volumeName:at.string().min(1).regex(
+Ws,"Invalid volume 
+name."),path:om,serverId:at.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Qn({code:"UNAUTHORIZED"});return await qU(e.
+volumeName,e.path,e.serverId)}),writeVolumeFile:g("docker","read").input(at.object({volumeName:at.string().min(1).regex
+(Ws,"Invalid volume name."),path:om,content:at.string(),serverId:at.string().optional()})).mutation(async({input:e,ctx:
+r})=>{if(e.serverId&&(await Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new 
+Qn({code:"UNAUTHORIZED"});await jU(e.volumeName,e.path,e.content,e.serverId),await c(r,{action:"update",resourceType:"d
+ocker",resourceId:e.volumeName,resourceName:`${e.volumeName}:${e.path}`})}),deleteVolumeFile:g("docker","read").input(a
+t.object({volumeName:at.string().min(1).regex(Ws,"Invalid volume name."),path:om.refine(e=>e!=="/","Cannot delete the 
+volume root."),serverId:at.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Qn({code:"UNAUTHORIZED"});await 
+OU(e.volumeName,e.path,e.serverId),await c(r,{action:"delete",resourceType:"docker",resourceId:e.volumeName,resourceNam
+e:`${e.volumeName}:${e.path}`})}),getVolumeConfig:g("docker","read").input(at.object({volumeName:at.string().min(1).reg
+ex(Ws,"Invalid volume name."),serverId:at.string().optional()})).query(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Qn({code:"UNAUTHORIZED"});return await _U(e.
+volumeName,e.serverId)}),removeVolume:g("docker","read").input(at.object({volumeName:at.string().min(1).regex(Ws,"Inval
+id volume name."),serverId:at.string().optional()})).mutation(async({input:e,ctx:r})=>{if(e.serverId&&(await 
+Gn(e.serverId)).organizationId!==r.session?.activeOrganizationId)throw new Qn({code:"UNAUTHORIZED"});await 
+FU(e.volumeName,e.serverId),await 
+c(r,{action:"delete",resourceType:"docker",resourceId:e.volumeName,resourceName:e.volumeName})})});import{createDomain 
+as MU,checkDomainSsl as LU,findApplicationById as Ud,findDomainById as Yn,findDomainsByApplicationId as 
+HU,findDomainsByComposeId as VU,findDomainsFiltered as KU,findPreviewDeploymentById as Js,findServerById as 
+GU,generateTraefikMeDomain as QU,getWebServerSettings as YU,manageDomain as am,removeDomain as WU,removeDomainById as 
+JU,updateDomainById as $S,validateDomain as ZU,verifyDomainDns as XU}from"@dokploy/server";import{TRPCError as 
+ez}from"@trpc/server";import{z as Ht}from"zod";var 
+OS=S({create:s.input(iu).mutation(async({input:e,ctx:r})=>{try{e.domainType==="compose"&&e.composeId?await 
+m(r,e.composeId,{domain:["create"]}):e.domainType==="application"&&e.applicationId&&await 
+m(r,e.applicationId,{domain:["create"]});let t=await MU(e);return await 
+c(r,{action:"create",resourceType:"domain",resourceId:t.domainId,resourceName:t.host}),t}catch(t){throw new 
+ez({code:"BAD_REQUEST",message:t instanceof Error?t.message:"Error creating the 
+domain",cause:t})}}),byApplicationId:s.input(ir).query(async({input:e,ctx:r})=>(await 
+m(r,e.applicationId,{domain:["read"]}),await 
+HU(e.applicationId))),byComposeId:s.input(ar).query(async({input:e,ctx:r})=>(await 
+m(r,e.composeId,{domain:["read"]}),await VU(e.composeId))),generateDomain:g("domain","create").input(Ht.object({appName
+:Ht.string(),serverId:Ht.string().optional()})).mutation(async({input:e,ctx:r})=>QU(e.appName,r.user.ownerId,e.serverId
+)),canGenerateTraefikMeDomains:g("domain","read").input(Ht.object({serverId:Ht.string()})).query(async({input:e})=>e.se
+rverId?(await GU(e.serverId)).ipAddress:(await 
+YU())?.serverIp||""),update:s.input(su).mutation(async({input:e,ctx:r})=>{let t=await 
+Yn(e.domainId),o=t.applicationId||t.composeId;if(o)await m(r,o,{domain:["create"]});else if(t.previewDeploymentId){let 
+i=await Js(t.previewDeploymentId);await m(r,i.applicationId,{domain:["create"]})}let a=await $S(e.domainId,e),n=await 
+Yn(e.domainId);if(await 
+c(r,{action:"update",resourceType:"domain",resourceId:n.domainId,resourceName:n.host}),n.applicationId){let i=await 
+Ud(n.applicationId);await am(i,n)}else if(n.previewDeploymentId){let i=await Js(n.previewDeploymentId),l=await 
+Ud(i.applicationId);l.appName=i.appName,await am(l,n)}return 
+a}),toggleEnable:s.input(fc).mutation(async({input:e,ctx:r})=>{let t=await 
+Yn(e.domainId),o=t.applicationId||t.composeId;if(o)await m(r,o,{domain:["create"]});else if(t.previewDeploymentId){let 
+i=await Js(t.previewDeploymentId);await m(r,i.applicationId,{domain:["create"]})}let a=await 
+$S(e.domainId,{enabled:!t.enabled}),n=await Yn(e.domainId);if(await 
+c(r,{action:"update",resourceType:"domain",resourceId:n.domainId,resourceName:n.host}),n.applicationId){let i=await 
+Ud(n.applicationId);await am(i,n)}else if(n.previewDeploymentId){let i=await Js(n.previewDeploymentId),l=await 
+Ud(i.applicationId);l.appName=i.appName,await 
+am(l,n)}return{...a,requiresRedeploy:n.domainType==="compose"}}),one:s.input(fc).query(async({input:e,ctx:r})=>{let 
+t=await Yn(e.domainId),o=t.applicationId||t.composeId;if(o)await m(r,o,{domain:["read"]});else 
+if(t.previewDeploymentId){let a=await Js(t.previewDeploymentId);await m(r,a.applicationId,{domain:["read"]})}return 
+t}),delete:s.input(fc).mutation(async({input:e,ctx:r})=>{let t=await 
+Yn(e.domainId),o=t.applicationId||t.composeId;if(o)await m(r,o,{domain:["delete"]});else if(t.previewDeploymentId){let 
+n=await Js(t.previewDeploymentId);await m(r,n.applicationId,{domain:["delete"]})}let a=await JU(e.domainId);if(await 
+c(r,{action:"delete",resourceType:"domain",resourceId:t.domainId,resourceName:t.host}),t.applicationId){let n=await 
+Ud(t.applicationId);await WU(n,t.uniqueConfigKey)}return a}),validateDomain:g("domain","read").input(Ht.object({domain:
+Ht.string(),serverIp:Ht.string().optional()})).mutation(async({input:e})=>ZU(e.domain,e.serverIp)),verifyDns:s.input(Ht
+.object({domainId:Ht.string().min(1)})).mutation(async({input:e,ctx:r})=>{let t=await 
+Yn(e.domainId),o=t.applicationId||t.composeId;return o&&await m(r,o,{domain:["read"]}),XU(e.domainId)}),checkSsl:s.inpu
+t(Ht.object({domainId:Ht.string().min(1)})).mutation(async({input:e,ctx:r})=>{let t=await 
+Yn(e.domainId),o=t.applicationId||t.composeId;return o&&await m(r,o,{domain:["read"]}),LU(e.domainId)}),filteredList:s.
+input(Ht.object({id:Ht.string().min(1),type:Ht.enum(["application","compose"]),environment:Ht.string().optional(),verif
+ied:Ht.string().optional(),search:Ht.string().optional()})).query(async({input:e,ctx:r})=>(await m(r,e.id,{domain:["rea
+d"]}),KU(e.id,e.type,{environment:e.environment,verified:e.verified,search:e.search})))});N();import{createEnvironment 
+as tz,deleteEnvironment as rz,duplicateEnvironment as oz,filterEnvironmentServices as _S,findEnvironmentById as 
+nm,findEnvironmentsByProjectId as az,IS_CLOUD as nz,updateEnvironmentById as iz}from"@dokploy/server";import{TRPCError 
+as Vt}from"@trpc/server";import{and as sz,desc as cz,eq as im,ilike as sm,or as dz,sql as 
+zd}from"drizzle-orm";import{z as gn}from"zod";var 
+BS=S({create:s.input(vg).mutation(async({input:e,ctx:r})=>{try{if(await ob(r,e.projectId),nz&&await 
+Xk(r.session.activeOrganizationId,e.projectId),e.name==="production")throw new Vt({code:"BAD_REQUEST",message:"You 
+cannot create a environment with the name 'production'"});let t=await tz(e);return await dp(r,t.environmentId),await 
+c(r,{action:"create",resourceType:"environment",resourceId:t.environmentId,resourceName:t.name}),t}catch(t){throw t 
+instanceof Vt?t:new Vt({code:"BAD_REQUEST",message:`Error creating the environment: ${t instanceof 
+Error?t.message:t}`,cause:t})}}),one:s.input(Ig).query(async({input:e,ctx:r})=>{let t=await 
+nm(e.environmentId);if(t.project.organizationId!==r.session.activeOrganizationId)throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to access this 
+environment"});if(r.user.role!=="owner"&&r.user.role!=="admin"){let{accessedEnvironments:o,accessedServices:a}=await 
+W(r.user.id,r.session.activeOrganizationId);if(!o.includes(t.environmentId))throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to access this environment"});return _S(t,a)}return 
+t}),byProjectId:s.input(gn.object({projectId:gn.string()})).query(async({input:e,ctx:r})=>{try{let t=await 
+az(e.projectId);if(t.some(o=>o.project.organizationId!==r.session.activeOrganizationId))throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to access this 
+environment"});if(r.user.role!=="owner"&&r.user.role!=="admin"){let{accessedEnvironments:o,accessedServices:a}=await 
+W(r.user.id,r.session.activeOrganizationId);return t.filter(i=>o.includes(i.environmentId)).map(i=>_S(i,a))}return 
+t}catch(t){throw console.log(t),new Vt({code:"BAD_REQUEST",message:`Error fetching environments: ${t instanceof 
+Error?t.message:t}`})}}),remove:s.input(bg).mutation(async({input:e,ctx:r})=>{try{let t=await 
+nm(e.environmentId);if(t.project.organizationId!==r.session.activeOrganizationId)throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to access this environment"});if(t.isDefault)throw new 
+Vt({code:"BAD_REQUEST",message:"You cannot delete the default environment"});await ab(r,t.projectId),await 
+cp(r,e.environmentId,"read");let o=await rz(e.environmentId);return await 
+c(r,{action:"delete",resourceType:"environment",resourceId:o?.environmentId,resourceName:o?.name}),o}catch(t){throw t 
+instanceof Vt?t:new Vt({code:"BAD_REQUEST",message:`Error deleting the environment: ${t instanceof Error?t.message:t}`,
+cause:t})}}),update:s.input(kg).mutation(async({input:e,ctx:r})=>{try{let{environmentId:t,...o}=e;await 
+cp(r,t,"read"),o.env!==void 0&&await We(r,{environmentEnvVars:["write"]});let a=await 
+nm(t);if(a.isDefault&&o.name!==void 0)throw new Vt({code:"BAD_REQUEST",message:"You cannot rename the default 
+environment"});if(a.project.organizationId!==r.session.activeOrganizationId)throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to access this 
+environment"});if(r.user.role!=="owner"&&r.user.role!=="admin"){let{accessedEnvironments:i}=await 
+W(r.user.id,r.session.activeOrganizationId);if(!i.includes(a.environmentId))throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to update this environment"})}let n=await iz(t,o);return n&&await 
+c(r,{action:"update",resourceType:"environment",resourceId:n.environmentId,resourceName:n.name}),n}catch(t){throw new 
+Vt({code:"BAD_REQUEST",message:`Error updating the environment: ${t instanceof 
+Error?t.message:t}`})}}),duplicate:s.input(Sg).mutation(async({input:e,ctx:r})=>{try{await 
+cp(r,e.environmentId,"read");let t=await 
+nm(e.environmentId);if(t.project.organizationId!==r.session.activeOrganizationId)throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to access this 
+environment"});if(r.user.role!=="owner"&&r.user.role!=="admin"){let{accessedEnvironments:a}=await 
+W(r.user.id,r.session.activeOrganizationId);if(!a.includes(t.environmentId))throw new 
+Vt({code:"FORBIDDEN",message:"You are not allowed to duplicate this environment"})}let o=await oz(e);return await c(r,{
+action:"create",resourceType:"environment",resourceId:o.environmentId,resourceName:o.name,metadata:{duplicatedFrom:e.en
+vironmentId}}),o}catch(t){throw new Vt({code:"BAD_REQUEST",message:`Error duplicating the environment: ${t instanceof E
+rror?t.message:t}`})}}),search:s.input(gn.object({q:gn.string().optional(),name:gn.string().optional(),description:gn.s
+tring().optional(),projectId:gn.string().optional(),limit:gn.number().min(1).max(100).default(20),offset:gn.number().mi
+n(0).default(0)})).query(async({ctx:e,input:r})=>{let t=[im(E.organizationId,e.session.activeOrganizationId)];if(r.proj
+ectId&&t.push(im(v.projectId,r.projectId)),r.q?.trim()){let i=`%${r.q.trim()}%`;t.push(dz(sm(v.name,i),sm(v.description
+??"",i)))}if(r.name?.trim()&&t.push(sm(v.name,`%${r.name.trim()}%`)),r.description?.trim()&&t.push(sm(v.description??""
+,`%${r.description.trim()}%`)),e.user.role!=="owner"&&e.user.role!=="admin"){let{accessedEnvironments:i}=await 
+W(e.user.id,e.session.activeOrganizationId);if(i.length===0)return{items:[],total:0};t.push(zd`${v.environmentId} IN 
+(${zd.join(i.map(l=>zd`${l}`),zd`, `)})`)}let o=sz(...t),[a,n]=await Promise.all([d.select({environmentId:v.environment
+Id,name:v.name,description:v.description,createdAt:v.createdAt,env:v.env,projectId:v.projectId,isDefault:v.isDefault}).
+from(v).innerJoin(E,im(v.projectId,E.projectId)).where(o).orderBy(cz(v.createdAt)).limit(r.limit).offset(r.offset),d.se
+lect({count:zd`count(*)::int`}).from(v).innerJoin(E,im(v.projectId,E.projectId)).where(o)]);return{items:a,total:n[0]?.
+count??0}})});N();import{findGitProviderById as US,getAccessibleGitProviderIds as lz,removeGitProvider as 
+pz,updateGitProvider as mz}from"@dokploy/server";Po();import{TRPCError as qd}from"@trpc/server";import{desc as zS,eq 
+as uz,inArray as gz}from"drizzle-orm";var qS=S({getAll:s.query(async({ctx:e})=>{let r=await lz(e.session);return 
+r.size===0?[]:(await d.query.gitProvider.findMany({with:{gitlab:!0,bitbucket:!0,github:!0,gitea:!0},orderBy:zS(ye.creat
+edAt),where:gz(ye.gitProviderId,[...r])})).map(o=>({...o,isOwner:o.userId===e.session.userId,github:o.github?{githubId:
+o.github.githubId,githubAppName:o.github.githubAppName,githubAppId:o.github.githubAppId,githubInstallationId:o.github.g
+ithubInstallationId,githubUrl:o.github.githubUrl,isConfigured:!!(o.github.githubPrivateKey&&o.github.githubAppId&&o.git
+hub.githubInstallationId)}:null,gitlab:o.gitlab?{gitlabId:o.gitlab.gitlabId,applicationId:o.gitlab.applicationId,gitlab
+Url:o.gitlab.gitlabUrl,isConfigured:!!(o.gitlab.accessToken&&o.gitlab.refreshToken)}:null,bitbucket:o.bitbucket?{bitbuc
+ketId:o.bitbucket.bitbucketId,bitbucketUsername:o.bitbucket.bitbucketUsername,isConfigured:!1,isDeprecated:!!(o.bitbuck
+et.appPassword&&!o.bitbucket.apiToken)}:null,gitea:o.gitea?{giteaId:o.gitea.giteaId,giteaUrl:o.gitea.giteaUrl,clientId:
+o.gitea.clientId,isConfigured:!!(o.gitea.accessToken&&o.gitea.refreshToken)}:null}))}),toggleShare:s.input(ff).mutation
+(async({input:e,ctx:r})=>{let t=await 
+US(e.gitProviderId);if(t.userId!==r.session.userId||t.organizationId!==r.session.activeOrganizationId)throw new 
+qd({code:"UNAUTHORIZED",message:"Only the owner can share this provider"});return await c(r,{action:"update",resourceTy
+pe:"gitProvider",resourceId:t.gitProviderId,resourceName:t.name??t.gitProviderId}),await mz(e.gitProviderId,{sharedWith
+Organization:e.sharedWithOrganization})}),allForPermissions:g("member","update").use(async({ctx:e,next:r})=>{if(!await 
+wt(e.session.activeOrganizationId))throw new qd({code:"FORBIDDEN",message:"Valid enterprise license required"});return 
+r()}).query(async({ctx:e})=>await d.query.gitProvider.findMany({columns:{gitProviderId:!0,name:!0,providerType:!0},orde
+rBy:zS(ye.createdAt),where:uz(ye.organizationId,e.session.activeOrganizationId)})),remove:g("gitProviders","delete").in
+put(gf).mutation(async({input:e,ctx:r})=>{try{let t=await 
+US(e.gitProviderId);if(t.organizationId!==r.session.activeOrganizationId)throw new 
+qd({code:"UNAUTHORIZED",message:"You are not allowed to delete this Git provider"});let o=await W(r.user.id,r.session.a
+ctiveOrganizationId);if(!(o.role==="owner"||o.role==="admin")&&t.userId!==r.session.userId)throw new 
+qd({code:"UNAUTHORIZED",message:"You can only delete your own Git providers"});return await c(r,{action:"delete",resour
+ceType:"gitProvider",resourceId:t.gitProviderId,resourceName:t.name??t.gitProviderId}),await 
+pz(e.gitProviderId)}catch(t){let o=t instanceof Error?t.message:"Error deleting this Git provider";throw new 
+qd({code:"BAD_REQUEST",message:o})}})});N();import{assertGitProviderAccess as cm,createGitea as fz,findGiteaById as 
+Fd,getAccessibleGitProviderIds as yz,getGiteaBranches as wz,getGiteaRepositories as hz,haveGiteaRequirements as 
+vz,testGiteaConnection as Iz,updateGitea as FS,updateGitProvider as bz}from"@dokploy/server";import{TRPCError as 
+is}from"@trpc/server";var jS=S({create:g("gitProviders","create").input(Lm).mutation(async({input:e,ctx:r})=>{try{let 
+t=await fz(e,r.session.activeOrganizationId,r.session.userId);return await 
+c(r,{action:"create",resourceType:"gitProvider",resourceId:t.giteaId,resourceName:e.name}),t}catch(t){throw new 
+is({code:"BAD_REQUEST",message:"Error creating this Gitea 
+provider",cause:t})}}),one:s.input(cc).query(async({input:e,ctx:r})=>{let t=await Fd(e.giteaId);return await 
+cm(r.session,t.gitProvider),t}),giteaProviders:s.query(async({ctx:e})=>{let r=await yz(e.session),t=await 
+d.query.gitea.findMany({with:{gitProvider:!0}});return t=t.filter(a=>a.gitProvider.organizationId===e.session.activeOrg
+anizationId&&r.has(a.gitProvider.gitProviderId)),t.filter(a=>vz(a)).map(a=>({giteaId:a.giteaId,gitProvider:{...a.gitPro
+vider}}))}),getGiteaRepositories:s.input(cc).query(async({input:e,ctx:r})=>{let{giteaId:t}=e;if(!t)throw new 
+is({code:"BAD_REQUEST",message:"Gitea provider ID is required."});let o=await Fd(t);await 
+cm(r.session,o.gitProvider);try{return await hz(t)}catch(a){throw console.error("Error fetching Gitea 
+repositories:",a),new is({code:"BAD_REQUEST",message:a instanceof Error?a.message:String(a)})}}),getGiteaBranches:s.inp
+ut(Vm).query(async({input:e,ctx:r})=>{let{giteaId:t,owner:o,repositoryName:a}=e;if(!t||!o||!a)throw new 
+is({code:"BAD_REQUEST",message:"Gitea provider ID, owner, and repository name are required."});let n=await Fd(t);await 
+cm(r.session,n.gitProvider);try{return await wz({giteaId:t,owner:o,repo:a})}catch(i){throw console.error("Error 
+fetching Gitea branches:",i),new is({code:"BAD_REQUEST",message:i instanceof 
+Error?i.message:String(i)})}}),testConnection:s.input(Hm).mutation(async({input:e,ctx:r})=>{let 
+t=e.giteaId??"",o=await Fd(t);await cm(r.session,o.gitProvider);try{return`Found ${await Iz({giteaId:t})} 
+repositories`}catch(a){throw console.error("Gitea connection test error:",a),new is({code:"BAD_REQUEST",message:a 
+instanceof Error?a.message:String(a)})}}),update:g("gitProviders","create").input(Km).mutation(async({input:e,ctx:r})=>
+(e.name?(await bz(e.gitProviderId,{name:e.name,organizationId:r.session.activeOrganizationId}),await 
+FS(e.giteaId,{...e})):await FS(e.giteaId,{...e}),await c(r,{action:"update",resourceType:"gitProvider",resourceId:e.git
+eaId,resourceName:e.name}),{success:!0})),getGiteaUrl:s.input(cc).query(async({input:e})=>{let{giteaId:r}=e;if(!r)throw
+ new is({code:"BAD_REQUEST",message:"Gitea provider ID is required."});return(await 
+Fd(r)).giteaUrl})});N();import{assertGitProviderAccess as dm,findGithubById as lm,getAccessibleGitProviderIds as 
+kz,getGithubBranches as Sz,getGithubRepositories as MS,haveGithubRequirements as Tz,updateGithub as 
+Pz,updateGitProvider as Nz}from"@dokploy/server";import{TRPCError as Ez}from"@trpc/server";var 
+LS=S({one:s.input(lc).query(async({input:e,ctx:r})=>{let t=await lm(e.githubId);return await 
+dm(r.session,t.gitProvider),t}),getGithubRepositories:s.input(lc).query(async({input:e,ctx:r})=>{let t=await 
+lm(e.githubId);return await dm(r.session,t.gitProvider),await 
+MS(e.githubId)}),getGithubBranches:s.input(Gm).query(async({input:e,ctx:r})=>{if(e.githubId){let t=await 
+lm(e.githubId);await dm(r.session,t.gitProvider)}return await Sz(e)}),githubProviders:s.query(async({ctx:e})=>{let 
+r=await kz(e.session),t=await d.query.github.findMany({with:{gitProvider:!0}});return t=t.filter(a=>a.gitProvider.organ
+izationId===e.session.activeOrganizationId&&r.has(a.gitProvider.gitProviderId)),t.filter(a=>Tz(a)).map(a=>({githubId:a.
+githubId,githubUrl:a.githubUrl,gitProvider:{...a.gitProvider}}))}),testConnection:s.input(lc).mutation(async({input:e,c
+tx:r})=>{try{let t=await lm(e.githubId);return await dm(r.session,t.gitProvider),`Found ${(await 
+MS(e.githubId)).length} repositories`}catch(t){throw new Ez({code:"BAD_REQUEST",message:t instanceof 
+Error?t?.message:`Error: 
+${t}`})}}),update:g("gitProviders","create").input(Qm).mutation(async({input:e,ctx:r})=>{await 
+Nz(e.gitProviderId,{name:e.name,organizationId:r.session.activeOrganizationId}),await Pz(e.githubId,{...e}),await c(r,{
+action:"update",resourceType:"gitProvider",resourceId:e.gitProviderId,resourceName:e.name})})});N();import{assertGitPro
+viderAccess as pm,createGitlab as Rz,findGitlabById as mm,getAccessibleGitProviderIds as Dz,getGitlabBranches as 
+Cz,getGitlabRepositories as xz,haveGitlabRequirements as Az,testGitlabConnection as $z,updateGitlab as 
+HS,updateGitProvider as Oz}from"@dokploy/server";import{TRPCError as VS}from"@trpc/server";var 
+KS=S({create:g("gitProviders","create").input(Ym).mutation(async({input:e,ctx:r})=>{try{let t=await 
+Rz(e,r.session.activeOrganizationId,r.session.userId);return await 
+c(r,{action:"create",resourceType:"gitProvider",resourceName:e.name}),t}catch(t){throw new 
+VS({code:"BAD_REQUEST",message:"Error creating this Gitlab 
+provider",cause:t})}}),one:s.input(tl).query(async({input:e,ctx:r})=>{let t=await mm(e.gitlabId);return await 
+pm(r.session,t.gitProvider),t}),gitlabProviders:s.query(async({ctx:e})=>{let r=await Dz(e.session),t=await 
+d.query.gitlab.findMany({with:{gitProvider:!0}});return t=t.filter(a=>a.gitProvider.organizationId===e.session.activeOr
+ganizationId&&r.has(a.gitProvider.gitProviderId)),t.filter(a=>Az(a)).map(a=>({gitlabId:a.gitlabId,gitProvider:{...a.git
+Provider},gitlabUrl:a.gitlabUrl}))}),getGitlabRepositories:s.input(tl).query(async({input:e,ctx:r})=>{let t=await 
+mm(e.gitlabId);return await pm(r.session,t.gitProvider),await 
+xz(e.gitlabId)}),getGitlabBranches:s.input(Jm).query(async({input:e,ctx:r})=>{if(e.gitlabId){let t=await 
+mm(e.gitlabId);await pm(r.session,t.gitProvider)}return await 
+Cz(e)}),testConnection:s.input(Wm).mutation(async({input:e,ctx:r})=>{try{let t=await mm(e.gitlabId);return await 
+pm(r.session,t.gitProvider),`Found ${await $z(e)} repositories`}catch(t){throw new VS({code:"BAD_REQUEST",message:t 
+instanceof Error?t?.message:`Error: 
+${t}`})}}),update:g("gitProviders","create").input(Zm).mutation(async({input:e,ctx:r})=>{e.name?(await 
+Oz(e.gitProviderId,{name:e.name,organizationId:r.session.activeOrganizationId}),await HS(e.gitlabId,{...e})):await 
+HS(e.gitlabId,{...e}),await c(r,{action:"update",resourceType:"gitProvider",resourceId:e.gitProviderId,resourceName:e.n
+ame})})});import{checkPortInUse as _z,createLibsql as Bz,createMount as Uz,deployLibsql as Ih,findEnvironmentById as 
+zz,findLibsqlById as fn,findProjectById as qz,getAccessibleServerIds as Fz,getContainerLogs as jz,getWebServerSettings 
+as Mz,IS_CLOUD as Lz,rebuildDatabase as Hz,removeLibsqlById as Vz,removeService as Kz,startService as 
+YS,startServiceRemote as WS,stopService as JS,stopServiceRemote as ZS,updateLibsqlById as 
+Wn}from"@dokploy/server";import{TRPCError as Wo}from"@trpc/server";import{eq as Gz}from"drizzle-orm";import{z as 
+Zs}from"zod";ls();A();import{and as YCe,eq as WCe}from"drizzle-orm";import{drizzle as 
+GS}from"drizzle-orm/postgres-js";import QS from"postgres";var hh=globalThis,vh;process.env.NODE_ENV==="production"?vh=G
+S(QS(Ua),{schema:Un}):(hh.db||(hh.db=GS(QS(Ua),{schema:Un})),vh=hh.db);var vt=vh;var 
+XS=S({create:s.input(Tg).mutation(async({input:e,ctx:r})=>{try{let t=await zz(e.environmentId),o=await 
+qz(t.projectId);await ce(r,o.projectId,"create");let a=await Mz();if((Lz||a?.remoteServersOnly)&&!e.serverId)throw new 
+Wo({code:"UNAUTHORIZED",message:"You need to use a server to create a 
+Libsql"});if(o.organizationId!==r.session.activeOrganizationId)throw new Wo({code:"UNAUTHORIZED",message:"You are not 
+authorized to access this project"});if(e.serverId&&!(await Fz(r.session)).has(e.serverId))throw new 
+Wo({code:"UNAUTHORIZED",message:"You are not authorized to access this server"});let n=await Bz({...e});return await 
+$t(r,n.libsqlId),await Uz({serviceId:n.libsqlId,serviceType:"libsql",volumeName:`${n.appName}-data`,mountPath:"/var/lib
+/sqld",type:"volume"}),await 
+c(r,{action:"create",resourceType:"service",resourceId:n.libsqlId,resourceName:n.appName}),!0}catch(t){throw 
+t}}),one:s.input(ki).query(async({input:e,ctx:r})=>{await ce(r,e.libsqlId,"read");let t=await 
+fn(e.libsqlId);if(t.environment.project.organizationId!==r.session.activeOrganizationId)throw new 
+Wo({code:"UNAUTHORIZED",message:"You are not authorized to access this Libsql"});return 
+t}),start:s.input(ki).mutation(async({input:e,ctx:r})=>{await m(r,e.libsqlId,{deployment:["create"]});let t=await 
+fn(e.libsqlId);return t.serverId?await WS(t.serverId,t.appName):await YS(t.appName),await 
+Wn(e.libsqlId,{applicationStatus:"done"}),await c(r,{action:"start",resourceType:"service",resourceId:t.libsqlId,resour
+ceName:t.appName}),t}),stop:s.input(ki).mutation(async({input:e,ctx:r})=>{await 
+m(r,e.libsqlId,{deployment:["create"]});let t=await fn(e.libsqlId);return t.serverId?await 
+ZS(t.serverId,t.appName):await JS(t.appName),await Wn(e.libsqlId,{applicationStatus:"idle"}),await c(r,{action:"stop",r
+esourceType:"service",resourceId:t.libsqlId,resourceName:t.appName}),t}),saveExternalPorts:s.input(Eg).mutation(async({
+input:e,ctx:r})=>{await m(r,e.libsqlId,{service:["create"]});let t=await 
+fn(e.libsqlId);if(t.sqldNode==="replica"&&e.externalGRPCPort!==null)throw new 
+Wo({code:"BAD_REQUEST",message:"externalGRPCPort cannot be set when sqldNode is 'replica'"});let o=[{port:e.externalPor
+t,name:"externalPort",current:t.externalPort},{port:e.externalGRPCPort,name:"externalGRPCPort",current:t.externalGRPCPo
+rt},{port:e.externalAdminPort,name:"externalAdminPort",current:t.externalAdminPort}];for(let{port:a,name:n,current:i}of
+ o)if(a&&a!==i){let l=await _z(a,t.serverId||void 0);if(l.isInUse)throw new Wo({code:"CONFLICT",message:`Port ${a} 
+(${n}) is already in use by ${l.conflictingContainer}`})}return await Wn(e.libsqlId,{externalPort:e.externalPort,extern
+alGRPCPort:e.externalGRPCPort,externalAdminPort:e.externalAdminPort}),await Ih(e.libsqlId),await c(r,{action:"update",r
+esourceType:"service",resourceId:t.libsqlId,resourceName:t.appName}),t}),deploy:s.input(Nl).mutation(async({input:e,ctx
+:r})=>{await m(r,e.libsqlId,{deployment:["create"]});let t=await fn(e.libsqlId);return await c(r,{action:"deploy",resou
+rceType:"service",resourceId:t.libsqlId,resourceName:t.appName}),Ih(e.libsqlId)}),deployWithLogs:s.meta({openapi:{path:
+"/deploy/libsql-with-logs",method:"POST",override:!0,enabled:!1}}).input(Nl).subscription(async 
+function*({input:e,ctx:r,signal:t}){await m(r,e.libsqlId,{deployment:["create"]});let 
+o=[],a=!1;for(Ih(e.libsqlId,n=>{o.push(n)}).catch(()=>{}).finally(()=>{a=!0});!a||o.length>0;)if(o.length>0?yield 
+o.shift():await new 
+Promise(n=>setTimeout(n,50)),t?.aborted)return}),changeStatus:s.input(Pg).mutation(async({input:e,ctx:r})=>{await 
+m(r,e.libsqlId,{deployment:["create"]});let t=await fn(e.libsqlId);return await 
+Wn(e.libsqlId,{applicationStatus:e.applicationStatus}),await c(r,{action:"update",resourceType:"service",resourceId:t.l
+ibsqlId,resourceName:t.appName}),t}),remove:s.input(ki).mutation(async({input:e,ctx:r})=>{await 
+ce(r,e.libsqlId,"delete");let t=await 
+fn(e.libsqlId);if(t.environment.project.organizationId!==r.session.activeOrganizationId)throw new 
+Wo({code:"UNAUTHORIZED",message:"You are not authorized to delete this Libsql"});await 
+c(r,{action:"delete",resourceType:"service",resourceId:t.libsqlId,resourceName:t.appName});let o=[async()=>await 
+Kz(t?.appName,t.serverId),async()=>await Vz(e.libsqlId)];for(let a of o)try{await a()}catch{}return 
+t}),saveEnvironment:s.input(Ng).mutation(async({input:e,ctx:r})=>{if(await m(r,e.libsqlId,{envVars:["write"]}),!await 
+Wn(e.libsqlId,{env:e.env}))throw new Wo({code:"BAD_REQUEST",message:"Error adding environment variables"});return 
+await c(r,{action:"update",resourceType:"service",resourceId:e.libsqlId}),!0}),reload:s.input(Rg).mutation(async({input
+:e,ctx:r})=>{await m(r,e.libsqlId,{deployment:["create"]});let t=await fn(e.libsqlId);return t.serverId?await 
+ZS(t.serverId,t.appName):await JS(t.appName),await Wn(e.libsqlId,{applicationStatus:"idle"}),t.serverId?await 
+WS(t.serverId,t.appName):await YS(t.appName),await Wn(e.libsqlId,{applicationStatus:"done"}),await c(r,{action:"reload"
+,resourceType:"service",resourceId:t.libsqlId,resourceName:t.appName}),!0}),update:s.input(Dg).mutation(async({input:e,
+ctx:r})=>{let{libsqlId:t,...o}=e;await m(r,t,{service:["create"]});let a=await Wn(t,{...o});if(!a)throw new 
+Wo({code:"BAD_REQUEST",message:"Error updating Libsql"});return await c(r,{action:"update",resourceType:"service",resou
+rceId:t,resourceName:a.appName}),!0}),move:s.input(Zs.object({libsqlId:Zs.string(),targetEnvironmentId:Zs.string()})).m
+utation(async({input:e,ctx:r})=>{await m(r,e.libsqlId,{service:["create"]});let t=await vt.update(Se).set({environmentI
+d:e.targetEnvironmentId}).where(Gz(Se.libsqlId,e.libsqlId)).returning().then(o=>o[0]);if(!t)throw new 
+Wo({code:"INTERNAL_SERVER_ERROR",message:"Failed to move libsql"});return await c(r,{action:"move",resourceType:"servic
+e",resourceId:t.libsqlId,resourceName:t.appName}),t}),rebuild:s.input(Cg).mutation(async({input:e,ctx:r})=>(await 
+m(r,e.libsqlId,{deployment:["create"]}),await Hz(e.libsqlId,"libsql"),await c(r,{action:"rebuild",resourceType:"service
+",resourceId:e.libsqlId}),!0)),readLogs:s.input(ki.extend({tail:Zs.number().int().min(1).max(1e4).default(100),since:Zs
+.string().regex(/^(all|\d+[smhd])$/,"Invalid since format").default("all"),search:Zs.string().regex(/^[a-zA-Z0-9 
+._-]{0,500}$/).optional()})).query(async({input:e,ctx:r})=>{await ce(r,e.libsqlId,"read");let t=await 
+fn(e.libsqlId);if(t.environment.project.organizationId!==r.session.activeOrganizationId)throw new 
+Wo({code:"UNAUTHORIZED",message:"You are not authorized to access this LibSQL"});return await 
+jz(t.appName,e.tail,e.since,e.search,t.serverId)})});N();import{checkPortInUse as Qz,createMariadb as Yz,createMount 
+as Wz,deployMariadb as bh,execAsync as Jz,execAsyncRemote as Zz,findBackupsByDbId as Xz,findEnvironmentById as 
+eq,findMariadbById as Pa,findProjectById as tq,getAccessibleServerIds as rq,getContainerLogs as oq,getServiceContainer 
+as aq,getWebServerSettings as nq,IS_CLOUD as iq,rebuildDatabase as sq,removeMariadbById as cq,removeService as 
+dq,startService as eT,startServiceRemote as tT,stopService as rT,stopServiceRemote as oT,updateMariadbById as 
+Jn}from"@dokploy/server";import{TRPCError as xo}from"@trpc/server";import{observable as 
+lq}from"@trpc/server/observable";import{and as pq,desc as mq,eq as yn,ilike as Xs,or as uq,sql as 
+jd}from"drizzle-orm";import{z as Ut}from"zod";var aT=S({create:s.input(rg).mutation(async({input:e,ctx:r})=>{try{let 
+t=await eq(e.environmentId),o=await tq(t.projectId);await ce(r,o.projectId,"create");let a=await 
+nq();if((iq||a?.remoteServersOnly)&&!e.serverId)throw new xo({code:"UNAUTHORIZED",message:"You need to use a server to 
+create a Mariadb"});if(o.organizationId!==r.session.activeOrganizationId)throw new 
+xo({code:"UNAUTHORIZED",message:"You are not authorized to access this project"});if(e.serverId&&!(await 
+rq(r.session)).has(e.serverId))throw new xo({code:"UNAUTHORIZED",message:"You are not authorized to access this 
+server"});let n=await Yz({...e});return await $t(r,n.mariadbId),await Wz({serviceId:n.mariadbId,serviceType:"mariadb",v
+olumeName:`${n.appName}-data`,mountPath:"/var/lib/mysql",type:"volume"}),await 
+c(r,{action:"create",resourceType:"service",resourceId:n.mariadbId,resourceName:n.appName}),n}catch(t){throw t 
+instanceof xo,t}}),one:s.input(Ii).query(async({input:e,ctx:r})=>{await ce(r,e.mariadbId,"read");let t=await 
+Pa(e.mariadbId);if(t.environment.project.organizationId!==r.session.activeOrganizationId)throw new 
+xo({code:"UNAUTHORIZED",message:"You are not authorized to access this Mariadb"});return 
+t}),start:s.input(Ii).mutation(async({input:e,ctx:r})=>{await m(r,e.mariadbId,{deployment:["create"]});let t=await 
+Pa(e.mariadbId);return t.serverId?await tT(t.serverId,t.appName):await eT(t.appName),await 
+Jn(e.mariadbId,{applicationStatus:"done"}),await c(r,{action:"start",resourceType:"service",resourceId:t.mariadbId,reso
+urceName:t.appName}),t}),stop:s.input(Ii).mutation(async({input:e,ctx:r})=>{await 
+m(r,e.mariadbId,{deployment:["create"]});let t=await Pa(e.mariadbId);return t.serverId?await 
+oT(t.serverId,t.appName):await rT(t.appName),await Jn(e.mariadbId,{applicationStatus:"idle"}),await c(r,{action:"stop",
+resourceType:"service",resourceId:t.mariadbId,resourceName:t.appName}),t}),saveExternalPort:s.input(ng).mutation(async(
+{input:e,ctx:r})=>{await m(r,e.mariadbId,{service:["create"]});let t=await Pa(e.mariadbId);if(e.externalPort){let 
+o=await Qz(e.externalPort,t.serverId||void 0);if(o.isInUse)throw new xo({code:"CONFLICT",message:`Port 
+${e.externalPort} is already in use by ${o.conflictingContainer}`})}return await 
+Jn(e.mariadbId,{externalPort:e.externalPort}),await bh(e.mariadbId),await c(r,{action:"update",resourceType:"service",r
+esourceId:t.mariadbId,resourceName:t.appName}),t}),deploy:s.input(Sl).mutation(async({input:e,ctx:r})=>{await 
+m(r,e.mariadbId,{deployment:["create"]});let t=await Pa(e.mariadbId);return await c(r,{action:"deploy",resourceType:"se
+rvice",resourceId:t.mariadbId,resourceName:t.appName}),bh(e.mariadbId)}),deployWithLogs:s.meta({openapi:{path:"/deploy/
+mariadb-with-logs",method:"POST",override:!0,enabled:!1}}).input(Sl).subscription(async({input:e,ctx:r})=>(await m(r,e.
+mariadbId,{deployment:["create"]}),lq(t=>{bh(e.mariadbId,o=>{t.next(o)})}))),changeStatus:s.input(og).mutation(async({i
+nput:e,ctx:r})=>{await m(r,e.mariadbId,{deployment:["create"]});let t=await Pa(e.mariadbId);return await 
+Jn(e.mariadbId,{applicationStatus:e.applicationStatus}),await c(r,{action:"update",resourceType:"service",resourceId:t.
+mariadbId,resourceName:t.appName}),t}),remove:s.input(Ii).mutation(async({input:e,ctx:r})=>{await 
+ce(r,e.mariadbId,"delete");let t=await 
+Pa(e.mariadbId);if(t.environment.project.organizationId!==r.session.activeOrganizationId)throw new 
+xo({code:"UNAUTHORIZED",message:"You are not authorized to delete this Mariadb"});await 
+c(r,{action:"delete",resourceType:"service",resourceId:t.mariadbId,resourceName:t.appName});let o=await 
+Xz(e.mariadbId,"mariadb"),a=[async()=>await dq(t?.appName,t.serverId),async()=>await Kn(o),async()=>await 
+cq(e.mariadbId)];for(let n of a)try{await n()}catch{}return 
+t}),saveEnvironment:s.input(ag).mutation(async({input:e,ctx:r})=>{if(await m(r,e.mariadbId,{envVars:["write"]}),!await 
+Jn(e.mariadbId,{env:e.env}))throw new xo({code:"BAD_REQUEST",message:"Error adding environment variables"});return 
+await c(r,{action:"update",resourceType:"service",resourceId:e.mariadbId}),!0}),reload:s.input(ig).mutation(async({inpu
+t:e,ctx:r})=>{await m(r,e.mariadbId,{deployment:["create"]});let t=await Pa(e.mariadbId);return t.serverId?await 
+oT(t.serverId,t.appName):await rT(t.appName),await Jn(e.mariadbId,{applicationStatus:"idle"}),t.serverId?await 
+tT(t.serverId,t.appName):await eT(t.appName),await Jn(e.mariadbId,{applicationStatus:"done"}),await c(r,{action:"reload
+",resourceType:"service",resourceId:t.mariadbId,resourceName:t.appName}),!0}),update:s.input(sg).mutation(async({input:
+e,ctx:r})=>{let{mariadbId:t,...o}=e;await m(r,t,{service:["create"]});let a=await Jn(t,{...o});if(!a)throw new 
+xo({code:"BAD_REQUEST",message:"Update: Error updating Mariadb"});return await c(r,{action:"update",resourceType:"servi
+ce",resourceId:t,resourceName:a.appName}),!0}),changePassword:s.input(Ut.object({mariadbId:Ut.string().min(1),password:
+Ut.string().min(1).regex(nt,{message:it}),type:Ut.enum(["user","root"]).default("user")})).mutation(async({input:e,ctx:
+r})=>{let{mariadbId:t,password:o,type:a}=e;await m(r,t,{service:["create"]});let n=await 
+Pa(t),{appName:i,serverId:l,databaseUser:p,databaseRootPassword:u}=n,y=await aq(i,l);if(!y)throw new 
+xo({code:"BAD_REQUEST",message:`No running container found for ${i}`});let f=a==="root"?"root":p,w=`docker exec 
+${y.Id} mariadb -u root -p'${u}' -e "ALTER USER '${f}'@'%' IDENTIFIED BY '${o}'; FLUSH PRIVILEGES;"`;return await 
+d.transaction(async C=>{let O=a==="root"?{databaseRootPassword:o}:{databasePassword:o};await 
+C.update(Y).set(O).where(yn(Y.mariadbId,t)),l?await Zz(l,w):await Jz(w,{shell:"/bin/bash"})}),await c(r,{action:"update
+",resourceType:"service",resourceId:t,resourceName:i}),!0}),move:s.input(Ut.object({mariadbId:Ut.string(),targetEnviron
+mentId:Ut.string()})).mutation(async({input:e,ctx:r})=>{await m(r,e.mariadbId,{service:["create"]});let t=await d.updat
+e(Y).set({environmentId:e.targetEnvironmentId}).where(yn(Y.mariadbId,e.mariadbId)).returning().then(o=>o[0]);if(!t)thro
+w new xo({code:"INTERNAL_SERVER_ERROR",message:"Failed to move mariadb"});return await c(r,{action:"move",resourceType:
+"service",resourceId:t.mariadbId,resourceName:t.appName}),t}),rebuild:s.input(cg).mutation(async({input:e,ctx:r})=>(awa
+it m(r,e.mariadbId,{deployment:["create"]}),await sq(e.mariadbId,"mariadb"),await c(r,{action:"rebuild",resourceType:"s
+ervice",resourceId:e.mariadbId}),!0)),search:s.input(Ut.object({q:Ut.string().optional(),name:Ut.string().optional(),ap
+pName:Ut.string().optional(),description:Ut.string().optional(),projectId:Ut.string().optional(),environmentId:Ut.strin
+g().optional(),limit:Ut.number().min(1).max(100).default(20),offset:Ut.number().min(0).default(0)})).query(async({ctx:e
+,input:r})=>{let t=[yn(E.organizationId,e.session.activeOrganizationId)];if(r.projectId&&t.push(yn(v.projectId,r.projec
+tId)),r.environmentId&&t.push(yn(Y.environmentId,r.environmentId)),r.q?.trim()){let l=`%${r.q.trim()}%`;t.push(uq(Xs(Y.
+name,l),Xs(Y.appName,l),Xs(Y.description??"",l)))}r.name?.trim()&&t.push(Xs(Y.name,`%${r.name.trim()}%`)),r.appName?.tr
+im()&&t.push(Xs(Y.appName,`%${r.appName.trim()}%`)),r.description?.trim()&&t.push(Xs(Y.description??"",`%${r.descriptio
+n.trim()}%`));let{accessedServices:o}=await 
+W(e.user.id,e.session.activeOrganizationId);if(o.length===0)return{items:[],total:0};t.push(jd`${Y.mariadbId} IN 
+(${jd.join(o.map(l=>jd`${l}`),jd`, `)})`);let a=pq(...t),[n,i]=await Promise.all([d.

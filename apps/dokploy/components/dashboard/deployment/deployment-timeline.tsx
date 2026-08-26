@@ -22,14 +22,20 @@ function getStepIndex(status: string | null): number {
 	return 0;
 }
 
-export const DeploymentTimeline = ({ deployment }: { deployment: Deployment }) => {
+export const DeploymentTimeline = ({
+	deployment,
+}: {
+	deployment: Deployment;
+}) => {
 	const activeIndex = getStepIndex(deployment.status);
 	const isError = deployment.status === "error";
 
 	return (
 		<div className="flex flex-col gap-0">
 			{STEPS.map((step, i) => {
-				const isComplete = i < activeIndex || (i === activeIndex && deployment.status === "done");
+				const isComplete =
+					i < activeIndex ||
+					(i === activeIndex && deployment.status === "done");
 				const isActive = i === activeIndex && deployment.status === "running";
 				const isCurrent = i === activeIndex;
 
@@ -60,7 +66,9 @@ export const DeploymentTimeline = ({ deployment }: { deployment: Deployment }) =
 							{i < STEPS.length - 1 && (
 								<div
 									className={`w-px h-6 ${
-										i < activeIndex ? "bg-emerald-500/40" : "bg-muted-foreground/20"
+										i < activeIndex
+											? "bg-emerald-500/40"
+											: "bg-muted-foreground/20"
 									}`}
 								/>
 							)}

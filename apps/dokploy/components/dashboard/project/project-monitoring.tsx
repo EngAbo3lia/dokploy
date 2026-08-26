@@ -55,7 +55,10 @@ const latestPerContainer = (samples: ContainerMetricSample[]) => {
 	const byId = new Map<string, ContainerMetricSample>();
 	for (const sample of samples) {
 		const existing = byId.get(sample.ID);
-		if (!existing || (sample.timestamp || "").localeCompare(existing.timestamp) >= 0) {
+		if (
+			!existing ||
+			(sample.timestamp || "").localeCompare(existing.timestamp) >= 0
+		) {
 			byId.set(sample.ID, sample);
 		}
 	}
@@ -112,7 +115,10 @@ export const ProjectMonitoring = ({ services }: Props) => {
 							: null,
 					memory:
 						latest.length > 0
-							? latest.reduce((acc, sample) => acc + (sample.Memory?.used || 0), 0)
+							? latest.reduce(
+									(acc, sample) => acc + (sample.Memory?.used || 0),
+									0,
+								)
 							: null,
 					memoryUnit: latest[0]?.Memory?.usedUnit || null,
 					error: null,

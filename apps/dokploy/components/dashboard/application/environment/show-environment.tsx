@@ -174,7 +174,7 @@ export const ShowEnvironment = ({ id, type }: Props) => {
 					</div>
 
 					<Toggle
-						aria-label="Toggle bold"
+						aria-label="Toggle visibility"
 						pressed={isEnvVisible}
 						onPressedChange={setIsEnvVisible}
 					>

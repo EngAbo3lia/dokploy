@@ -1,31 +1,28 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-const statusDotVariants = cva(
-	"inline-flex shrink-0 rounded-full",
-	{
-		variants: {
-			status: {
-				running: "h-2 w-2 bg-success animate-pulse",
-				success: "h-2 w-2 bg-success",
-				warning: "h-2 w-2 bg-warning",
-				error: "h-2 w-2 bg-destructive",
-				info: "h-2 w-2 bg-info",
-				idle: "h-2 w-2 bg-muted-foreground/50",
-				stopped: "h-2 w-2 bg-muted-foreground/30",
-			},
-			size: {
-				sm: "h-1.5 w-1.5",
-				md: "h-2 w-2",
-				lg: "h-2.5 w-2.5",
-			},
+const statusDotVariants = cva("inline-flex shrink-0 rounded-full", {
+	variants: {
+		status: {
+			running: "h-2 w-2 bg-success animate-pulse",
+			success: "h-2 w-2 bg-success",
+			warning: "h-2 w-2 bg-warning",
+			error: "h-2 w-2 bg-destructive",
+			info: "h-2 w-2 bg-info",
+			idle: "h-2 w-2 bg-muted-foreground/50",
+			stopped: "h-2 w-2 bg-muted-foreground/30",
 		},
-		defaultVariants: {
-			status: "idle",
-			size: "md",
+		size: {
+			sm: "h-1.5 w-1.5",
+			md: "h-2 w-2",
+			lg: "h-2.5 w-2.5",
 		},
 	},
-);
+	defaultVariants: {
+		status: "idle",
+		size: "md",
+	},
+});
 
 function StatusDot({
 	status,
@@ -69,7 +66,8 @@ function StatusBadge({
 	children,
 	className,
 	...props
-}: React.ComponentProps<"span"> & VariantProps<typeof statusBadgeVariants> & { children?: React.ReactNode }) {
+}: React.ComponentProps<"span"> &
+	VariantProps<typeof statusBadgeVariants> & { children?: React.ReactNode }) {
 	return (
 		<span
 			data-slot="status-badge"
@@ -84,26 +82,43 @@ function StatusBadge({
 
 function DeploymentStatus({ status }: { status: string }) {
 	const mappedStatus = (
-		status === "running" ? "running" :
-		status === "success" ? "success" :
-		status === "failed" ? "error" :
-		status === "canceled" ? "warning" :
-		status === "queued" ? "info" :
-		status === "stopped" ? "stopped" :
-		"idle"
+		status === "running"
+			? "running"
+			: status === "success"
+				? "success"
+				: status === "failed"
+					? "error"
+					: status === "canceled"
+						? "warning"
+						: status === "queued"
+							? "info"
+							: status === "stopped"
+								? "stopped"
+								: "idle"
 	) as VariantProps<typeof statusDotVariants>["status"];
 
-	const label = (
-		status === "running" ? "Building" :
-		status === "success" ? "Deployed" :
-		status === "failed" ? "Failed" :
-		status === "canceled" ? "Canceled" :
-		status === "queued" ? "Queued" :
-		status === "stopped" ? "Stopped" :
-		status.charAt(0).toUpperCase() + status.slice(1)
-	);
+	const label =
+		status === "running"
+			? "Building"
+			: status === "success"
+				? "Deployed"
+				: status === "failed"
+					? "Failed"
+					: status === "canceled"
+						? "Canceled"
+						: status === "queued"
+							? "Queued"
+							: status === "stopped"
+								? "Stopped"
+								: status.charAt(0).toUpperCase() + status.slice(1);
 
 	return <StatusBadge status={mappedStatus}>{label}</StatusBadge>;
 }
 
-export { StatusDot, StatusBadge, DeploymentStatus, statusDotVariants, statusBadgeVariants };
+export {
+	DeploymentStatus,
+	StatusBadge,
+	StatusDot,
+	statusBadgeVariants,
+	statusDotVariants,
+};

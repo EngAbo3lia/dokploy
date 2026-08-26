@@ -119,7 +119,7 @@ export const UpdateLibsql = ({ libsqlId }: Props) => {
 										<FormItem>
 											<FormLabel>Name</FormLabel>
 											<FormControl>
-												<Input placeholder="Vandelay Industries" {...field} />
+												<Input placeholder="e.g. edge-libsql" {...field} />
 											</FormControl>
 
 											<FormMessage />

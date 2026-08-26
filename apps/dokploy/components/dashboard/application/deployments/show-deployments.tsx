@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { DeploymentDetail } from "@/components/dashboard/deployment/deployment-detail";
 import { AlertBlock } from "@/components/shared/alert-block";
 import { DateTooltip } from "@/components/shared/date-tooltip";
 import { DialogAction } from "@/components/shared/dialog-action";
@@ -38,7 +39,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { api, type RouterOutputs } from "@/utils/api";
-import { DeploymentDetail } from "@/components/dashboard/deployment/deployment-detail";
 import { ShowRollbackSettings } from "../rollbacks/show-rollback-settings";
 import { CancelQueues } from "./cancel-queues";
 import { ClearDeployments } from "./clear-deployments";
@@ -83,7 +83,9 @@ export const ShowDeployments = ({
 	const [activeLog, setActiveLog] = useState<
 		RouterOutputs["deployment"]["all"][number] | null
 	>(null);
-	const [detailDeploymentId, setDetailDeploymentId] = useState<string | null>(null);
+	const [detailDeploymentId, setDetailDeploymentId] = useState<string | null>(
+		null,
+	);
 	const [removingDeploymentIds, setRemovingDeploymentIds] = useState<
 		Set<string>
 	>(new Set());
@@ -103,7 +105,8 @@ export const ShowDeployments = ({
 				id,
 				type: type as "application" | "compose",
 				status: statusFilter !== "all" ? statusFilter : undefined,
-				environment: environmentFilter !== "all" ? environmentFilter : undefined,
+				environment:
+					environmentFilter !== "all" ? environmentFilter : undefined,
 				search: search || undefined,
 				page,
 				pageSize: 20,
@@ -123,9 +126,7 @@ export const ShowDeployments = ({
 			},
 		);
 
-	const deployments = isFilterable
-		? filteredData?.items
-		: legacyDeployments;
+	const deployments = isFilterable ? filteredData?.items : legacyDeployments;
 	const isLoading = isFilterable ? isLoadingDeployments : isLoadingLegacy;
 	const totalPages = filteredData?.totalPages ?? 1;
 	const total = filteredData?.total ?? 0;
@@ -349,7 +350,10 @@ export const ShowDeployments = ({
 								<SelectItem value="cancelled">Cancelled</SelectItem>
 							</SelectContent>
 						</Select>
-						<Select value={environmentFilter} onValueChange={setEnvironmentFilter}>
+						<Select
+							value={environmentFilter}
+							onValueChange={setEnvironmentFilter}
+						>
 							<SelectTrigger className="w-[140px]">
 								<SelectValue placeholder="Environment" />
 							</SelectTrigger>
@@ -431,7 +435,10 @@ export const ShowDeployments = ({
 												{deployment.status}
 											</Badge>
 											{deployment.environment && (
-												<Badge variant="secondary" className="text-[10px] shrink-0">
+												<Badge
+													variant="secondary"
+													className="text-[10px] shrink-0"
+												>
 													{deployment.environment}
 												</Badge>
 											)}
@@ -484,7 +491,10 @@ export const ShowDeployments = ({
 
 									<div className="hidden sm:flex items-center gap-1 w-24 justify-end">
 										{duration !== null && (
-											<Badge variant="outline" className="text-[10px] gap-1 flex items-center">
+											<Badge
+												variant="outline"
+												className="text-[10px] gap-1 flex items-center"
+											>
 												<Clock className="size-3" />
 												{formatDuration(duration)}
 											</Badge>
@@ -542,7 +552,9 @@ export const ShowDeployments = ({
 												<Button
 													variant="ghost"
 													size="sm"
-													onClick={() => setDetailDeploymentId(deployment.deploymentId)}
+													onClick={() =>
+														setDetailDeploymentId(deployment.deploymentId)
+													}
 													className="h-7 px-2"
 												>
 													Detail

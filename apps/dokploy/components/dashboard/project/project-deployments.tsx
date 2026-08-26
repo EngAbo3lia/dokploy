@@ -121,7 +121,9 @@ export const ProjectDeployments = ({
 				setItems(merged);
 			})
 			.catch((err) => {
-				setError(err instanceof Error ? err.message : "Failed to load deployments");
+				setError(
+					err instanceof Error ? err.message : "Failed to load deployments",
+				);
 			});
 	};
 
@@ -163,9 +165,7 @@ export const ProjectDeployments = ({
 			<Card>
 				<CardContent className="flex h-40 flex-col items-center justify-center gap-2">
 					<History className="size-8 text-muted-foreground" />
-					<span className="text-sm font-medium">
-						No deployments yet
-					</span>
+					<span className="text-sm font-medium">No deployments yet</span>
 				</CardContent>
 			</Card>
 		);
@@ -217,9 +217,7 @@ export const ProjectDeployments = ({
 							<div className="flex min-w-0 flex-row items-center gap-3">
 								<Icon className={`size-4 shrink-0 ${status.className}`} />
 								<div className="min-w-0">
-									<p className="truncate text-sm font-medium">
-										{item.title}
-									</p>
+									<p className="truncate text-sm font-medium">{item.title}</p>
 									<p className="truncate text-xs text-muted-foreground">
 										<span className="font-medium text-foreground">
 											{item.serviceName}

@@ -8,7 +8,6 @@ import {
 	Search,
 	TrashIcon,
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -346,301 +345,276 @@ export const ShowProjects = () => {
 													key={project.projectId}
 													className="w-full lg:max-w-md"
 												>
-													<Link
-														href={
-															hasNoEnvironments
-																? "#"
-																: `/dashboard/project/${project.projectId}/environment/${accessibleEnvironment?.environmentId}`
-														}
-														onClick={(e) => {
-															if (hasNoEnvironments) {
-																e.preventDefault();
+													<Card
+														className="group relative w-full h-full bg-transparent transition-colors hover:bg-border flex flex-col"
+														onClick={() => {
+															if (!hasNoEnvironments) {
+																router.push(
+																	`/dashboard/project/${project.projectId}/environment/${accessibleEnvironment?.environmentId}`,
+																);
 															}
 														}}
 													>
-														<Card className="group relative w-full h-full bg-transparent transition-colors hover:bg-border flex flex-col">
-															<CardHeader>
-																<CardTitle className="flex items-center justify-between gap-2 overflow-clip">
-																	<span className="flex flex-col gap-1.5 ">
-																		<div className="flex items-center gap-2">
-																			<BookIcon className="size-4 text-muted-foreground" />
-																			<span className="text-base font-medium leading-none">
-																				{project.name}
-																			</span>
-																		</div>
-
-																		<span className="text-sm font-medium text-muted-foreground break-normal">
-																			{project.description}
+														<CardHeader>
+															<CardTitle className="flex items-center justify-between gap-2 overflow-clip">
+																<span className="flex flex-col gap-1.5 cursor-pointer">
+																	<div className="flex items-center gap-2">
+																		<BookIcon className="size-4 text-muted-foreground" />
+																		<span className="text-base font-medium leading-none">
+																			{project.name}
 																		</span>
+																	</div>
 
-																		{project.projectTags &&
-																			project.projectTags.length > 0 && (
-																				<div className="flex flex-wrap gap-1.5 mt-2">
-																					{project.projectTags.map((pt) => (
-																						<TagBadge
-																							key={pt.tag.tagId}
-																							name={pt.tag.name}
-																							color={pt.tag.color}
-																						/>
-																					))}
-																				</div>
-																			)}
+																	<span className="text-sm font-medium text-muted-foreground break-normal">
+																		{project.description}
+																	</span>
 
-																		{(() => {
-																			const health =
-																				healthByProjectId.get(
-																					project.projectId,
-																				);
-																			if (!health) return null;
-																			const meta =
-																				STATUS_META[health.status];
-																			return (
-																				<div className="mt-2 flex flex-col gap-1.5">
-																					<span
-																						className={`inline-flex w-fit items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium ${meta.badge}`}
-																					>
-																						<span className="relative flex size-1.5">
-																							{meta.pulse && (
-																								<span
-																									className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-60 ${meta.dot}`}
-																								/>
-																							)}
-																							<span
-																								className={`relative inline-flex size-1.5 rounded-full ${meta.dot}`}
-																							/>
-																						</span>
-																						{meta.label}
-																					</span>
-																					<span className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-																						<span>
-																							{health.totals.services}{" "}
-																							services
-																						</span>
-																						<span className="text-emerald-600 dark:text-emerald-400">
-																							{health.totals.running}{" "}
-																							running
-																						</span>
-																						{health.totals.failed > 0 && (
-																							<span className="text-red-600 dark:text-red-400">
-																								{health.totals.failed}{" "}
-																								failed
-																							</span>
-																						)}
-																						{health.totals.stopped > 0 && (
-																							<span className="text-muted-foreground">
-																								{health.totals.stopped}{" "}
-																								stopped
-																							</span>
-																						)}
-																						{health.totals.deploying >
-																							0 && (
-																							<span className="text-blue-600 dark:text-blue-400">
-																								{health.totals.deploying}{" "}
-																								deploying
-																							</span>
-																						)}
-																					</span>
-																					{health.totals.lastDeployAt && (
-																						<DateTooltip
-																							date={
-																								health
-																									.totals
-																									.lastDeployAt
-																							}
-																						>
-																							<span className="text-muted-foreground">
-																								Last deploy
-																							</span>
-																						</DateTooltip>
-																					)}
-																					{(() => {
-																						const firstEnv =
-																							health.environments[0];
-																						if (
-																							!firstEnv ||
-																							firstEnv.services.length === 0
-																						)
-																							return null;
-																						return (
-																							<span className="flex flex-wrap gap-1">
-																								{firstEnv.services
-																									.slice(0, 8)
-																									.map((service) => (
-																										<span
-																											key={service.serviceId}
-																											title={service.name}
-																											className="inline-flex h-5 min-w-5 items-center justify-center rounded-md border bg-muted px-1 text-[10px] font-medium text-muted-foreground"
-																										>
-																											{service.name
-																												.split(" ")
-																												.slice(0, 2)
-																												.map((word) => word[0])
-																												.join("")
-																												.toUpperCase()}
-																										</span>
-																									))}
-																							</span>
-																						);
-																					})()}
-																					<span className="text-xs text-muted-foreground">
-																						{(() => {
-																							const servers = [
-																								...new Set(
-																									health.environments.flatMap(
-																										(env) =>
-																											env.services
-																												.map((s) => s.serverName)
-																												.filter(
-																													(
-																														name,
-																													): name is string =>
-																														Boolean(name),
-																												),
-																									),
-																								),
-																							];
-																							return servers.length > 0
-																								? servers.join(" + ")
-																								: "Dokploy Server (local)";
-																						})()}
-																					</span>
-																				</div>
-																			);
-																		})()}
-																		{hasNoEnvironments && (
-																			<div className="flex flex-row gap-2 items-center rounded-lg bg-yellow-50 p-2 mt-2 dark:bg-yellow-950">
-																				<AlertTriangle className="size-4 text-yellow-600 dark:text-yellow-400 shrink-0" />
-																				<span className="text-xs text-yellow-600 dark:text-yellow-400">
-																					You have access to this project but no
-																					environments are available
-																				</span>
+																	{project.projectTags &&
+																		project.projectTags.length > 0 && (
+																			<div className="flex flex-wrap gap-1.5 mt-2">
+																				{project.projectTags.map((pt) => (
+																					<TagBadge
+																						key={pt.tag.tagId}
+																						name={pt.tag.name}
+																						color={pt.tag.color}
+																					/>
+																				))}
 																			</div>
 																		)}
-																	</span>
-																	<div className="flex self-start space-x-1">
-																		<DropdownMenu>
-																			<DropdownMenuTrigger asChild>
-																				<Button
-																					variant="ghost"
-																					size="icon"
-																					className="px-2"
-																				>
-																					<MoreHorizontalIcon className="size-5" />
-																				</Button>
-																			</DropdownMenuTrigger>
-																			<DropdownMenuContent
-																				className="w-[200px] space-y-2 overflow-y-auto max-h-[280px]"
-																				onClick={(e) => e.stopPropagation()}
-																			>
-																				<DropdownMenuLabel className="font-normal">
-																					Actions
-																				</DropdownMenuLabel>
-																				<div
-																					onClick={(e) => e.stopPropagation()}
-																				>
-																					<ProjectEnvironment
-																						projectId={project.projectId}
-																					/>
-																				</div>
-																				<div
-																					onClick={(e) => e.stopPropagation()}
-																				>
-																					<HandleProject
-																						projectId={project.projectId}
-																					/>
-																				</div>
 
-																				<div
-																					onClick={(e) => e.stopPropagation()}
+																	{(() => {
+																		const health = healthByProjectId.get(
+																			project.projectId,
+																		);
+																		if (!health) return null;
+																		const meta = STATUS_META[health.status];
+																		return (
+																			<div className="mt-2 flex flex-col gap-1.5">
+																				<span
+																					className={`inline-flex w-fit items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium ${meta.badge}`}
 																				>
-																					{permissions?.project.delete && (
-																						<AlertDialog>
-																							<AlertDialogTrigger className="w-full">
-																								<DropdownMenuItem
-																									className="w-full cursor-pointer  space-x-3"
-																									onSelect={(e) =>
-																										e.preventDefault()
-																									}
-																								>
-																									<TrashIcon className="size-4" />
-																									<span>Delete</span>
-																								</DropdownMenuItem>
-																							</AlertDialogTrigger>
-																							<AlertDialogContent>
-																								<AlertDialogHeader>
-																									<AlertDialogTitle>
-																										Are you sure to delete this
-																										project?
-																									</AlertDialogTitle>
-																									{!emptyServices ? (
-																										<div className="flex flex-row gap-4 rounded-lg bg-yellow-50 p-2 dark:bg-yellow-950">
-																											<AlertTriangle className="text-yellow-600 dark:text-yellow-400" />
-																											<span className="text-sm text-yellow-600 dark:text-yellow-400">
-																												You have active
-																												services, please delete
-																												them first
-																											</span>
-																										</div>
-																									) : (
-																										<AlertDialogDescription>
-																											This action cannot be
-																											undone
-																										</AlertDialogDescription>
-																									)}
-																								</AlertDialogHeader>
-																								<AlertDialogFooter>
-																									<AlertDialogCancel>
-																										Cancel
-																									</AlertDialogCancel>
-																									<AlertDialogAction
-																										disabled={!emptyServices}
-																										onClick={async () => {
-																											await mutateAsync({
-																												projectId:
-																													project.projectId,
-																											})
-																												.then(() => {
-																													toast.success(
-																														"Project deleted successfully",
-																													);
-																												})
-																												.catch(() => {
-																													toast.error(
-																														"Error deleting this project",
-																													);
-																												})
-																												.finally(() => {
-																													utils.project.all.invalidate();
-																												});
-																										}}
-																									>
-																										Delete
-																									</AlertDialogAction>
-																								</AlertDialogFooter>
-																							</AlertDialogContent>
-																						</AlertDialog>
+																					<span className="relative flex size-1.5">
+																						{meta.pulse && (
+																							<span
+																								className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-60 ${meta.dot}`}
+																							/>
+																						)}
+																						<span
+																							className={`relative inline-flex size-1.5 rounded-full ${meta.dot}`}
+																						/>
+																					</span>
+																					{meta.label}
+																				</span>
+																				<span className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+																					<span>
+																						{health.totals.services} services
+																					</span>
+																					<span className="text-emerald-600 dark:text-emerald-400">
+																						{health.totals.running} running
+																					</span>
+																					{health.totals.failed > 0 && (
+																						<span className="text-red-600 dark:text-red-400">
+																							{health.totals.failed} failed
+																						</span>
 																					)}
-																				</div>
-																			</DropdownMenuContent>
-																		</DropdownMenu>
-																	</div>
-																</CardTitle>
-															</CardHeader>
-															<CardFooter className="pt-4 mt-auto">
-																<div className="space-y-1 text-xs flex flex-row justify-between max-sm:flex-wrap w-full gap-2 sm:gap-4">
-																	<DateTooltip date={project.createdAt}>
-																		Created
-																	</DateTooltip>
-																	<span>
-																		{totalServices}{" "}
-																		{totalServices === 1
-																			? "service"
-																			: "services"}
-																	</span>
+																					{health.totals.stopped > 0 && (
+																						<span className="text-muted-foreground">
+																							{health.totals.stopped} stopped
+																						</span>
+																					)}
+																					{health.totals.deploying > 0 && (
+																						<span className="text-blue-600 dark:text-blue-400">
+																							{health.totals.deploying}{" "}
+																							deploying
+																						</span>
+																					)}
+																				</span>
+																				{health.totals.lastDeployAt && (
+																					<DateTooltip
+																						date={health.totals.lastDeployAt}
+																					>
+																						<span className="text-muted-foreground">
+																							Last deploy
+																						</span>
+																					</DateTooltip>
+																				)}
+																				{(() => {
+																					const firstEnv =
+																						health.environments[0];
+																					if (
+																						!firstEnv ||
+																						firstEnv.services.length === 0
+																					)
+																						return null;
+																					return (
+																						<span className="flex flex-wrap gap-1">
+																							{firstEnv.services
+																								.slice(0, 8)
+																								.map((service) => (
+																									<span
+																										key={service.serviceId}
+																										title={service.name}
+																										className="inline-flex h-5 min-w-5 items-center justify-center rounded-md border bg-muted px-1 text-[10px] font-medium text-muted-foreground"
+																									>
+																										{service.name
+																											.split(" ")
+																											.slice(0, 2)
+																											.map((word) => word[0])
+																											.join("")
+																											.toUpperCase()}
+																									</span>
+																								))}
+																						</span>
+																					);
+																				})()}
+																				<span className="text-xs text-muted-foreground">
+																					{(() => {
+																						const servers = [
+																							...new Set(
+																								health.environments.flatMap(
+																									(env) =>
+																										env.services
+																											.map((s) => s.serverName)
+																											.filter(
+																												(
+																													name,
+																												): name is string =>
+																													Boolean(name),
+																											),
+																								),
+																							),
+																						];
+																						return servers.length > 0
+																							? servers.join(" + ")
+																							: "Dokploy Server (local)";
+																					})()}
+																				</span>
+																			</div>
+																		);
+																	})()}
+																	{hasNoEnvironments && (
+																		<div className="flex flex-row gap-2 items-center rounded-lg bg-yellow-50 p-2 mt-2 dark:bg-yellow-950">
+																			<AlertTriangle className="size-4 text-yellow-600 dark:text-yellow-400 shrink-0" />
+																			<span className="text-xs text-yellow-600 dark:text-yellow-400">
+																				You have access to this project but no
+																				environments are available
+																			</span>
+																		</div>
+																	)}
+																</span>
+																<div
+																	className="flex self-start space-x-1"
+																	onClick={(e) => e.stopPropagation()}
+																	onKeyDown={(e) => e.stopPropagation()}
+																>
+																	<DropdownMenu>
+																		<DropdownMenuTrigger asChild>
+																			<Button
+																				variant="ghost"
+																				size="icon"
+																				className="px-2"
+																			>
+																				<MoreHorizontalIcon className="size-5" />
+																			</Button>
+																		</DropdownMenuTrigger>
+																		<DropdownMenuContent className="w-[200px] space-y-2 overflow-y-auto max-h-[280px]">
+																			<DropdownMenuLabel className="font-normal">
+																				Actions
+																			</DropdownMenuLabel>
+																			<div>
+																				<ProjectEnvironment
+																					projectId={project.projectId}
+																				/>
+																			</div>
+																			<div>
+																				<HandleProject
+																					projectId={project.projectId}
+																				/>
+																			</div>
+																			<div>
+																				{permissions?.project.delete && (
+																					<AlertDialog>
+																						<AlertDialogTrigger className="w-full">
+																							<DropdownMenuItem
+																								className="w-full cursor-pointer space-x-3"
+																								onSelect={(e) =>
+																									e.preventDefault()
+																								}
+																							>
+																								<TrashIcon className="size-4" />
+																								<span>Delete</span>
+																							</DropdownMenuItem>
+																						</AlertDialogTrigger>
+																						<AlertDialogContent>
+																							<AlertDialogHeader>
+																								<AlertDialogTitle>
+																									Are you sure to delete this
+																									project?
+																								</AlertDialogTitle>
+																								{!emptyServices ? (
+																									<div className="flex flex-row gap-4 rounded-lg bg-yellow-50 p-2 dark:bg-yellow-950">
+																										<AlertTriangle className="text-yellow-600 dark:text-yellow-400" />
+																										<span className="text-sm text-yellow-600 dark:text-yellow-400">
+																											You have active services,
+																											please delete them first
+																										</span>
+																									</div>
+																								) : (
+																									<AlertDialogDescription>
+																										This action cannot be undone
+																									</AlertDialogDescription>
+																								)}
+																							</AlertDialogHeader>
+																							<AlertDialogFooter>
+																								<AlertDialogCancel>
+																									Cancel
+																								</AlertDialogCancel>
+																								<AlertDialogAction
+																									disabled={!emptyServices}
+																									onClick={async () => {
+																										await mutateAsync({
+																											projectId:
+																												project.projectId,
+																										})
+																											.then(() => {
+																												toast.success(
+																													"Project deleted successfully",
+																												);
+																											})
+																											.catch(() => {
+																												toast.error(
+																													"Error deleting this project",
+																												);
+																											})
+																											.finally(() => {
+																												utils.project.all.invalidate();
+																											});
+																									}}
+																								>
+																									Delete
+																								</AlertDialogAction>
+																							</AlertDialogFooter>
+																						</AlertDialogContent>
+																					</AlertDialog>
+																				)}
+																			</div>
+																		</DropdownMenuContent>
+																	</DropdownMenu>
 																</div>
-															</CardFooter>
-														</Card>
-													</Link>
+															</CardTitle>
+														</CardHeader>
+														<CardFooter className="pt-4 mt-auto">
+															<div className="space-y-1 text-xs flex flex-row justify-between max-sm:flex-wrap w-full gap-2 sm:gap-4">
+																<DateTooltip date={project.createdAt}>
+																	Created
+																</DateTooltip>
+																<span>
+																	{totalServices}{" "}
+																	{totalServices === 1 ? "service" : "services"}
+																</span>
+															</div>
+														</CardFooter>
+													</Card>
 												</div>
 											);
 										})}

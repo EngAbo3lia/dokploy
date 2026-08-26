@@ -26,12 +26,10 @@ import {
 	findPostgresById,
 	findProjectById,
 	findRedisById,
-		findUserById,
+	findUserById,
 	getAllProjectsHealth,
 	getProjectHealth,
 	IS_CLOUD,
-
-
 	updateProjectById,
 } from "@dokploy/server";
 import { db } from "@dokploy/server/db";

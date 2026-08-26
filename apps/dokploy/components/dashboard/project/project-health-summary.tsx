@@ -12,8 +12,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { DateTooltip } from "@/components/shared/date-tooltip";
 import { DialogAction } from "@/components/shared/dialog-action";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { api } from "@/utils/api";
 import { STATUS_META } from "./health-status";
 
@@ -23,11 +23,7 @@ type Props = {
 	onRetry: () => void;
 };
 
-export const ProjectHealthSummary = ({
-	health,
-	isLoading,
-	onRetry,
-}: Props) => {
+export const ProjectHealthSummary = ({ health, isLoading, onRetry }: Props) => {
 	const [isDeployingAll, setIsDeployingAll] = useState(false);
 	const { mutateAsync: deployCompose } = api.compose.deploy.useMutation();
 
@@ -49,22 +45,21 @@ export const ProjectHealthSummary = ({
 		),
 	];
 	const serverLabel =
-		serverNames.length > 0
-			? serverNames.join(" + ")
-			: "Dokploy Server (local)";
+		serverNames.length > 0 ? serverNames.join(" + ") : "Dokploy Server (local)";
 
 	const domains = services.flatMap((s) => s.domains);
-	const lastDeployAt = services
-		.map((s) =>
-			s.lastDeployment
-				? s.lastDeployment.finishedAt ||
-					s.lastDeployment.startedAt ||
-					s.lastDeployment.createdAt
-				: null,
-		)
-		.filter((d): d is string => Boolean(d))
-		.sort()
-		.at(-1) || null;
+	const lastDeployAt =
+		services
+			.map((s) =>
+				s.lastDeployment
+					? s.lastDeployment.finishedAt ||
+						s.lastDeployment.startedAt ||
+						s.lastDeployment.createdAt
+					: null,
+			)
+			.filter((d): d is string => Boolean(d))
+			.sort()
+			.at(-1) || null;
 
 	const deployAll = () => {
 		setIsDeployingAll(true);
@@ -153,17 +148,14 @@ export const ProjectHealthSummary = ({
 						type="default"
 						onClick={deployAll}
 					>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => deployAll()}
-						>
+						<Button variant="outline" size="sm" onClick={() => deployAll()}>
 							{isDeployingAll ? (
 								<Loader2 className="size-4 animate-spin" />
 							) : (
 								<Play className="size-4" />
 							)}
-							Deploy all{composeServices.length > 0 ? ` ${composeServices.length}` : ""}
+							Deploy all
+							{composeServices.length > 0 ? ` ${composeServices.length}` : ""}
 						</Button>
 					</DialogAction>
 				)}

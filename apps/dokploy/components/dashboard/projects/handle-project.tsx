@@ -190,7 +190,10 @@ export const HandleProject = ({ projectId }: Props) => {
 									<FormItem>
 										<FormLabel>Name</FormLabel>
 										<FormControl>
-											<Input placeholder="Vandelay Industries" {...field} />
+											<Input
+												placeholder="e.g. Production / Acme Corp"
+												{...field}
+											/>
 										</FormControl>
 
 										<FormMessage />

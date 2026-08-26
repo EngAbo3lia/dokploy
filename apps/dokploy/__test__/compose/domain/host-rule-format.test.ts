@@ -34,14 +34,14 @@ describe("Host rule format regression tests", () => {
 		stripPath: false,
 		customEntrypoint: null,
 		middlewares: null,
-	forwardAuthEnabled: false,
-	enabled: true,
-	dnsVerified: false,
-	dnsVerifiedAt: null,
-	sslStatus: "pending",
-	sslCheckedAt: null,
-	environment: "production",
-};
+		forwardAuthEnabled: false,
+		enabled: true,
+		dnsVerified: false,
+		dnsVerifiedAt: null,
+		sslStatus: "pending",
+		sslCheckedAt: null,
+		environment: "production",
+	};
 
 	describe("Host rule format validation", () => {
 		it("should generate Host rule with correct parentheses format", async () => {

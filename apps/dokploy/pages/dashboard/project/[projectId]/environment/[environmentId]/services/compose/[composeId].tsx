@@ -32,9 +32,9 @@ import { ShowSchedules } from "@/components/dashboard/application/schedules/show
 import { ShowVolumeBackups } from "@/components/dashboard/application/volume-backups/show-volume-backups";
 import { AddCommandCompose } from "@/components/dashboard/compose/advanced/add-command";
 import { IsolatedDeploymentTab } from "@/components/dashboard/compose/advanced/add-isolation";
-import { ShowComposeContainers } from "@/components/dashboard/compose/containers/show-compose-containers";
 import { ComposeConfigurationTabs } from "@/components/dashboard/compose/compose-configuration-tabs";
 import { ComposeOverview } from "@/components/dashboard/compose/compose-overview";
+import { ShowComposeContainers } from "@/components/dashboard/compose/containers/show-compose-containers";
 import { DeleteService } from "@/components/dashboard/compose/delete-service";
 import { ShowGeneralCompose } from "@/components/dashboard/compose/general/show";
 import { ShowDockerLogsCompose } from "@/components/dashboard/compose/logs/show";
@@ -395,8 +395,10 @@ const Service = (
 																ipAddress: data.server.ipAddress,
 																metricsConfig: {
 																	server: {
-																		port: data.server.metricsConfig?.server?.port,
-																		token: data.server.metricsConfig?.server?.token,
+																		port: data.server.metricsConfig?.server
+																			?.port,
+																		token:
+																			data.server.metricsConfig?.server?.token,
 																	},
 																},
 															}

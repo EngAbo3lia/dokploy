@@ -38,7 +38,7 @@ export const Secrets = (props: Props) => {
 				</div>
 
 				<Toggle
-					aria-label="Toggle bold"
+					aria-label="Toggle visibility"
 					pressed={isVisible}
 					onPressedChange={setIsVisible}
 				>

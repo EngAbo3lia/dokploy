@@ -6,12 +6,14 @@ export const STATUS_META: Record<
 > = {
 	healthy: {
 		label: "Healthy",
-		badge: "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+		badge:
+			"border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
 		dot: "bg-emerald-500",
 	},
 	degraded: {
 		label: "Degraded",
-		badge: "border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+		badge:
+			"border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400",
 		dot: "bg-amber-500",
 	},
 	deploying: {

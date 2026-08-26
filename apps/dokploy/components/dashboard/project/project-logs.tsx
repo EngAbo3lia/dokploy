@@ -9,6 +9,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
 	Select,
 	SelectContent,
@@ -16,7 +17,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { api } from "@/utils/api";
 
 type ContainerItem = {
@@ -49,15 +49,18 @@ export const ProjectLogs = ({ services }: Props) => {
 	const [error, setError] = useState<string | null>(null);
 	const scrollRef = useRef<HTMLDivElement>(null);
 
-	const selectedService = composeServices.find((s) => s.serviceId === serviceId);
+	const selectedService = composeServices.find(
+		(s) => s.serviceId === serviceId,
+	);
 
 	const loadContainers = useCallback(async () => {
 		if (!selectedService?.appName) return;
 		setContainersLoading(true);
 		setContainerId("");
 		try {
-			const all = (await utils.docker.getContainers.fetch({})) as unknown as
-				ContainerItem[];
+			const all = (await utils.docker.getContainers.fetch(
+				{},
+			)) as unknown as ContainerItem[];
 			const prefix = selectedService.appName.toLowerCase();
 			const matched = (all || []).filter((c) =>
 				c.name.toLowerCase().startsWith(prefix),
@@ -90,7 +93,9 @@ export const ProjectLogs = ({ services }: Props) => {
 			setError(null);
 		} catch (err) {
 			setError(
-				err instanceof Error ? err.message.slice(0, 200) : "Failed to read logs",
+				err instanceof Error
+					? err.message.slice(0, 200)
+					: "Failed to read logs",
 			);
 		} finally {
 			setLogsLoading(false);
@@ -168,9 +173,7 @@ export const ProjectLogs = ({ services }: Props) => {
 						<SelectTrigger className="w-[260px]">
 							<SelectValue
 								placeholder={
-									containersLoading
-										? "Loading containers..."
-										: "Container"
+									containersLoading ? "Loading containers..." : "Container"
 								}
 							/>
 						</SelectTrigger>
@@ -209,11 +212,7 @@ export const ProjectLogs = ({ services }: Props) => {
 				{error && (
 					<div className="flex items-center justify-between rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-700 dark:text-red-400">
 						<span className="truncate">{error}</span>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={loadLogs}
-						>
+						<Button variant="outline" size="sm" onClick={loadLogs}>
 							Retry
 						</Button>
 					</div>

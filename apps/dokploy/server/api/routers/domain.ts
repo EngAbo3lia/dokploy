@@ -1,6 +1,6 @@
 import {
-	createDomain,
 	checkDomainSsl,
+	createDomain,
 	findApplicationById,
 	findDomainById,
 	findDomainsByApplicationId,
