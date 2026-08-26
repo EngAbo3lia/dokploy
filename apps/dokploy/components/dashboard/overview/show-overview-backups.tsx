@@ -3,6 +3,7 @@ import { getBackupOverviewIcon } from "@dokploy/server/services/overview-shared"
 import {
 	ArrowUpDown,
 	CircuitBoard,
+	DatabaseBackup,
 	GlobeIcon,
 	Loader2,
 	RefreshCw,
@@ -11,6 +12,8 @@ import {
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { DB_ENGINE_ICONS } from "@/components/icons/data-tools-icons";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -173,12 +176,7 @@ export const ShowOverviewBackups = () => {
 					</div>
 				</div>
 
-				{isFetching && !isFetched && (
-					<div className="flex items-center justify-center gap-2 py-16 text-muted-foreground">
-						<Loader2 className="size-4 animate-spin" />
-						Loading backups...
-					</div>
-				)}
+				{isFetching && !isFetched && <SkeletonTable rows={5} />}
 
 				{isFetched && isError && (
 					<div className="flex flex-col items-center justify-center gap-2 py-16 text-muted-foreground">
@@ -190,9 +188,13 @@ export const ShowOverviewBackups = () => {
 				)}
 
 				{isFetched && !isError && rows.length === 0 && (
-					<div className="flex items-center justify-center py-16 text-muted-foreground">
-						No backups match the current filters.
-					</div>
+					<EmptyState
+						icon={
+							<DatabaseBackup className="size-8 text-muted-foreground/60" />
+						}
+						title="No backups match the current filters"
+						description="Try adjusting your search or filter criteria."
+					/>
 				)}
 
 				{isFetched && !isError && rows.length > 0 && (

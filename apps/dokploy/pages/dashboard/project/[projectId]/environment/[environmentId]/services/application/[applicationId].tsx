@@ -38,7 +38,7 @@ import { ContainerPaidMonitoring } from "@/components/dashboard/monitoring/paid/
 import { AssignNetworks } from "@/components/dashboard/networks/assign-networks";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdvanceBreadcrumb } from "@/components/shared/advance-breadcrumb";
-import { StatusTooltip } from "@/components/shared/status-tooltip";
+import { StatusDot } from "@/components/shared/status-indicator";
 import { Badge } from "@/components/ui/badge";
 import {
 	Card,
@@ -59,6 +59,15 @@ import { UseKeyboardNav } from "@/hooks/use-keyboard-nav";
 import { appRouter } from "@/server/api/root";
 import { api } from "@/utils/api";
 import { useWhitelabeling } from "@/utils/hooks/use-whitelabeling";
+
+function mapServiceStatus(status: string | undefined | null) {
+	if (!status) return "idle" as const;
+	if (["running", "ready", "healthy"].includes(status))
+		return "running" as const;
+	if (["error", "failed"].includes(status)) return "error" as const;
+	if (["idle", "stopped"].includes(status)) return "stopped" as const;
+	return "idle" as const;
+}
 
 type TabState =
 	| "projects"
@@ -132,7 +141,9 @@ const Service = (
 											icon={data?.icon}
 										/>
 										<div className="absolute -right-1 -top-2 z-10">
-											<StatusTooltip status={data?.applicationStatus} />
+											<StatusDot
+												status={mapServiceStatus(data?.applicationStatus)}
+											/>
 										</div>
 									</div>
 									{data?.name}

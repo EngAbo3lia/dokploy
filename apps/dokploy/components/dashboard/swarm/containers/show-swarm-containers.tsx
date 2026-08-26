@@ -1,14 +1,9 @@
-import {
-	AlertTriangle,
-	Container,
-	Info,
-	Loader2,
-	RefreshCw,
-} from "lucide-react";
+import { AlertTriangle, Container, Info, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
 import { CardTitle } from "@/components/ui/card";
 import { api } from "@/utils/api";
 import {
@@ -199,12 +194,7 @@ export const ShowSwarmContainers = ({ serverId }: Props) => {
 	nodeGroups.sort((a, b) => a.nodeName.localeCompare(b.nodeName));
 
 	if (isLoading) {
-		return (
-			<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[40vh]">
-				<span>Loading containers...</span>
-				<Loader2 className="animate-spin size-4" />
-			</div>
-		);
+		return <SkeletonTable rows={5} />;
 	}
 
 	if (nodesError) {

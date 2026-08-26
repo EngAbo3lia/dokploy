@@ -4,13 +4,21 @@ import { cn } from "@/lib/utils";
 const statusDotVariants = cva("inline-flex shrink-0 rounded-full", {
 	variants: {
 		status: {
-			running: "h-2 w-2 bg-success animate-pulse",
+			running: "h-2 w-2 bg-info animate-pulse",
 			success: "h-2 w-2 bg-success",
+			deploying: "h-2 w-2 bg-info animate-pulse",
+			healthy: "h-2 w-2 bg-success",
+			degraded: "h-2 w-2 bg-warning",
 			warning: "h-2 w-2 bg-warning",
 			error: "h-2 w-2 bg-destructive",
+			failed: "h-2 w-2 bg-destructive",
 			info: "h-2 w-2 bg-info",
 			idle: "h-2 w-2 bg-muted-foreground/50",
 			stopped: "h-2 w-2 bg-muted-foreground/30",
+			cancelled: "h-2 w-2 bg-muted-foreground/50",
+			canceled: "h-2 w-2 bg-muted-foreground/50",
+			pending: "h-2 w-2 bg-muted-foreground/30",
+			done: "h-2 w-2 bg-success",
 		},
 		size: {
 			sm: "h-1.5 w-1.5",
@@ -46,13 +54,21 @@ const statusBadgeVariants = cva(
 	{
 		variants: {
 			status: {
-				running: "bg-success/10 text-success",
+				running: "bg-info/10 text-info",
 				success: "bg-success/10 text-success",
+				deploying: "bg-info/10 text-info",
+				healthy: "bg-success/10 text-success",
+				degraded: "bg-warning/10 text-warning",
 				warning: "bg-warning/10 text-warning",
 				error: "bg-destructive/10 text-destructive",
+				failed: "bg-destructive/10 text-destructive",
 				info: "bg-info/10 text-info",
 				idle: "bg-muted text-muted-foreground",
 				stopped: "bg-muted text-muted-foreground",
+				cancelled: "bg-muted text-muted-foreground",
+				canceled: "bg-muted text-muted-foreground",
+				pending: "bg-muted text-muted-foreground",
+				done: "bg-success/10 text-success",
 			},
 		},
 		defaultVariants: {
@@ -87,11 +103,11 @@ function DeploymentStatus({ status }: { status: string }) {
 			: status === "success"
 				? "success"
 				: status === "failed"
-					? "error"
+					? "failed"
 					: status === "canceled"
-						? "warning"
+						? "cancelled"
 						: status === "queued"
-							? "info"
+							? "pending"
 							: status === "stopped"
 								? "stopped"
 								: "idle"

@@ -2,6 +2,7 @@ import { Package, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AlertBlock } from "@/components/shared/alert-block";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -67,17 +68,19 @@ export const ShowVolumes = ({ id, type }: Props) => {
 			</CardHeader>
 			<CardContent className="flex flex-col gap-4">
 				{data?.mounts.length === 0 ? (
-					<div className="flex w-full flex-col items-center justify-center gap-3 pt-10">
-						<Package className="size-8 text-muted-foreground" />
-						<span className="text-base text-muted-foreground">
-							No volumes/mounts configured
-						</span>
-						{canCreate && (
-							<AddVolumes serviceId={id} refetch={refetch} serviceType={type}>
-								Add Volume
-							</AddVolumes>
-						)}
-					</div>
+					<EmptyState
+						icon={<Package className="size-8 text-muted-foreground/60" />}
+						title="No volumes or mounts configured"
+						description="Add a volume or bind mount to persist data for this service."
+						className="min-h-[40vh]"
+						action={
+							canCreate ? (
+								<AddVolumes serviceId={id} refetch={refetch} serviceType={type}>
+									Add Volume
+								</AddVolumes>
+							) : undefined
+						}
+					/>
 				) : (
 					<div className="flex flex-col pt-2 gap-4">
 						<AlertBlock type="warning">

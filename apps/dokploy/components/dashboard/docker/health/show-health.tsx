@@ -9,6 +9,12 @@ import {
 	Server as ServerIcon,
 } from "lucide-react";
 import { useState } from "react";
+import {
+	Skeleton,
+	SkeletonCard,
+	SkeletonStat,
+	SkeletonTable,
+} from "@/components/shared/skeleton-card";
 import { CodeEditor } from "@/components/shared/code-editor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -229,9 +235,13 @@ export const ShowHealth = ({ serverId }: Props) => {
 					</div>
 
 					{isFetching && !health && (
-						<div className="flex flex-col items-center justify-center gap-2 py-12 text-muted-foreground border border-dashed rounded-xl">
-							<Loader2 className="size-8 animate-spin" />
-							<span>Checking server health…</span>
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 py-12 border border-dashed rounded-xl p-4">
+							<SkeletonStat />
+							<SkeletonStat />
+							<SkeletonStat />
+							<SkeletonStat />
+							<SkeletonStat />
+							<SkeletonStat />
 						</div>
 					)}
 

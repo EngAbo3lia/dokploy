@@ -1,7 +1,15 @@
 import DOMPurify from "dompurify";
-import { CircuitBoard, GlobeIcon, Pencil, Search, X } from "lucide-react";
+import {
+	CircuitBoard,
+	GlobeIcon,
+	ImageIcon,
+	Pencil,
+	Search,
+	X,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -213,9 +221,12 @@ export const ShowIconSettings = ({
 
 					<div className="max-h-[300px] overflow-y-auto border rounded-lg p-4">
 						{displayedIcons.length === 0 ? (
-							<div className="text-center py-8 text-sm text-muted-foreground">
-								No icons found
-							</div>
+							<EmptyState
+								icon={<ImageIcon />}
+								title="No icons found"
+								description="Try a different search query."
+								className="py-8"
+							/>
 						) : (
 							<>
 								<div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">

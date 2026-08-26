@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { GithubIcon } from "@/components/icons/data-tools-icons";
 import { AlertBlock } from "@/components/shared/alert-block";
+import { EmptyState } from "@/components/shared/empty-state";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -362,20 +363,20 @@ export const AddTemplate = ({ environmentId, baseUrl }: Props) => {
 								</div>
 							</div>
 						) : templates.length === 0 ? (
-							<div className="flex flex-col justify-center items-center w-full gap-2 min-h-[50vh]">
-								<SearchIcon className="text-muted-foreground size-6" />
-								<div className="text-xl font-medium text-muted-foreground">
-									{showBookmarksOnly
+							<EmptyState
+								icon={<SearchIcon />}
+								title={
+									showBookmarksOnly
 										? "No bookmarked templates found"
-										: "No templates found"}
-								</div>
-								{showBookmarksOnly && (
-									<p className="text-sm text-muted-foreground">
-										Click the bookmark icon on templates to add them to
-										bookmarks
-									</p>
-								)}
-							</div>
+										: "No templates found"
+								}
+								description={
+									showBookmarksOnly
+										? "Click the bookmark icon on templates to add them to bookmarks"
+										: undefined
+								}
+								className="justify-center min-h-[50vh]"
+							/>
 						) : (
 							<div
 								className={cn(

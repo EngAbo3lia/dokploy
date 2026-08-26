@@ -1,7 +1,8 @@
-import { Copy, Loader2 } from "lucide-react";
+import { Copy, FolderInput, Loader2 } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -239,11 +240,12 @@ export const DuplicateProject = ({
 						<>
 							{allProjects?.filter((p) => p.projectId !== environmentId)
 								.length === 0 ? (
-								<div className="flex flex-col items-center justify-center gap-2 py-4 text-center">
-									<p className="text-sm text-muted-foreground">
-										No other projects available. Create a new project first.
-									</p>
-								</div>
+								<EmptyState
+									icon={<FolderInput />}
+									title="No other projects available"
+									description="Create a new project first before duplicating."
+									className="py-6"
+								/>
 							) : (
 								<>
 									{/* Step 1: Select Project */}

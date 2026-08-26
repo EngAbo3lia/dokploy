@@ -6,6 +6,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { AlertBlock } from "@/components/shared/alert-block";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -154,15 +155,14 @@ export const ManageTraefikPorts = ({ children, serverId }: Props) => {
 						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 							<div className="grid gap-6 py-4">
 								{fields.length === 0 ? (
-									<div className="flex w-full flex-col items-center justify-center gap-3 pt-10">
-										<ArrowRightLeft className="size-8 text-muted-foreground" />
-										<span className="text-base text-muted-foreground text-center">
-											No port mappings configured
-										</span>
-										<p className="text-sm text-muted-foreground text-center">
-											Add one to get started
-										</p>
-									</div>
+									<EmptyState
+										icon={
+											<ArrowRightLeft className="size-8 text-muted-foreground/60" />
+										}
+										title="No port mappings configured"
+										description="Add a port mapping to get started."
+										className="py-10"
+									/>
 								) : (
 									<ScrollArea className="pr-4">
 										<div className="grid gap-4">

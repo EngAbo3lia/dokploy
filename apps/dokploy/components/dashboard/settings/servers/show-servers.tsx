@@ -3,7 +3,6 @@ import {
 	Clock,
 	Key,
 	KeyIcon,
-	Loader2,
 	Network,
 	ServerIcon,
 	Terminal,
@@ -15,6 +14,7 @@ import { useRouter } from "next/router";
 import { toast } from "sonner";
 import { AlertBlock } from "@/components/shared/alert-block";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { SkeletonCard } from "@/components/shared/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -77,9 +77,10 @@ export const ShowServers = () => {
 					</CardHeader>
 					<CardContent className="space-y-2 py-8 border-t">
 						{isPending ? (
-							<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[25vh]">
-								<span>Loading...</span>
-								<Loader2 className="animate-spin size-4" />
+							<div className="min-h-[25vh] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+								<SkeletonCard />
+								<SkeletonCard />
+								<SkeletonCard />
 							</div>
 						) : (
 							<>

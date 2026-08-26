@@ -13,6 +13,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { BreadcrumbSidebar } from "@/components/shared/breadcrumb-sidebar";
 import { DateTooltip } from "@/components/shared/date-tooltip";
+import { EmptyState } from "@/components/shared/empty-state";
 import { FocusShortcutInput } from "@/components/shared/focus-shortcut-input";
 import { TagBadge } from "@/components/shared/tag-badge";
 import { TagFilter } from "@/components/shared/tag-filter";
@@ -296,12 +297,14 @@ export const ShowProjects = () => {
 										</div>
 									</div>
 									{filteredProjects?.length === 0 && (
-										<div className="mt-6 flex h-[50vh] w-full flex-col items-center justify-center space-y-4">
-											<FolderInput className="size-8 self-center text-muted-foreground" />
-											<span className="text-center font-medium text-muted-foreground">
-												No projects found
-											</span>
-										</div>
+										<EmptyState
+											icon={
+												<FolderInput className="size-8 text-muted-foreground/60" />
+											}
+											title="No projects found"
+											description="Create your first project to organize your services and deployments."
+											className="mt-6 h-[50vh]"
+										/>
 									)}
 									<div className="w-full grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-5">
 										{filteredProjects?.map((project) => {

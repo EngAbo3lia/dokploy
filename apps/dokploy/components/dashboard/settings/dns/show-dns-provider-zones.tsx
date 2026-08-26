@@ -1,6 +1,7 @@
 import {
 	ChevronDown,
 	ChevronRight,
+	FileText,
 	Globe,
 	Loader2,
 	Trash2,
@@ -8,6 +9,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,9 +52,12 @@ const ZoneRecords = ({ dnsProviderId, zoneId, zoneName }: ZoneRecordsProps) => {
 				<p className="text-sm text-destructive py-2">{error?.message}</p>
 			)}
 			{data && data.length === 0 && (
-				<p className="text-sm text-muted-foreground py-2">
-					No records found in this zone.
-				</p>
+				<EmptyState
+					icon={<FileText />}
+					title="No records found"
+					description="This zone has no DNS records yet."
+					className="py-6"
+				/>
 			)}
 			{data?.map((record) => {
 				const isEditable = record.type === "A" || record.type === "CNAME";
@@ -174,10 +179,12 @@ export const ShowDnsProviderZones = ({
 					<p className="text-sm text-destructive py-2">{error?.message}</p>
 				)}
 				{data && data.length === 0 && (
-					<p className="text-sm text-muted-foreground py-2">
-						No zones found for this token. Make sure it has access to at least
-						one zone.
-					</p>
+					<EmptyState
+						icon={<FileText />}
+						title="No zones found"
+						description="Make sure this token has access to at least one zone."
+						className="py-6"
+					/>
 				)}
 				{data && data.length > 0 && (
 					<div className="flex flex-col gap-1.5 max-h-[60vh] overflow-y-auto">

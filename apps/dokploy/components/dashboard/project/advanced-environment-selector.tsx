@@ -3,6 +3,7 @@ import { ChevronDownIcon, PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { StatusDot } from "@/components/shared/status-indicator";
 import { AlertBlock } from "@/components/shared/alert-block";
 import { Button } from "@/components/ui/button";
 import {
@@ -238,7 +239,7 @@ export const AdvancedEnvironmentSelector = ({
 											{environment.name} ({servicesCount})
 										</span>
 										{environment.environmentId === currentEnvironmentId && (
-											<div className="w-2 h-2 bg-blue-500 rounded-full" />
+											<StatusDot status="info" size="sm" />
 										)}
 									</div>
 								</DropdownMenuItem>

@@ -1,6 +1,14 @@
 import type { HealthServiceRow } from "@dokploy/server";
-import { Loader2, Radio, ScrollText, Square } from "lucide-react";
+import {
+	Loader2,
+	Radio,
+	ScrollText,
+	Search,
+	Square,
+	Terminal,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -236,9 +244,22 @@ export const ProjectLogs = ({ services }: Props) => {
 							Reading logs...
 						</div>
 					) : filteredLogs.length === 0 ? (
-						<p className="py-10 text-center text-muted-foreground">
-							{search ? "No matching log lines" : "No logs available"}
-						</p>
+						<EmptyState
+							icon={
+								search ? (
+									<Search className="size-8 text-muted-foreground/60" />
+								) : (
+									<Terminal className="size-8 text-muted-foreground/60" />
+								)
+							}
+							title={search ? "No matching log lines" : "No logs available"}
+							description={
+								search
+									? "Try adjusting your search query."
+									: "Logs will appear here once the container produces output."
+							}
+							className="py-6"
+						/>
 					) : (
 						filteredLogs.map((line, index) => (
 							<div

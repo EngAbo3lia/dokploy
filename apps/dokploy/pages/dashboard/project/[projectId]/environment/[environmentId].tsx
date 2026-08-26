@@ -17,7 +17,6 @@ import {
 	History,
 	LayoutDashboard,
 	LayoutGrid,
-	Loader2,
 	Play,
 	PlusIcon,
 	RefreshCw,
@@ -65,11 +64,13 @@ import {
 } from "@/components/icons/data-tools-icons";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdvanceBreadcrumb } from "@/components/shared/advance-breadcrumb";
+import { StatusDot } from "@/components/shared/status-indicator";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
 import { AlertBlock } from "@/components/shared/alert-block";
 import { DateTooltip } from "@/components/shared/date-tooltip";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
 import { FocusShortcutInput } from "@/components/shared/focus-shortcut-input";
-import { StatusTooltip } from "@/components/shared/status-tooltip";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -127,6 +128,15 @@ import { cn } from "@/lib/utils";
 import { appRouter } from "@/server/api/root";
 import { api } from "@/utils/api";
 import { useWhitelabeling } from "@/utils/hooks/use-whitelabeling";
+
+function mapServiceStatus(status: string | undefined | null) {
+	if (!status) return "idle" as const;
+	if (["running", "ready", "healthy"].includes(status))
+		return "running" as const;
+	if (["error", "failed"].includes(status)) return "error" as const;
+	if (["idle", "stopped"].includes(status)) return "stopped" as const;
+	return "idle" as const;
+}
 
 export type Services = {
 	serverId?: string | null;
@@ -308,57 +318,6 @@ export const extractServicesFromEnvironment = (
 	});
 
 	return allServices;
-};
-
-const ServiceRuntimeDot = ({
-	runtime,
-	isDeploying,
-	name,
-}: {
-	runtime: "healthy" | "degraded" | "failed" | "stopped" | "unknown";
-	isDeploying: boolean;
-	name: string;
-}) => {
-	const className = isDeploying
-		? "bg-blue-500"
-		: runtime === "healthy"
-			? "bg-emerald-500"
-			: runtime === "degraded"
-				? "bg-amber-500"
-				: runtime === "failed"
-					? "bg-red-500"
-					: runtime === "stopped"
-						? "bg-muted-foreground/50"
-						: "bg-muted-foreground/40";
-	const label = isDeploying
-		? "Deploying"
-		: runtime === "healthy"
-			? "Running"
-			: runtime === "degraded"
-				? "Degraded"
-				: runtime === "failed"
-					? "Failed"
-					: runtime === "stopped"
-						? "Stopped"
-						: "Unknown";
-	const textColor = isDeploying
-		? "text-blue-600 dark:text-blue-400"
-		: runtime === "healthy"
-			? "text-emerald-600 dark:text-emerald-400"
-			: runtime === "degraded"
-				? "text-amber-600 dark:text-amber-400"
-				: runtime === "failed"
-					? "text-red-600 dark:text-red-400"
-					: "text-muted-foreground";
-	return (
-		<span
-			title={`${label} — ${name}`}
-			className={`inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5 text-[11px] font-medium shadow-sm ${textColor}`}
-		>
-			<span className={`size-1.5 rounded-full ${className}`} />
-			{label}
-		</span>
-	);
 };
 
 const EnvironmentPage = (
@@ -1131,9 +1090,8 @@ const EnvironmentPage = (
 
 	if (isLoading) {
 		return (
-			<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[60vh]">
-				<span>Loading...</span>
-				<Loader2 className="animate-spin size-4" />
+			<div className="min-h-[60vh]">
+				<SkeletonTable rows={6} />
 			</div>
 		);
 	}
@@ -1456,13 +1414,14 @@ const EnvironmentPage = (
 																</DialogHeader>
 																<div className="flex flex-col gap-4">
 																	{allProjects?.length === 0 ? (
-																		<div className="flex flex-col items-center justify-center gap-2 py-4">
-																			<FolderInput className="h-8 w-8 text-muted-foreground" />
-																			<p className="text-sm text-muted-foreground text-center">
-																				No other projects available. Create a
-																				new project first to move services.
-																			</p>
-																		</div>
+																		<EmptyState
+																			icon={
+																				<FolderInput className="size-8 text-muted-foreground/60" />
+																			}
+																			title="No other projects available"
+																			description="Create a new project first before moving services."
+																			className="py-8"
+																		/>
 																	) : (
 																		<>
 																			{/* Step 1: Select Project */}
@@ -1807,22 +1766,23 @@ const EnvironmentPage = (
 
 									<div className="flex w-full gap-8">
 										{emptyServices ? (
-											<div className="flex h-[70vh] w-full flex-col items-center justify-center">
-												<FolderInput className="size-8 self-center text-muted-foreground" />
-												<span className="text-center font-medium text-muted-foreground">
-													No services added yet. Click on Create Service.
-												</span>
-											</div>
+											<EmptyState
+												icon={
+													<FolderInput className="size-8 text-muted-foreground/60" />
+												}
+												title="No services added yet"
+												description="Create your first service to get started in this environment."
+												className="h-[70vh]"
+											/>
 										) : filteredServices.length === 0 ? (
-											<div className="flex h-[70vh] w-full flex-col items-center justify-center">
-												<Search className="size-8 self-center text-muted-foreground" />
-												<span className="text-center font-medium text-muted-foreground">
-													No services found with the current filters
-												</span>
-												<span className="text-sm text-muted-foreground">
-													Try adjusting your search or filters
-												</span>
-											</div>
+											<EmptyState
+												icon={
+													<Search className="size-8 text-muted-foreground/60" />
+												}
+												title="No services found with the current filters"
+												description="Try adjusting your search or filters."
+												className="h-[70vh]"
+											/>
 										) : (
 											<div className="flex w-full flex-col gap-4">
 												<div className="gap-5 pb-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
@@ -1845,15 +1805,26 @@ const EnvironmentPage = (
 																					service.id,
 																				);
 																				return health ? (
-																					<ServiceRuntimeDot
-																						runtime={health.runtime}
-																						isDeploying={health.isDeploying}
-																						name={service.name}
-																					/>
+																					(() => {
+																						const dotStatus = health.isDeploying
+																							? "running"
+																							: health.runtime === "healthy"
+																								? "success"
+																								: health.runtime === "degraded"
+																									? "warning"
+																									: health.runtime === "failed"
+																										? "error"
+																										: "stopped";
+																						return (
+																							<span
+																								title={`${health.runtime}${health.isDeploying ? " (deploying)" : ""} — ${service.name}`}
+																							>
+																								<StatusDot status={dotStatus} />
+																							</span>
+																						);
+																					})()
 																				) : (
-																					<StatusTooltip
-																						status={service.status}
-																					/>
+																					<StatusDot status="idle" />
 																				);
 																			})()}
 																		</div>

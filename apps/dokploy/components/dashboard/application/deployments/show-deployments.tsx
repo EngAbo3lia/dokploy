@@ -7,8 +7,6 @@ import {
 	Clock,
 	Copy,
 	Filter,
-	Loader2,
-	RefreshCcw,
 	RocketIcon,
 	Search,
 	Settings,
@@ -17,10 +15,15 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DeploymentDetail } from "@/components/dashboard/deployment/deployment-detail";
+import {
+	DeploymentStatus,
+	StatusBadge,
+} from "@/components/shared/status-indicator";
 import { AlertBlock } from "@/components/shared/alert-block";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
 import { DateTooltip } from "@/components/shared/date-tooltip";
 import { DialogAction } from "@/components/shared/dialog-action";
-import { StatusTooltip } from "@/components/shared/status-tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -65,13 +68,6 @@ export const formatDuration = (seconds: number) => {
 	const minutes = Math.floor(seconds / 60);
 	const remainingSeconds = seconds % 60;
 	return `${minutes}m ${remainingSeconds}s`;
-};
-
-const STATUS_BADGE: Record<string, string> = {
-	running: "border-blue-500/20 bg-blue-500/10 text-blue-600 dark:text-blue-400",
-	done: "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-	error: "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400",
-	cancelled: "border-muted-foreground/20 bg-muted/40 text-muted-foreground",
 };
 
 export const ShowDeployments = ({
@@ -367,23 +363,30 @@ export const ShowDeployments = ({
 				)}
 
 				{isLoading ? (
-					<div className="flex w-full flex-row items-center justify-center gap-3 pt-10 min-h-[25vh]">
-						<div className="flex flex-col items-center gap-3">
-							<div className="size-6 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
-							<span className="text-sm text-muted-foreground">
-								Loading deployments...
-							</span>
-						</div>
-					</div>
+					<SkeletonTable rows={5} />
 				) : !deployments || deployments.length === 0 ? (
-					<div className="flex w-full flex-col items-center justify-center gap-3 pt-10 min-h-[25vh]">
-						<RocketIcon className="size-8 text-muted-foreground" />
-						<span className="text-sm text-muted-foreground">
-							{search || statusFilter !== "all" || environmentFilter !== "all"
+					<EmptyState
+						icon={
+							search ||
+							statusFilter !== "all" ||
+							environmentFilter !== "all" ? (
+								<Search className="size-8 text-muted-foreground/60" />
+							) : (
+								<RocketIcon className="size-8 text-muted-foreground/60" />
+							)
+						}
+						title={
+							search || statusFilter !== "all" || environmentFilter !== "all"
 								? "No deployments match your filters"
-								: "No deployments found"}
-						</span>
-					</div>
+								: "No deployments found"
+						}
+						description={
+							search || statusFilter !== "all" || environmentFilter !== "all"
+								? "Try adjusting your search or filter criteria."
+								: "Deployments will appear here after your first deploy."
+						}
+						className="min-h-[25vh] py-10"
+					/>
 				) : (
 					<div className="flex flex-col gap-0">
 						<div className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 items-center px-4 py-2 text-xs text-muted-foreground border-b">
@@ -393,7 +396,7 @@ export const ShowDeployments = ({
 							<span className="w-20 text-right">Status</span>
 							<span className="w-32 text-right">Date</span>
 						</div>
-						{deployments.map((deployment, index) => {
+						{deployments.map((deployment, _index) => {
 							const titleText = deployment?.title?.trim() || "";
 							const needsTruncation = titleText.length > MAX_DESCRIPTION_LENGTH;
 							const isExpanded = expandedDescriptions.has(
@@ -416,10 +419,7 @@ export const ShowDeployments = ({
 									key={deployment.deploymentId}
 									className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 items-center px-4 py-3 border-b last:border-b-0 hover:bg-muted/30 transition-colors"
 								>
-									<StatusTooltip
-										status={deployment?.status}
-										className="size-2.5"
-									/>
+									<DeploymentStatus status={deployment.status || "idle"} />
 
 									<div className="flex flex-col gap-0.5 min-w-0">
 										<div className="flex items-center gap-2">
@@ -428,12 +428,19 @@ export const ShowDeployments = ({
 													? titleText
 													: truncateDescription(titleText)}
 											</span>
-											<Badge
-												variant="outline"
-												className={`text-[10px] shrink-0 ${STATUS_BADGE[deployment.status || ""] || ""}`}
+											<StatusBadge
+												status={
+													deployment.status === "done"
+														? "success"
+														: deployment.status === "running"
+															? "running"
+															: deployment.status === "error"
+																? "failed"
+																: "idle"
+												}
 											>
 												{deployment.status}
-											</Badge>
+											</StatusBadge>
 											{deployment.environment && (
 												<Badge
 													variant="secondary"
@@ -502,12 +509,19 @@ export const ShowDeployments = ({
 									</div>
 
 									<div className="w-20 text-right">
-										<Badge
-											variant="outline"
-											className={`text-[10px] ${STATUS_BADGE[deployment.status || ""] || ""}`}
+										<StatusBadge
+											status={
+												deployment.status === "done"
+													? "success"
+													: deployment.status === "running"
+														? "running"
+														: deployment.status === "error"
+															? "failed"
+															: "idle"
+											}
 										>
 											{deployment.status}
-										</Badge>
+										</StatusBadge>
 									</div>
 
 									<div className="flex items-center gap-2 w-32 justify-end">

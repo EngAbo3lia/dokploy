@@ -23,7 +23,7 @@ const badgeVariants = cva(
 				yellow:
 					"border-transparent select-none items-center whitespace-nowrap font-medium bg-warning/10 dark:text-warning text-warning text-xs h-4 px-1 py-1 rounded-md",
 				orange:
-					"border-transparent select-none items-center whitespace-nowrap font-medium bg-orange-600/20 dark:bg-orange-500/15 dark:text-orange-500 text-orange-600 text-xs h-4 px-1 py-1 rounded-md",
+					"border-transparent select-none items-center whitespace-nowrap font-medium bg-warning/10 text-warning text-xs h-4 px-1 py-1 rounded-md",
 				green:
 					"border-transparent select-none items-center whitespace-nowrap font-medium bg-success/10 dark:text-success text-success text-xs h-4 px-1 py-1 rounded-md",
 				blue: "border-transparent select-none items-center whitespace-nowrap font-medium bg-info/10 dark:text-info text-info text-xs h-4 px-1 py-1 rounded-md",

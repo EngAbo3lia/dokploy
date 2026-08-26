@@ -1,8 +1,7 @@
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { badgeStateColor } from "@/components/dashboard/application/logs/show";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/shared/status-indicator";
 import { Button } from "@/components/ui/button";
 import {
 	CardContent,
@@ -21,6 +20,14 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { api } from "@/utils/api";
+
+function mapContainerState(state: string) {
+	if (["running", "ready"].includes(state)) return "success" as const;
+	if (["exited", "shutdown"].includes(state)) return "error" as const;
+	if (["accepted", "created"].includes(state)) return "info" as const;
+	return "idle" as const;
+}
+
 import { ContainerFreeMonitoring } from "./show-free-container-monitoring";
 
 interface Props {
@@ -98,9 +105,9 @@ export const ComposeFreeMonitoring = ({
 										value={container.name}
 									>
 										{container.name} ({container.containerId}){" "}
-										<Badge variant={badgeStateColor(container.state)}>
+										<StatusBadge status={mapContainerState(container.state)}>
 											{container.state}
-										</Badge>
+										</StatusBadge>
 									</SelectItem>
 								))}
 								<SelectLabel>Containers ({data?.length})</SelectLabel>

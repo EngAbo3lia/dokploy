@@ -5,6 +5,7 @@ import {
 	CheckIcon,
 	ChevronsUpDown,
 	Copy,
+	DatabaseBackup,
 	DatabaseZap,
 	RefreshCw,
 	RotateCcw,
@@ -14,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { DrawerLogs } from "@/components/shared/drawer-logs";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -454,14 +456,13 @@ export const RestoreBackup = ({
 													<div className="py-6 text-center text-sm">
 														Loading backup files...
 													</div>
-												) : files.length === 0 && search ? (
-													<div className="py-6 text-center text-sm text-muted-foreground">
-														No backup files found for "{search}"
-													</div>
 												) : files.length === 0 ? (
-													<div className="py-6 text-center text-sm text-muted-foreground">
-														No backup files available
-													</div>
+													<EmptyState
+														icon={<DatabaseBackup />}
+														title="No backup files found"
+														description="Try a different search or create a new backup."
+														className="py-6"
+													/>
 												) : (
 													<ScrollArea className="h-64">
 														<CommandGroup className="w-96">

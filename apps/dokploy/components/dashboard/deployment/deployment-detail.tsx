@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { DeploymentStatus } from "@/components/shared/status-indicator";
 import { DateTooltip } from "@/components/shared/date-tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,13 +20,6 @@ interface Props {
 	deploymentId: string;
 	onBack: () => void;
 }
-
-const STATUS_STYLES: Record<string, string> = {
-	running: "border-blue-500/20 bg-blue-500/10 text-blue-600 dark:text-blue-400",
-	done: "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-	error: "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400",
-	cancelled: "border-muted-foreground/20 bg-muted/40 text-muted-foreground",
-};
 
 export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 	const utils = api.useUtils();
@@ -100,12 +94,7 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 					Back
 				</Button>
 				<h2 className="text-lg font-semibold">{deployment.title}</h2>
-				<Badge
-					variant="outline"
-					className={STATUS_STYLES[deployment.status || ""] || ""}
-				>
-					{deployment.status}
-				</Badge>
+				<DeploymentStatus status={deployment.status || "idle"} />
 				{deployment.environment && (
 					<Badge variant="secondary">{deployment.environment}</Badge>
 				)}

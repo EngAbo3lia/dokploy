@@ -13,9 +13,9 @@ import {
 import type { inferRouterOutputs } from "@trpc/server";
 import {
 	ArrowUpDown,
-	Loader2,
 	Network,
 	RotateCcw,
+	Search,
 	ShieldCheck,
 	Trash2,
 } from "lucide-react";
@@ -25,6 +25,9 @@ import { HandleNetwork } from "@/components/dashboard/networks/handle-network";
 import { ShowNetworkConfig } from "@/components/dashboard/networks/show-network-config";
 import { SyncNetworks } from "@/components/dashboard/networks/sync-networks";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonCard } from "@/components/shared/skeleton-card";
+import { StatusBadge } from "@/components/shared/status-indicator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -166,7 +169,7 @@ export const ShowNetworks = ({ serverId }: Props) => {
 							syncStatus &&
 							(missingIds.has(row.original.networkId) ? (
 								<>
-									<Badge variant="red">Missing in Docker</Badge>
+									<StatusBadge status="error">Missing in Docker</StatusBadge>
 									<Button
 										variant="outline"
 										size="xs"
@@ -195,7 +198,7 @@ export const ShowNetworks = ({ serverId }: Props) => {
 									</Button>
 								</>
 							) : (
-								<Badge variant="green">In sync</Badge>
+								<StatusBadge status="success">In sync</StatusBadge>
 							))}
 					</div>
 				),
@@ -374,9 +377,8 @@ export const ShowNetworks = ({ serverId }: Props) => {
 
 					<CardContent className="space-y-4 py-8 border-t">
 						{isLoading ? (
-							<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[45vh]">
-								<span>Loading...</span>
-								<Loader2 className="animate-spin size-4" />
+							<div className="min-h-[45vh]">
+								<SkeletonCard />
 							</div>
 						) : !networks?.length ? (
 							<div className="flex min-h-[45vh] w-full flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8">
@@ -449,9 +451,14 @@ export const ShowNetworks = ({ serverId }: Props) => {
 												<TableRow>
 													<TableCell
 														colSpan={columns.length}
-														className="h-24 text-center text-muted-foreground"
+														className="text-center"
 													>
-														No networks match your filters.
+														<EmptyState
+															icon={<Search />}
+															title="No networks match your filters"
+															description="Try adjusting your search or filter criteria."
+															className="py-8"
+														/>
 													</TableCell>
 												</TableRow>
 											)}

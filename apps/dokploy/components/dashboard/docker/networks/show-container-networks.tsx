@@ -1,3 +1,5 @@
+import { Network } from "lucide-react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import {
 	Dialog,
@@ -73,9 +75,12 @@ export const ShowContainerNetworks = ({ containerId, serverId }: Props) => {
 				</DialogHeader>
 				<div className="overflow-auto max-h-[70vh]">
 					{entries.length === 0 ? (
-						<div className="text-center text-muted-foreground py-8">
-							No networks found for this container.
-						</div>
+						<EmptyState
+							icon={<Network />}
+							title="No networks found"
+							description="This container is not attached to any networks."
+							className="py-8"
+						/>
 					) : (
 						<Table>
 							<TableHeader>

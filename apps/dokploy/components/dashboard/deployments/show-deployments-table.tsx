@@ -19,13 +19,15 @@ import {
 	CircuitBoard,
 	ExternalLink,
 	GlobeIcon,
-	Loader2,
 	Rocket,
 	Server,
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { DeploymentStatus } from "@/components/shared/status-indicator";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -48,22 +50,6 @@ import { api } from "@/utils/api";
 
 type DeploymentRow =
 	inferRouterOutputs<AppRouter>["deployment"]["allCentralized"][number];
-
-const statusVariants: Record<
-	string,
-	| "default"
-	| "secondary"
-	| "destructive"
-	| "outline"
-	| "yellow"
-	| "green"
-	| "red"
-> = {
-	running: "yellow",
-	done: "green",
-	error: "red",
-	cancelled: "outline",
-};
 
 function getServiceInfo(d: DeploymentRow) {
 	const app = d.application;
@@ -386,11 +372,7 @@ export function ShowDeploymentsTable() {
 				),
 				cell: ({ row }: { row: { original: DeploymentRow } }) => {
 					const status = row.original.status ?? "running";
-					return (
-						<Badge variant={statusVariants[status] ?? "secondary"}>
-							{status}
-						</Badge>
-					);
+					return <DeploymentStatus status={status} />;
 				},
 			},
 			{
@@ -494,10 +476,7 @@ export function ShowDeploymentsTable() {
 			</div>
 			<div className="px-0">
 				{isLoading ? (
-					<div className="flex gap-4 w-full items-center justify-center min-h-[45vh] text-muted-foreground">
-						<Loader2 className="size-4 animate-spin" />
-						<span>Loading deployments...</span>
-					</div>
+					<SkeletonTable rows={5} />
 				) : (
 					<>
 						<div className="rounded-md border overflow-x-auto">
@@ -538,14 +517,14 @@ export function ShowDeploymentsTable() {
 												colSpan={columns.length}
 												className=" text-center"
 											>
-												<div className="flex flex-col min-h-[45vh] items-center justify-center gap-2 text-muted-foreground">
-													<Rocket className="size-8" />
-													<p className="font-medium">No deployments found</p>
-													<p className="text-sm">
-														Deployments from applications and compose will
-														appear here.
-													</p>
-												</div>
+												<EmptyState
+													icon={
+														<Rocket className="size-8 text-muted-foreground/60" />
+													}
+													title="No deployments found"
+													description="Deployments from applications and compose will appear here."
+													className="min-h-[45vh]"
+												/>
 											</TableCell>
 										</TableRow>
 									)}

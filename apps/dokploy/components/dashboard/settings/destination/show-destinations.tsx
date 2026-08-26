@@ -1,6 +1,8 @@
-import { Database, FolderUp, Loader2, Trash2 } from "lucide-react";
+import { Database, FolderUp, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonCard } from "@/components/shared/skeleton-card";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -33,21 +35,25 @@ export const ShowDestinations = () => {
 					</CardHeader>
 					<CardContent className="space-y-2 py-8 border-t">
 						{isPending ? (
-							<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[25vh]">
-								<span>Loading...</span>
-								<Loader2 className="animate-spin size-4" />
+							<div className="min-h-[25vh]">
+								<SkeletonCard />
 							</div>
 						) : (
 							<>
 								{data?.length === 0 ? (
-									<div className="flex flex-col items-center gap-3  min-h-[25vh] justify-center">
-										<FolderUp className="size-8 self-center text-muted-foreground" />
-										<span className="text-base text-muted-foreground">
-											To create a backup it is required to set at least 1
-											provider.
-										</span>
-										{permissions?.destination.create && <HandleDestinations />}
-									</div>
+									<EmptyState
+										icon={
+											<FolderUp className="size-8 text-muted-foreground/60" />
+										}
+										title="No backup destinations configured"
+										description="Set up at least one S3-compatible destination to enable backups."
+										className="min-h-[25vh]"
+										action={
+											permissions?.destination.create ? (
+												<HandleDestinations />
+											) : undefined
+										}
+									/>
 								) : (
 									<div className="flex flex-col gap-4  min-h-[25vh]">
 										<div className="flex flex-col gap-4 rounded-lg ">

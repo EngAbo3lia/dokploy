@@ -38,7 +38,7 @@ export const StatusTooltip = ({ status, className }: Props) => {
 					)}
 					{status === "done" && (
 						<div
-							className={cn("size-3.5 rounded-full bg-green-500", className)}
+							className={cn("size-3.5 rounded-full bg-success", className)}
 						/>
 					)}
 					{status === "cancelled" && (
@@ -51,7 +51,7 @@ export const StatusTooltip = ({ status, className }: Props) => {
 					)}
 					{status === "running" && (
 						<div
-							className={cn("size-3.5 rounded-full bg-yellow-500", className)}
+							className={cn("size-3.5 rounded-full bg-warning", className)}
 						/>
 					)}
 				</TooltipTrigger>

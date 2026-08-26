@@ -1,12 +1,17 @@
 import { IS_CLOUD } from "@dokploy/server/constants";
 import { validateRequest } from "@dokploy/server/lib/auth";
 import { hasPermission } from "@dokploy/server/services/permission";
-import { Loader2 } from "lucide-react";
 import type { GetServerSidePropsContext } from "next";
 import type { ReactElement } from "react";
 import { ContainerFreeMonitoring } from "@/components/dashboard/monitoring/free/container/show-free-container-monitoring";
 import { ShowPaidMonitoring } from "@/components/dashboard/monitoring/paid/servers/show-paid-monitoring";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import {
+	Skeleton,
+	SkeletonCard,
+	SkeletonStat,
+	SkeletonTable,
+} from "@/components/shared/skeleton-card";
 import { Card } from "@/components/ui/card";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { api } from "@/utils/api";
@@ -37,11 +42,12 @@ const Dashboard = () => {
 				to get more features.
 			</AlertBlock> */}
 			{isPending ? (
-				<Card className="bg-sidebar  p-2.5 rounded-xl  mx-auto  items-center">
-					<div className="rounded-xl bg-background flex shadow-md px-4 w-full min-h-[50vh] justify-center items-center text-muted-foreground">
-						Loading... <Loader2 className="h-4 w-4 animate-spin" />
-					</div>
-				</Card>
+				<div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+					<SkeletonStat />
+					<SkeletonStat />
+					<SkeletonStat />
+					<SkeletonStat />
+				</div>
 			) : (
 				<>
 					{/* {monitoring?.enabledFeatures && (

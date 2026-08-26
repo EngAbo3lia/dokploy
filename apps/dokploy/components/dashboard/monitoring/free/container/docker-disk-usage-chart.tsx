@@ -1,5 +1,11 @@
-import { Loader2, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { useMemo } from "react";
+import {
+	Skeleton,
+	SkeletonCard,
+	SkeletonStat,
+	SkeletonTable,
+} from "@/components/shared/skeleton-card";
 import { Cell, Label, Pie, PieChart } from "recharts";
 import { Button } from "@/components/ui/button";
 import {
@@ -77,11 +83,7 @@ export const DockerDiskUsageChart = () => {
 	}, [data]);
 
 	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center h-64">
-				<Loader2 className="size-5 animate-spin text-muted-foreground" />
-			</div>
-		);
+		return <Skeleton className="h-64 w-full" />;
 	}
 
 	if (chartData.length === 0) {

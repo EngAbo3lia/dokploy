@@ -1,7 +1,9 @@
 import { formatDistanceToNow } from "date-fns";
-import { KeyRound, Loader2, Trash2 } from "lucide-react";
+import { KeyRound, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonCard } from "@/components/shared/skeleton-card";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -35,20 +37,25 @@ export const ShowDestinations = () => {
 					</CardHeader>
 					<CardContent className="space-y-2 py-8 border-t">
 						{isPending ? (
-							<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[25vh]">
-								<span>Loading...</span>
-								<Loader2 className="animate-spin size-4" />
+							<div className="min-h-[25vh]">
+								<SkeletonCard />
 							</div>
 						) : (
 							<>
 								{data?.length === 0 ? (
-									<div className="flex flex-col items-center gap-3  min-h-[25vh] justify-center">
-										<KeyRound className="size-8 self-center text-muted-foreground" />
-										<span className="text-base text-muted-foreground text-center">
-											You don't have any SSH keys
-										</span>
-										{permissions?.sshKeys.create && <HandleSSHKeys />}
-									</div>
+									<EmptyState
+										icon={
+											<KeyRound className="size-8 text-muted-foreground/60" />
+										}
+										title="No SSH keys"
+										description="Add an SSH key to enable deployments to remote servers."
+										className="min-h-[25vh]"
+										action={
+											permissions?.sshKeys.create ? (
+												<HandleSSHKeys />
+											) : undefined
+										}
+									/>
 								) : (
 									<div className="flex flex-col gap-4  min-h-[25vh]">
 										<div className="flex flex-col gap-4 rounded-lg ">

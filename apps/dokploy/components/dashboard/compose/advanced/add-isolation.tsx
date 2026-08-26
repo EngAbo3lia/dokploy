@@ -1,12 +1,18 @@
 import { standardSchemaResolver as zodResolver } from "@hookform/resolvers/standard-schema";
-import { AlertTriangle, Loader2 } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { AlertBlock } from "@/components/shared/alert-block";
 import { CodeEditor } from "@/components/shared/code-editor";
-import { Badge } from "@/components/ui/badge";
+import {
+	Skeleton,
+	SkeletonCard,
+	SkeletonStat,
+	SkeletonTable,
+} from "@/components/shared/skeleton-card";
+import { StatusBadge } from "@/components/shared/status-indicator";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -114,7 +120,7 @@ export const IsolatedDeploymentTab = ({ composeId }: Props) => {
 			<CardHeader>
 				<CardTitle className="text-xl flex items-center gap-2">
 					Enable Isolated Deployment
-					<Badge variant="yellow">Deprecated</Badge>
+					<StatusBadge status="warning">Deprecated</StatusBadge>
 				</CardTitle>
 				<CardDescription>
 					Configure isolated deployment to the compose file.
@@ -221,12 +227,7 @@ export const IsolatedDeploymentTab = ({ composeId }: Props) => {
 										</DialogHeader>
 										<div className="flex flex-col gap-4 overflow-auto">
 											{isPreviewLoading ? (
-												<div className="flex flex-col items-center justify-center py-12 gap-4">
-													<Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-													<p className="text-muted-foreground">
-														Generating compose preview...
-													</p>
-												</div>
+												<Skeleton className="h-64 w-full" />
 											) : (
 												<pre>
 													<CodeEditor

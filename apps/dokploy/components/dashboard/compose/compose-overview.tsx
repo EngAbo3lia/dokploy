@@ -1,6 +1,5 @@
 import {
 	Boxes,
-	CheckCircle2,
 	Cpu,
 	GitBranch,
 	Globe2,
@@ -9,10 +8,10 @@ import {
 	Play,
 	RefreshCw,
 	Server,
-	TriangleAlert,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { StatusBadge } from "@/components/shared/status-indicator";
 import { DateTooltip } from "@/components/shared/date-tooltip";
 import { Button } from "@/components/ui/button";
 import {
@@ -172,39 +171,16 @@ export const ComposeOverview = ({
 		(c) => c.status.includes("(unhealthy)") || c.state === "restarting",
 	);
 
-	const runtimeBadge =
+	const runtimeStatus =
 		containers.length === 0
-			? {
-					label: "Unknown",
-					className: "border-border bg-muted/40 text-muted-foreground",
-					dot: "bg-muted-foreground/40",
-				}
+			? { label: "Unknown", status: "idle" as const }
 			: degraded
-				? {
-						label: "Degraded",
-						className:
-							"border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400",
-						dot: "bg-amber-500",
-					}
+				? { label: "Degraded", status: "warning" as const }
 				: running === containers.length
-					? {
-							label: "Running",
-							className:
-								"border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-							dot: "bg-emerald-500",
-						}
+					? { label: "Running", status: "success" as const }
 					: running > 0
-						? {
-								label: "Degraded",
-								className:
-									"border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400",
-								dot: "bg-amber-500",
-							}
-						: {
-								label: "Stopped",
-								className: "border-border bg-muted/40 text-muted-foreground",
-								dot: "bg-muted-foreground/50",
-							};
+						? { label: "Degraded", status: "warning" as const }
+						: { label: "Stopped", status: "stopped" as const };
 
 	const domains = composeData?.domains || [];
 
@@ -213,12 +189,9 @@ export const ComposeOverview = ({
 			<Card>
 				<CardContent className="flex flex-row flex-wrap items-center justify-between gap-4 p-6">
 					<div className="flex flex-row items-center gap-3">
-						<span
-							className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium ${runtimeBadge.className}`}
-						>
-							<span className={`size-2 rounded-full ${runtimeBadge.dot}`} />
-							{runtimeBadge.label}
-						</span>
+						<StatusBadge status={runtimeStatus.status}>
+							{runtimeStatus.label}
+						</StatusBadge>
 						<span className="text-sm text-muted-foreground">
 							{containers.length} containers · {running} running · {healthy}{" "}
 							healthy
@@ -395,21 +368,12 @@ export const ComposeOverview = ({
 						)}
 						<div className="mt-4 flex flex-wrap gap-2">
 							{containers.slice(0, 6).map((container) => (
-								<span
+								<StatusBadge
 									key={container.containerId}
-									className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[11px] font-medium ${
-										container.state === "running"
-											? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-											: "border-border bg-muted/40 text-muted-foreground"
-									}`}
+									status={container.state === "running" ? "success" : "stopped"}
 								>
-									{container.state === "running" ? (
-										<CheckCircle2 className="size-3" />
-									) : (
-										<TriangleAlert className="size-3" />
-									)}
 									{container.name}
-								</span>
+								</StatusBadge>
 							))}
 						</div>
 					</CardContent>

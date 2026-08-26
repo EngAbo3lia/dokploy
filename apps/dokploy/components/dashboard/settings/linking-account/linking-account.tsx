@@ -3,6 +3,7 @@
 import { Link2, Loader2, Unlink } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -135,9 +136,12 @@ export function LinkingAccount() {
 								Loading...
 							</div>
 						) : socialAccounts.length === 0 ? (
-							<p className="text-sm text-muted-foreground py-2">
-								No social accounts linked yet.
-							</p>
+							<EmptyState
+								icon={<Link2 />}
+								title="No social accounts linked"
+								description="Link a social account to enable single sign-on."
+								className="py-6"
+							/>
 						) : (
 							<ul className="space-y-2">
 								{socialAccounts.map((acc) => (

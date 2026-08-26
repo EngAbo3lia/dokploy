@@ -1,9 +1,10 @@
 "use client";
 
 import type { inferRouterOutputs } from "@trpc/server";
-import { ArrowRight, ListTodo, Loader2, XCircle } from "lucide-react";
+import { ArrowRight, ListTodo, XCircle } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
 import { Button } from "@/components/ui/button";
 import {
 	Table,
@@ -90,10 +91,7 @@ export function ShowQueueTable(props: { embedded?: boolean }) {
 	return (
 		<div className="px-0">
 			{isLoading ? (
-				<div className="flex gap-4 w-full items-center justify-center min-h-[30vh] text-muted-foreground">
-					<Loader2 className="size-4 animate-spin" />
-					<span>Loading queue...</span>
-				</div>
+				<SkeletonTable rows={5} />
 			) : (
 				<div className="rounded-md border overflow-x-auto">
 					<Table>

@@ -132,9 +132,7 @@ function Input({
 				inputElement
 			)}
 			{errorMessage && (
-				<span className="text-sm text-red-600 text-secondary-foreground">
-					{errorMessage}
-				</span>
+				<span className="text-sm text-destructive">{errorMessage}</span>
 			)}
 		</>
 	);

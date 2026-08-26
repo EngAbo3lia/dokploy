@@ -1,10 +1,11 @@
 import { standardSchemaResolver as zodResolver } from "@hookform/resolvers/standard-schema";
-import { InfoIcon, Plus, Trash2 } from "lucide-react";
+import { InfoIcon, Plus, SlidersHorizontal, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { AlertBlock } from "@/components/shared/alert-block";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -513,10 +514,12 @@ export const ShowResources = ({ id, type }: Props) => {
 							)}
 
 							{fields.length === 0 && (
-								<p className="text-sm text-muted-foreground">
-									No ulimits configured. Click &quot;Add Ulimit&quot; to set
-									resource limits.
-								</p>
+								<EmptyState
+									icon={<SlidersHorizontal />}
+									title="No ulimits configured"
+									description='Click "Add Ulimit" to set resource limits.'
+									className="py-8"
+								/>
 							)}
 						</div>
 

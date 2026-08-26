@@ -1,12 +1,7 @@
-import {
-	Boxes,
-	HelpCircle,
-	Loader2,
-	LockIcon,
-	MoreHorizontal,
-} from "lucide-react";
+import { Boxes, HelpCircle, LockIcon, MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { DateTooltip } from "@/components/shared/date-tooltip";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
 import { DialogAction } from "@/components/shared/dialog-action";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -77,9 +72,7 @@ export const ShowNodes = ({ serverId }: Props) => {
 					</CardHeader>
 					<CardContent className="space-y-2 py-8 border-t min-h-[35vh]">
 						{isPending ? (
-							<div className="flex items-center justify-center w-full h-[40vh]">
-								<Loader2 className="size-8 animate-spin text-muted-foreground" />
-							</div>
+							<SkeletonTable rows={5} />
 						) : haveAtLeastOneRegistry ? (
 							<div className="grid md:grid-cols-1 gap-4">
 								<Table>

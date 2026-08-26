@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
 	Popover,
@@ -112,18 +113,20 @@ export function AnalyzeLogs({ logs, context }: Props) {
 				<div className="p-4 space-y-3">
 					{!data?.analysis ? (
 						providers && providers.length === 0 ? (
-							<div className="flex flex-col items-center gap-3 py-2 text-center">
-								<p className="text-sm text-muted-foreground">
-									No AI providers configured. Set up a provider to start
-									analyzing logs.
-								</p>
-								<Button size="sm" variant="outline" asChild>
-									<Link href="/dashboard/settings/ai">
-										<Settings className="mr-2 h-3.5 w-3.5" />
-										Configure AI Provider
-									</Link>
-								</Button>
-							</div>
+							<EmptyState
+								icon={<Bot />}
+								title="No AI providers configured"
+								description="Set up an AI provider to start analyzing logs."
+								className="py-6"
+								action={
+									<Button size="sm" variant="outline" asChild>
+										<Link href="/dashboard/settings/ai">
+											<Settings className="mr-2 h-3.5 w-3.5" />
+											Configure AI Provider
+										</Link>
+									</Button>
+								}
+							/>
 						) : (
 							<>
 								<Select value={aiId} onValueChange={setAiId}>

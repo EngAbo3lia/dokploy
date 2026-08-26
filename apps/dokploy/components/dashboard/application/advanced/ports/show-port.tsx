@@ -2,6 +2,7 @@ import { Rss, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AlertBlock } from "@/components/shared/alert-block";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -44,13 +45,15 @@ export const ShowPorts = ({ applicationId }: Props) => {
 			</CardHeader>
 			<CardContent className="flex flex-col gap-4">
 				{data?.ports.length === 0 ? (
-					<div className="flex w-full flex-col items-center justify-center gap-3 pt-10">
-						<Rss className="size-8 text-muted-foreground" />
-						<span className="text-base text-muted-foreground">
-							No ports configured
-						</span>
-						<HandlePorts applicationId={applicationId}>Add Port</HandlePorts>
-					</div>
+					<EmptyState
+						icon={<Rss className="size-8 text-muted-foreground/60" />}
+						title="No ports configured"
+						description="Add a port to expose your application to the network."
+						className="min-h-[40vh]"
+						action={
+							<HandlePorts applicationId={applicationId}>Add Port</HandlePorts>
+						}
+					/>
 				) : (
 					<div className="flex flex-col pt-2 gap-4">
 						<AlertBlock type="info">

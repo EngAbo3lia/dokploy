@@ -3,7 +3,6 @@ import {
 	FileText,
 	GitPullRequest,
 	Hammer,
-	Loader2,
 	PenSquare,
 	RocketIcon,
 	Trash2,
@@ -13,7 +12,8 @@ import { toast } from "sonner";
 import { GithubIcon } from "@/components/icons/data-tools-icons";
 import { DateTooltip } from "@/components/shared/date-tooltip";
 import { DialogAction } from "@/components/shared/dialog-action";
-import { StatusTooltip } from "@/components/shared/status-tooltip";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
+import { StatusDot } from "@/components/shared/status-indicator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,6 +35,16 @@ import { ShowModalLogs } from "../../settings/web-server/show-modal-logs";
 import { ShowDeploymentsModal } from "../deployments/show-deployments-modal";
 import { AddPreviewDomain } from "./add-preview-domain";
 import { ShowPreviewSettings } from "./show-preview-settings";
+
+function mapPreviewStatus(status: string | undefined | null) {
+	if (!status) return "idle" as const;
+	if (status === "done") return "success" as const;
+	if (status === "running") return "running" as const;
+	if (status === "error") return "error" as const;
+	if (status === "cancelled") return "cancelled" as const;
+	if (status === "idle") return "idle" as const;
+	return "idle" as const;
+}
 
 interface Props {
 	applicationId: string;
@@ -96,12 +106,7 @@ export const ShowPreviewDeployments = ({ applicationId }: Props) => {
 							</span>
 						</div>
 						{isLoadingPreviewDeployments ? (
-							<div className="flex w-full flex-row items-center justify-center gap-3 min-h-[35vh]">
-								<Loader2 className="size-5 text-muted-foreground animate-spin" />
-								<span className="text-base text-muted-foreground">
-									Loading preview deployments...
-								</span>
-							</div>
+							<SkeletonTable rows={5} />
 						) : !previewDeployments?.length ? (
 							<div className="flex w-full flex-col items-center justify-center gap-3 min-h-[35vh]">
 								<RocketIcon className="size-8 text-muted-foreground" />
@@ -143,8 +148,10 @@ export const ShowPreviewDeployments = ({ applicationId }: Props) => {
 														</div>
 													</div>
 													<Badge variant="outline" className="gap-2">
-														<StatusTooltip
-															status={deployment.previewStatus}
+														<StatusDot
+															status={mapPreviewStatus(
+																deployment.previewStatus,
+															)}
 															className="size-2"
 														/>
 														<DateTooltip date={deployment.createdAt} />

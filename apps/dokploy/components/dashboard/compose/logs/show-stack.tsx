@@ -1,9 +1,8 @@
 import { Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { badgeStateColor } from "@/components/dashboard/application/logs/show";
 import { resolveContainerSelection } from "@/components/dashboard/docker/logs/utils";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/shared/status-indicator";
 import {
 	Card,
 	CardContent,
@@ -23,6 +22,14 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { api } from "@/utils/api";
+
+function mapContainerState(state: string) {
+	if (["running", "ready"].includes(state)) return "success" as const;
+	if (["exited", "shutdown"].includes(state)) return "error" as const;
+	if (["accepted", "created"].includes(state)) return "info" as const;
+	return "idle" as const;
+}
+
 export const DockerLogs = dynamic(
 	() =>
 		import("@/components/dashboard/docker/logs/docker-logs-id").then(
@@ -129,9 +136,9 @@ export const ShowDockerLogsStack = ({
 											value={container.containerId}
 										>
 											{container.name} ({container.containerId}){" "}
-											<Badge variant={badgeStateColor(container.state)}>
+											<StatusBadge status={mapContainerState(container.state)}>
 												{container.state}
-											</Badge>
+											</StatusBadge>
 											{container.status ? ` ${container.status}` : ""}
 										</SelectItem>
 									))}
@@ -145,9 +152,9 @@ export const ShowDockerLogsStack = ({
 										>
 											{container.name} ({container.containerId}@{container.node}
 											)
-											<Badge variant={badgeStateColor(container.state)}>
+											<StatusBadge status={mapContainerState(container.state)}>
 												{container.state}
-											</Badge>
+											</StatusBadge>
 											{container.currentState
 												? ` ${container.currentState}`
 												: ""}

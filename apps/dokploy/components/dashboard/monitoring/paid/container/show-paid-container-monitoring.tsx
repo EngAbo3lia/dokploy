@@ -1,5 +1,11 @@
-import { Cpu, HardDrive, Loader2, MemoryStick, Network } from "lucide-react";
+import { Cpu, HardDrive, MemoryStick, Network } from "lucide-react";
 import { useEffect, useState } from "react";
+import {
+	Skeleton,
+	SkeletonCard,
+	SkeletonStat,
+	SkeletonTable,
+} from "@/components/shared/skeleton-card";
 import { Card } from "@/components/ui/card";
 import {
 	Select,
@@ -104,8 +110,11 @@ export const ContainerPaidMonitoring = ({ appName, baseUrl, token }: Props) => {
 
 	if (isLoading) {
 		return (
-			<div className="flex h-[400px] w-full items-center justify-center">
-				<Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+			<div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+				<SkeletonStat />
+				<SkeletonStat />
+				<SkeletonStat />
+				<SkeletonStat />
 			</div>
 		);
 	}

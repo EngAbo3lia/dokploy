@@ -1,6 +1,7 @@
 import { LockKeyhole, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
 import { ToggleVisibilityInput } from "@/components/shared/toggle-visibility-input";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,15 +48,17 @@ export const ShowSecurity = ({ applicationId }: Props) => {
 			</CardHeader>
 			<CardContent className="flex flex-col gap-4">
 				{data?.security.length === 0 ? (
-					<div className="flex w-full flex-col items-center justify-center gap-3 pt-10">
-						<LockKeyhole className="size-8 text-muted-foreground" />
-						<span className="text-base text-muted-foreground">
-							No security configured
-						</span>
-						<HandleSecurity applicationId={applicationId}>
-							Add Security
-						</HandleSecurity>
-					</div>
+					<EmptyState
+						icon={<LockKeyhole className="size-8 text-muted-foreground/60" />}
+						title="No security configured"
+						description="Add basic authentication to protect this application."
+						className="min-h-[40vh]"
+						action={
+							<HandleSecurity applicationId={applicationId}>
+								Add Security
+							</HandleSecurity>
+						}
+					/>
 				) : (
 					<div className="flex flex-col pt-2">
 						<div className="flex flex-col gap-6 ">

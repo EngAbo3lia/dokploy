@@ -1,8 +1,10 @@
 "use client";
 
-import { BotIcon, Loader2, Trash2 } from "lucide-react";
+import { BotIcon, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonCard } from "@/components/shared/skeleton-card";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -41,20 +43,21 @@ export const AiForm = () => {
 					</CardHeader>
 					<CardContent className="space-y-2 py-8 border-t">
 						{isPending ? (
-							<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[25vh]">
-								<span>Loading...</span>
-								<Loader2 className="animate-spin size-4" />
+							<div className="min-h-[25vh]">
+								<SkeletonCard />
 							</div>
 						) : (
 							<>
 								{aiConfigs?.length === 0 ? (
-									<div className="flex flex-col items-center gap-3  min-h-[25vh] justify-center">
-										<BotIcon className="size-8 self-center text-muted-foreground" />
-										<span className="text-base text-muted-foreground text-center">
-											You don't have any AI configurations
-										</span>
-										<HandleAi />
-									</div>
+									<EmptyState
+										icon={
+											<BotIcon className="size-8 text-muted-foreground/60" />
+										}
+										title="No AI configurations"
+										description="Add an AI provider to enable intelligent features like log analysis."
+										className="min-h-[25vh]"
+										action={<HandleAi />}
+									/>
 								) : (
 									<div className="flex flex-col gap-4 rounded-lg min-h-[25vh]">
 										{aiConfigs?.map((config) => (

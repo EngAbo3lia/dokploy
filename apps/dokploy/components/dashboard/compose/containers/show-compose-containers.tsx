@@ -1,4 +1,4 @@
-import { Loader2, MoreHorizontal, RefreshCw } from "lucide-react";
+import { Container, Loader2, MoreHorizontal, RefreshCw } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -6,7 +6,9 @@ import { ShowContainerConfig } from "@/components/dashboard/docker/config/show-c
 import { ShowContainerMounts } from "@/components/dashboard/docker/mounts/show-container-mounts";
 import { ShowContainerNetworks } from "@/components/dashboard/docker/networks/show-container-networks";
 import { DockerTerminalModal } from "@/components/dashboard/docker/terminal/docker-terminal-modal";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -97,15 +99,14 @@ export const ShowComposeContainers = ({
 			</CardHeader>
 			<CardContent>
 				{isPending ? (
-					<div className="flex items-center justify-center h-[20vh]">
-						<Loader2 className="animate-spin h-6 w-6 text-muted-foreground" />
-					</div>
+					<SkeletonTable rows={5} />
 				) : !data || data.length === 0 ? (
-					<div className="flex items-center justify-center h-[20vh]">
-						<span className="text-muted-foreground">
-							No containers found. Deploy the compose to see containers here.
-						</span>
-					</div>
+					<EmptyState
+						icon={<Container className="size-8 text-muted-foreground/60" />}
+						title="No containers found"
+						description="Deploy the compose to see containers here."
+						className="h-[20vh]"
+					/>
 				) : (
 					<div className="rounded-md border">
 						<Table>

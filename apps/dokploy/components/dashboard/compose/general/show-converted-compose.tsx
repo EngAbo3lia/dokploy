@@ -1,8 +1,14 @@
-import { Loader2, Puzzle, RefreshCw } from "lucide-react";
+import { Puzzle, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AlertBlock } from "@/components/shared/alert-block";
 import { CodeEditor } from "@/components/shared/code-editor";
+import {
+	Skeleton,
+	SkeletonCard,
+	SkeletonStat,
+	SkeletonTable,
+} from "@/components/shared/skeleton-card";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -63,9 +69,7 @@ export const ShowConvertedCompose = ({ composeId }: Props) => {
 				{isError && <AlertBlock type="error">{error?.message}</AlertBlock>}
 
 				{isPending ? (
-					<div className="flex flex-row items-center justify-center min-h-100 border p-4 rounded-md">
-						<Loader2 className="h-8 w-8 text-muted-foreground mb-2 animate-spin" />
-					</div>
+					<Skeleton className="h-100 w-full" />
 				) : compose?.length === 5 ? (
 					<div className="border p-4 rounded-md flex flex-col items-center justify-center min-h-100">
 						<Puzzle className="h-8 w-8 text-muted-foreground mb-2" />

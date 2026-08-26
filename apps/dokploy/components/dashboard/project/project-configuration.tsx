@@ -4,11 +4,13 @@ import {
 	CalendarClock,
 	Globe2,
 	KeyRound,
+	Settings,
 	Settings2,
 } from "lucide-react";
 import Link from "next/link";
+import { EmptyState } from "@/components/shared/empty-state";
+import { StatusBadge } from "@/components/shared/status-indicator";
 import { EnvironmentVariables } from "@/components/dashboard/project/environment-variables";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -64,9 +66,12 @@ export const ProjectConfiguration = ({
 				description="Routes, HTTPS and certificate status for this environment"
 			>
 				{domains.length === 0 ? (
-					<p className="py-4 text-center text-sm text-muted-foreground">
-						No domains configured — add one from any service page
-					</p>
+					<EmptyState
+						icon={<Globe2 />}
+						title="No domains configured"
+						description="Add a domain from any service page to get started."
+						className="py-6"
+					/>
 				) : (
 					<div className="space-y-2">
 						{domains.map((domain) => (
@@ -86,19 +91,9 @@ export const ProjectConfiguration = ({
 										{domain.service.name}
 									</span>
 									{domain.enabled ? (
-										<Badge
-											variant="secondary"
-											className="border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-										>
-											Active
-										</Badge>
+										<StatusBadge status="success">Active</StatusBadge>
 									) : (
-										<Badge
-											variant="secondary"
-											className="text-muted-foreground"
-										>
-											Disabled
-										</Badge>
+										<StatusBadge status="idle">Disabled</StatusBadge>
 									)}
 								</span>
 							</Link>
@@ -154,9 +149,12 @@ export const ProjectConfiguration = ({
 						</Link>
 					))}
 					{services.length === 0 && (
-						<p className="py-4 text-center text-sm text-muted-foreground">
-							No services to configure
-						</p>
+						<EmptyState
+							icon={<Settings />}
+							title="No services to configure"
+							description="Add services to this environment to configure them."
+							className="py-6"
+						/>
 					)}
 				</div>
 			</ConfigCard>

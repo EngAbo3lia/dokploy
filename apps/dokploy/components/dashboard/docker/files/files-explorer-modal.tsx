@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { AlertBlock } from "@/components/shared/alert-block";
 import { CodeEditor } from "@/components/shared/code-editor";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -288,9 +289,12 @@ export const FilesExplorerModal = ({
 									</button>
 								)}
 								{entries?.length === 0 && (
-									<span className="px-2 py-1.5 text-sm text-muted-foreground">
-										Empty directory
-									</span>
+									<EmptyState
+										icon={<FolderOpen />}
+										title="Empty directory"
+										description="This directory contains no files or subdirectories."
+										className="py-8"
+									/>
 								)}
 								{entries?.map((entry) => {
 									const entryPath = joinPath(path, entry.name);

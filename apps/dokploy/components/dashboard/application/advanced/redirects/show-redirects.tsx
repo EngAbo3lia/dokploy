@@ -1,6 +1,7 @@
 import { Split, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -48,15 +49,17 @@ export const ShowRedirects = ({ applicationId }: Props) => {
 			</CardHeader>
 			<CardContent className="flex flex-col gap-4">
 				{data?.redirects.length === 0 ? (
-					<div className="flex w-full flex-col items-center justify-center gap-3 pt-10">
-						<Split className="size-8 text-muted-foreground" />
-						<span className="text-base text-muted-foreground">
-							No redirects configured
-						</span>
-						<HandleRedirect applicationId={applicationId}>
-							Add Redirect
-						</HandleRedirect>
-					</div>
+					<EmptyState
+						icon={<Split className="size-8 text-muted-foreground/60" />}
+						title="No redirects configured"
+						description="Add a redirect to route traffic from one path to another."
+						className="min-h-[40vh]"
+						action={
+							<HandleRedirect applicationId={applicationId}>
+								Add Redirect
+							</HandleRedirect>
+						}
+					/>
 				) : (
 					<div className="flex flex-col pt-2">
 						<div className="flex flex-col gap-6">

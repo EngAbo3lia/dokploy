@@ -1,4 +1,6 @@
-import { Box, Cpu, Database, HardDrive, Loader2 } from "lucide-react";
+import { Box, Cpu, Database, HardDrive } from "lucide-react";
+import { StatusDot } from "@/components/shared/status-indicator";
+import { SkeletonCard } from "@/components/shared/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -28,21 +30,7 @@ export function NodeCard({ node, serverId }: Props) {
 	});
 
 	if (isPending) {
-		return (
-			<Card className="w-full bg-background">
-				<CardHeader>
-					<CardTitle className="flex items-center justify-between text-lg">
-						<span className="flex items-center gap-2">{node.Hostname}</span>
-						<Badge variant="green">{node.ManagerStatus || "Worker"}</Badge>
-					</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<div className="flex items-center justify-center">
-						<Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-					</div>
-				</CardContent>
-			</Card>
-		);
+		return <SkeletonCard />;
 	}
 
 	return (
@@ -54,8 +42,9 @@ export function NodeCard({ node, serverId }: Props) {
 				<div className="space-y-6">
 					<div className="flex flex-wrap gap-y-2 items-center justify-between">
 						<div className="flex items-center space-x-4 p-2 rounded-xl border">
-							<div
-								className={`h-2.5 w-2.5 rounded-full ${node.Status === "Ready" ? "bg-green-500" : "bg-red-500"}`}
+							<StatusDot
+								status={node.Status === "Ready" ? "success" : "error"}
+								size="lg"
 							/>
 							<div className="font-medium">{node.Hostname}</div>
 							<Badge variant="green">{node.ManagerStatus || "Worker"}</Badge>

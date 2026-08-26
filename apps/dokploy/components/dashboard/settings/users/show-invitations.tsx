@@ -1,7 +1,8 @@
 import copy from "copy-to-clipboard";
 import { format, isPast } from "date-fns";
-import { Loader2, Mail, MoreHorizontal, Users } from "lucide-react";
+import { Mail, MoreHorizontal, Users } from "lucide-react";
 import { toast } from "sonner";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,10 +54,7 @@ export const ShowInvitations = () => {
 					</CardHeader>
 					<CardContent className="space-y-2 py-8 border-t">
 						{isPending ? (
-							<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[25vh]">
-								<span>Loading...</span>
-								<Loader2 className="animate-spin size-4" />
-							</div>
+							<SkeletonTable rows={5} />
 						) : (
 							<>
 								{data?.length === 0 ? (

@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { StatusDot } from "@/components/shared/status-indicator";
 import { DateTooltip } from "@/components/shared/date-tooltip";
 import { DialogAction } from "@/components/shared/dialog-action";
 import { Badge } from "@/components/ui/badge";
@@ -120,22 +121,22 @@ export const ProjectHealthSummary = ({ health, isLoading, onRetry }: Props) => {
 							{services.length} service{services.length !== 1 ? "s" : ""}
 						</span>
 						<span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-							<span className="size-1.5 rounded-full bg-emerald-500" />
+							<StatusDot status="success" size="sm" />
 							{services.filter((s) => s.runtime === "healthy").length} running
 						</span>
 						<span className="flex items-center gap-1 text-red-600 dark:text-red-400">
-							<span className="size-1.5 rounded-full bg-red-500" />
+							<StatusDot status="error" size="sm" />
 							{services.filter((s) => s.runtime === "failed").length} failed
 						</span>
 						{services.filter((s) => s.runtime === "stopped").length > 0 && (
 							<span className="flex items-center gap-1 text-muted-foreground">
-								<span className="size-1.5 rounded-full bg-muted-foreground/50" />
+								<StatusDot status="stopped" size="sm" />
 								{services.filter((s) => s.runtime === "stopped").length} stopped
 							</span>
 						)}
 						{services.filter((s) => s.isDeploying).length > 0 && (
 							<span className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
-								<span className="size-1.5 rounded-full bg-blue-500" />
+								<StatusDot status="running" size="sm" />
 								{services.filter((s) => s.isDeploying).length} deploying
 							</span>
 						)}

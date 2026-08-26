@@ -1,7 +1,9 @@
-import { Globe, Loader2, Trash2 } from "lucide-react";
+import { Globe, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { dnsProviderIcons } from "@/components/icons/dns-provider-icons";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonCard } from "@/components/shared/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,20 +44,23 @@ export const ShowDnsProviders = () => {
 					</CardHeader>
 					<CardContent className="space-y-2 py-8 border-t">
 						{isPending ? (
-							<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[25vh]">
-								<span>Loading...</span>
-								<Loader2 className="animate-spin size-4" />
+							<div className="min-h-[25vh]">
+								<SkeletonCard />
 							</div>
 						) : (
 							<>
 								{data?.length === 0 ? (
-									<div className="flex flex-col items-center gap-3 min-h-[25vh] justify-center">
-										<Globe className="size-8 self-center text-muted-foreground" />
-										<span className="text-base text-muted-foreground text-center">
-											You don't have any DNS providers configured
-										</span>
-										{permissions?.dnsProvider.create && <HandleDnsProvider />}
-									</div>
+									<EmptyState
+										icon={<Globe className="size-8 text-muted-foreground/60" />}
+										title="No DNS providers configured"
+										description="Connect a DNS provider to manage domain records automatically."
+										className="min-h-[25vh]"
+										action={
+											permissions?.dnsProvider.create ? (
+												<HandleDnsProvider />
+											) : undefined
+										}
+									/>
 								) : (
 									<div className="flex flex-col gap-4 min-h-[25vh]">
 										<div className="flex flex-col gap-4 rounded-lg">

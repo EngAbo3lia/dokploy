@@ -1,14 +1,8 @@
 import type { HealthEnvironmentRow } from "@dokploy/server";
-import {
-	Boxes,
-	Circle,
-	Globe2,
-	History,
-	LayoutGrid,
-	Server,
-	TriangleAlert,
-} from "lucide-react";
+import { Box, Boxes, Globe2, History, LayoutGrid, Server } from "lucide-react";
 import Link from "next/link";
+import { EmptyState } from "@/components/shared/empty-state";
+import { StatusBadge, StatusDot } from "@/components/shared/status-indicator";
 import { DateTooltip } from "@/components/shared/date-tooltip";
 import { Button } from "@/components/ui/button";
 import {
@@ -189,16 +183,14 @@ export const ProjectOverview = ({
 					</CardHeader>
 					<CardContent className="space-y-2">
 						{services.map((service) => {
-							const dot =
+							const dotStatus =
 								service.runtime === "healthy"
-									? "bg-emerald-500"
+									? "success"
 									: service.runtime === "degraded"
-										? "bg-amber-500"
+										? "warning"
 										: service.runtime === "failed"
-											? "bg-red-500"
-											: service.runtime === "stopped"
-												? "bg-muted-foreground/50"
-												: "bg-muted-foreground/40";
+											? "error"
+											: "stopped";
 							return (
 								<Link
 									key={service.serviceId}
@@ -206,7 +198,7 @@ export const ProjectOverview = ({
 									className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2 transition-colors hover:bg-accent"
 								>
 									<span className="flex min-w-0 items-center gap-2.5">
-										<span className={`size-2 shrink-0 rounded-full ${dot}`} />
+										<StatusDot status={dotStatus} />
 										<span className="truncate text-sm font-medium">
 											{service.name}
 										</span>
@@ -228,9 +220,12 @@ export const ProjectOverview = ({
 							);
 						})}
 						{services.length === 0 && (
-							<p className="py-6 text-center text-sm text-muted-foreground">
-								No services in this environment yet
-							</p>
+							<EmptyState
+								icon={<Box className="size-8 text-muted-foreground/60" />}
+								title="No services yet"
+								description="Services will appear here once you add them to this environment."
+								className="py-6"
+							/>
 						)}
 					</CardContent>
 				</Card>
@@ -252,27 +247,29 @@ export const ProjectOverview = ({
 								className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2"
 							>
 								<span className="flex min-w-0 items-center gap-2.5">
-									{service.lastDeployment?.status === "error" ? (
-										<TriangleAlert className="size-3.5 shrink-0 text-red-600" />
-									) : (
-										<Circle className="size-3.5 shrink-0 fill-emerald-500 text-emerald-500" />
-									)}
+									<StatusDot
+										status={
+											service.lastDeployment?.status === "error"
+												? "error"
+												: "success"
+										}
+									/>
 									<span className="truncate text-sm font-medium">
 										{service.name}
 									</span>
 								</span>
 								<span className="flex shrink-0 flex-col items-end gap-0.5">
-									<span
-										className={`text-xs ${
+									<StatusBadge
+										status={
 											service.lastDeployment?.status === "error"
-												? "text-red-600"
-												: "text-emerald-600 dark:text-emerald-400"
-										}`}
+												? "failed"
+												: "success"
+										}
 									>
 										{service.lastDeployment?.status === "error"
 											? "Failed"
 											: "Successful"}
-									</span>
+									</StatusBadge>
 									{service.lastDeployment?.finishedAt && (
 										<DateTooltip date={service.lastDeployment.finishedAt}>
 											<span className="text-xs text-muted-foreground">
@@ -284,9 +281,12 @@ export const ProjectOverview = ({
 							</div>
 						))}
 						{recent.length === 0 && (
-							<p className="py-6 text-center text-sm text-muted-foreground">
-								No deployments yet in this environment
-							</p>
+							<EmptyState
+								icon={<History className="size-8 text-muted-foreground/60" />}
+								title="No deployments yet"
+								description="Recent deployments will appear here after your first deploy."
+								className="py-6"
+							/>
 						)}
 					</CardContent>
 				</Card>

@@ -1,10 +1,12 @@
 import { standardSchemaResolver as zodResolver } from "@hookform/resolvers/standard-schema";
+import { Boxes, FolderInput, FolderOpen } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { EnterpriseFeatureLocked } from "@/components/proprietary/enterprise-feature-gate";
 import { AlertBlock } from "@/components/shared/alert-block";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -565,9 +567,12 @@ export const AddUserPermissions = ({ userId, role }: Props) => {
 										</FormDescription>
 									</div>
 									{projects?.length === 0 && (
-										<p className="text-sm text-muted-foreground">
-											No projects found
-										</p>
+										<EmptyState
+											icon={<FolderInput />}
+											title="No projects available"
+											description="Create a project first to assign access to it."
+											className="py-6"
+										/>
 									)}
 									<div className="grid md:grid-cols-1 gap-4">
 										{projects?.map((project, projectIndex) => {
@@ -659,9 +664,12 @@ export const AddUserPermissions = ({ userId, role }: Props) => {
 																{/* Environments */}
 																<div className="ml-6 w-full space-y-3">
 																	{project.environments.length === 0 && (
-																		<p className="text-sm text-muted-foreground">
-																			No environments found
-																		</p>
+																		<EmptyState
+																			icon={<FolderOpen />}
+																			title="No environments found"
+																			description="Add environments to this project to assign access."
+																			className="py-6"
+																		/>
 																	)}
 																	{project.environments.map(
 																		(environment, envIndex) => {
@@ -763,9 +771,12 @@ export const AddUserPermissions = ({ userId, role }: Props) => {
 																					{/* Services */}
 																					<div className="ml-4 space-y-2">
 																						{services.length === 0 && (
-																							<p className="text-xs text-muted-foreground">
-																								No services found
-																							</p>
+																							<EmptyState
+																								icon={<Boxes />}
+																								title="No services found"
+																								description="Add services to this environment to assign access."
+																								className="py-6"
+																							/>
 																						)}
 																						{services.map(
 																							(service, serviceIndex) => (

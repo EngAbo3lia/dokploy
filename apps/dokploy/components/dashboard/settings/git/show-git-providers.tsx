@@ -3,7 +3,6 @@ import {
 	ExternalLinkIcon,
 	GitBranch,
 	ImportIcon,
-	Loader2,
 	Trash2,
 	Users,
 } from "lucide-react";
@@ -16,6 +15,9 @@ import {
 	GitlabIcon,
 } from "@/components/icons/data-tools-icons";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonCard } from "@/components/shared/skeleton-card";
+import { StatusBadge } from "@/components/shared/status-indicator";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -82,20 +84,21 @@ export const ShowGitProviders = () => {
 					</CardHeader>
 					<CardContent className="space-y-2 py-8 border-t">
 						{isPending ? (
-							<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[25vh]">
-								<span>Loading...</span>
-								<Loader2 className="animate-spin size-4" />
+							<div className="min-h-[25vh]">
+								<SkeletonCard />
 							</div>
 						) : (
 							<>
 								{data?.length === 0 ? (
-									<div className="flex flex-col items-center gap-3 min-h-[25vh] justify-center">
-										<GitBranch className="size-8 self-center text-muted-foreground" />
-										<span className="text-base text-muted-foreground text-center">
-											No Git Providers configured
-										</span>
-										{permissions?.gitProviders.create && (
-											<div>
+									<EmptyState
+										icon={
+											<GitBranch className="size-8 text-muted-foreground/60" />
+										}
+										title="No Git providers configured"
+										description="Connect a Git provider for authentication and repository access."
+										className="min-h-[25vh]"
+										action={
+											permissions?.gitProviders.create ? (
 												<div className="flex items-center bg-sidebar p-1 w-full rounded-lg">
 													<div className="flex flex-wrap items-center gap-4 p-3.5 rounded-lg bg-background border w-full [&>button]:grow">
 														<AddGithubProvider />
@@ -104,9 +107,9 @@ export const ShowGitProviders = () => {
 														<AddGiteaProvider />
 													</div>
 												</div>
-											</div>
-										)}
-									</div>
+											) : undefined
+										}
+									/>
 								) : (
 									<div className="flex flex-col gap-4 min-h-[25vh]">
 										<div className="flex flex-col gap-2 rounded-lg ">
@@ -235,7 +238,9 @@ export const ShowGitProviders = () => {
 
 																{isBitbucket &&
 																gitProvider.bitbucket?.isDeprecated ? (
-																	<Badge variant="yellow">Deprecated</Badge>
+																	<StatusBadge status="warning">
+																		Deprecated
+																	</StatusBadge>
 																) : null}
 
 																{!haveGithubRequirements && isGithub && (

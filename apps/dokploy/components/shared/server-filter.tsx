@@ -1,7 +1,13 @@
-import { Loader2, PlusIcon, ServerIcon } from "lucide-react";
+import { PlusIcon, ServerIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, type ReactNode } from "react";
+import {
+	Skeleton,
+	SkeletonCard,
+	SkeletonStat,
+	SkeletonTable,
+} from "@/components/shared/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -61,11 +67,8 @@ export const ServerFilter = ({ children }: Props) => {
 	if (isLoadingServers || isLoadingCloud) {
 		return (
 			<Card className="bg-sidebar p-2.5 rounded-xl w-full">
-				<div className="rounded-xl bg-background shadow-md flex flex-col gap-2 items-center justify-center min-h-[60vh]">
-					<span className="text-muted-foreground text-lg font-medium">
-						Loading...
-					</span>
-					<Loader2 className="animate-spin size-8 text-muted-foreground" />
+				<div className="rounded-xl bg-background shadow-md">
+					<SkeletonCard />
 				</div>
 			</Card>
 		);

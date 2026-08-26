@@ -1,8 +1,10 @@
 import { File, FilePlus2, Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
 import {
 	Card,
 	CardContent,
@@ -102,29 +104,23 @@ export const ShowPatches = ({ id, type }: Props) => {
 			</CardHeader>
 			<CardContent>
 				{isPatchesLoading ? (
-					<div className="flex items-center justify-center py-8">
-						<Loader2 className="h-6 w-6 animate-spin" />
-					</div>
+					<SkeletonTable rows={5} />
 				) : patches?.length === 0 ? (
-					<div className="flex min-h-[40vh] w-full flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8">
-						<div className="rounded-full bg-muted p-4">
-							<FilePlus2 className="h-10 w-10 text-muted-foreground" />
-						</div>
-						<div className="space-y-1 text-center">
-							<p className="text-sm font-medium">No patches yet</p>
-							<p className="max-w-sm text-sm text-muted-foreground">
-								Add file patches to modify your repo before each build—configs,
-								env, or code. Create your first patch to get started.
-							</p>
-						</div>
-						<Button onClick={handleOpenEditor} disabled={isLoadingRepo}>
-							{isLoadingRepo && (
-								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-							)}
-							<FilePlus2 className="mr-2 h-4 w-4" />
-							Create Patch
-						</Button>
-					</div>
+					<EmptyState
+						icon={<FilePlus2 className="size-8 text-muted-foreground/60" />}
+						title="No patches yet"
+						description="Add file patches to modify your repo before each build—configs, env, or code."
+						className="min-h-[40vh]"
+						action={
+							<Button onClick={handleOpenEditor} disabled={isLoadingRepo}>
+								{isLoadingRepo && (
+									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								)}
+								<FilePlus2 className="mr-2 h-4 w-4" />
+								Create Patch
+							</Button>
+						}
+					/>
 				) : (
 					<Table>
 						<TableHeader>

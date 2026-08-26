@@ -23,6 +23,12 @@ import {
 	Trash2,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import {
+	Skeleton,
+	SkeletonCard,
+	SkeletonStat,
+	SkeletonTable,
+} from "@/components/shared/skeleton-card";
 import { toast } from "sonner";
 import { DialogAction } from "@/components/shared/dialog-action";
 import { Badge } from "@/components/ui/badge";
@@ -100,8 +106,8 @@ const StatCard = ({
 			{title}
 		</div>
 		{isLoading ? (
-			<div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-				<Loader2 className="size-4 animate-spin" />
+			<div className="mt-3">
+				<SkeletonStat />
 			</div>
 		) : (
 			<>

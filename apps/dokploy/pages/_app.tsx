@@ -13,6 +13,7 @@ import type { ReactElement, ReactNode } from "react";
 import { SearchCommand } from "@/components/dashboard/search-command";
 import { WhitelabelingProvider } from "@/components/proprietary/whitelabeling/whitelabeling-provider";
 import { Analytics } from "@/components/shared/analytics";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { api } from "@/utils/api";
@@ -57,7 +58,9 @@ const MyApp = ({
 					<Analytics />
 					<Toaster richColors />
 					<SearchCommand />
-					{getLayout(<Component {...pageProps} />)}
+					<ErrorBoundary>
+						{getLayout(<Component {...pageProps} />)}
+					</ErrorBoundary>
 				</ThemeProvider>
 			</TooltipProvider>
 		</>

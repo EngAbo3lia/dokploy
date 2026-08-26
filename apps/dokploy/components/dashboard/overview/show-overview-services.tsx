@@ -7,7 +7,6 @@ import {
 	Ban,
 	CircuitBoard,
 	GlobeIcon,
-	Loader2,
 	MoreHorizontal,
 	RefreshCw,
 	Search,
@@ -18,8 +17,10 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DB_ENGINE_ICONS } from "@/components/icons/data-tools-icons";
 import { DateTooltip } from "@/components/shared/date-tooltip";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
 import { DialogAction } from "@/components/shared/dialog-action";
-import { StatusTooltip } from "@/components/shared/status-tooltip";
+import { StatusDot } from "@/components/shared/status-indicator";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -47,6 +48,15 @@ import {
 } from "@/components/ui/table";
 import { useSortPreference } from "@/hooks/use-sort-preference";
 import { api } from "@/utils/api";
+
+function mapServiceStatus(status: string | undefined | null) {
+	if (!status) return "idle" as const;
+	if (["running", "ready", "healthy"].includes(status))
+		return "running" as const;
+	if (["error", "failed"].includes(status)) return "error" as const;
+	if (["idle", "stopped"].includes(status)) return "stopped" as const;
+	return "idle" as const;
+}
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100, 200];
 
@@ -371,17 +381,14 @@ export const ShowOverviewServices = () => {
 					</div>
 				</div>
 
-				{isLoading && (
-					<div className="flex items-center justify-center gap-2 py-16 text-muted-foreground">
-						<Loader2 className="size-4 animate-spin" />
-						Loading services...
-					</div>
-				)}
+				{isLoading && <SkeletonTable rows={5} />}
 
 				{!isLoading && filteredServices.length === 0 && (
-					<div className="flex flex-col items-center justify-center gap-2 py-16 text-muted-foreground">
-						<span>No services match the current filters.</span>
-					</div>
+					<EmptyState
+						icon={<Search className="size-8 text-muted-foreground/60" />}
+						title="No services match the current filters"
+						description="Try adjusting your search or filter criteria."
+					/>
 				)}
 
 				{!isLoading && filteredServices.length > 0 && (
@@ -419,8 +426,8 @@ export const ShowOverviewServices = () => {
 											</TableCell>
 											<TableCell>{TYPE_LABELS[service.type]}</TableCell>
 											<TableCell>
-												<StatusTooltip
-													status={service.status as any}
+												<StatusDot
+													status={mapServiceStatus(service.status as string)}
 													className="size-2.5"
 												/>
 											</TableCell>

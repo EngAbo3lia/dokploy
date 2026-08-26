@@ -6,7 +6,7 @@ import {
 	Settings,
 	WorkflowIcon,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/shared/status-indicator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -94,7 +94,7 @@ export default function SwarmMonitorCard({ serverId }: Props) {
 										<CardTitle className="text-sm font-medium">
 											Active Nodes
 										</CardTitle>
-										<Badge variant="green">Online</Badge>
+										<StatusBadge status="success">Online</StatusBadge>
 									</div>
 									<div className="p-2 bg-emerald-600/20 text-emerald-600 rounded-md">
 										<Activity className="h-4 w-4 text-muted-foreground dark:text-emerald-600" />
@@ -131,7 +131,7 @@ export default function SwarmMonitorCard({ serverId }: Props) {
 										<CardTitle className="text-sm font-medium">
 											Manager Nodes
 										</CardTitle>
-										<Badge variant="green">Online</Badge>
+										<StatusBadge status="success">Online</StatusBadge>
 									</div>
 									<div className="p-2 bg-emerald-600/20 text-emerald-600 rounded-md">
 										<Monitor className="h-4 w-4 text-muted-foreground dark:text-emerald-600" />

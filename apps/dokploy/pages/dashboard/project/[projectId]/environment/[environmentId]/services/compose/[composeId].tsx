@@ -2,13 +2,11 @@ import { validateRequest } from "@dokploy/server/lib/auth";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import copy from "copy-to-clipboard";
 import {
-	AlertTriangle,
 	ArrowUpRight,
 	Check,
 	Copy,
 	Globe,
 	HelpCircle,
-	Loader2,
 	ServerOff,
 } from "lucide-react";
 import type {
@@ -46,7 +44,7 @@ import { ComposePaidMonitoring } from "@/components/dashboard/monitoring/paid/co
 import { AssignComposeNetworks } from "@/components/dashboard/networks/assign-compose-networks";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdvanceBreadcrumb } from "@/components/shared/advance-breadcrumb";
-import { StatusTooltip } from "@/components/shared/status-tooltip";
+import { StatusBadge, StatusDot } from "@/components/shared/status-indicator";
 import { Badge } from "@/components/ui/badge";
 import {
 	Card,
@@ -67,6 +65,15 @@ import { UseKeyboardNav } from "@/hooks/use-keyboard-nav";
 import { appRouter } from "@/server/api/root";
 import { api } from "@/utils/api";
 import { useWhitelabeling } from "@/utils/hooks/use-whitelabeling";
+
+function mapServiceStatus(status: string | undefined | null) {
+	if (!status) return "idle" as const;
+	if (["running", "ready", "healthy"].includes(status))
+		return "running" as const;
+	if (["error", "failed"].includes(status)) return "error" as const;
+	if (["idle", "stopped"].includes(status)) return "stopped" as const;
+	return "idle" as const;
+}
 
 type TabState =
 	| "overview"
@@ -164,7 +171,9 @@ const Service = (
 											icon={data?.icon}
 										/>
 										<div className="absolute -right-1 -top-2 z-10">
-											<StatusTooltip status={data?.composeStatus} />
+											<StatusDot
+												status={mapServiceStatus(data?.composeStatus)}
+											/>
 										</div>
 									</div>
 									<div className="flex flex-col gap-1 min-w-0">
@@ -198,37 +207,24 @@ const Service = (
 								<div className="flex flex-col h-fit w-fit gap-2">
 									<div className="flex flex-row gap-2 justify-end flex-wrap">
 										{latestLiveDeployment && (
-											<Badge
-												variant="secondary"
-												className="gap-1.5 border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+											<StatusBadge
+												status="success"
 												title={`Last successful deploy: ${latestLiveDeployment?.createdAt}`}
 											>
-												<span className="relative flex size-2">
-													<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60" />
-													<span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
-												</span>
 												Live
-											</Badge>
+											</StatusBadge>
 										)}
 										{isDeploying && (
-											<Badge
-												variant="secondary"
-												className="gap-1.5 border border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400"
-											>
-												<Loader2 className="size-3 animate-spin" />
-												Deploying
-											</Badge>
+											<StatusBadge status="deploying">Deploying</StatusBadge>
 										)}
 										{latestDeployment?.status === "error" &&
 											latestLiveDeployment && (
-												<Badge
-													variant="secondary"
-													className="gap-1.5 border border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400"
+												<StatusBadge
+													status="error"
 													title="The last deployment failed. The previous successful deployment is still serving traffic."
 												>
-													<AlertTriangle className="size-3" />
 													Deploy failed
-												</Badge>
+												</StatusBadge>
 											)}
 										{!latestLiveDeployment && (
 											<Badge

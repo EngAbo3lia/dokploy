@@ -17,6 +17,7 @@ import {
 	FolderOpen,
 	HardDrive,
 	Loader2,
+	Search,
 	Trash2,
 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -25,6 +26,7 @@ import { FilesExplorerModal } from "@/components/dashboard/docker/files/files-ex
 import { AlertBlock } from "@/components/shared/alert-block";
 import { CodeEditor } from "@/components/shared/code-editor";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -332,17 +334,12 @@ export const ShowVolumes = ({ serverId }: Props) => {
 								<Loader2 className="animate-spin size-4" />
 							</div>
 						) : !volumes?.length ? (
-							<div className="flex min-h-[45vh] w-full flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8">
-								<div className="rounded-full bg-muted p-4">
-									<HardDrive className="size-10 text-muted-foreground" />
-								</div>
-								<div className="space-y-1 text-center">
-									<p className="text-sm font-medium">No volumes found</p>
-									<p className="max-w-sm text-sm text-muted-foreground">
-										Docker volumes created on this server will appear here.
-									</p>
-								</div>
-							</div>
+							<EmptyState
+								icon={<HardDrive className="size-8 text-muted-foreground/60" />}
+								title="No volumes found"
+								description="Docker volumes created on this server will appear here."
+								className="min-h-[45vh]"
+							/>
 						) : (
 							<>
 								<div className="flex flex-wrap items-center gap-2">
@@ -389,9 +386,14 @@ export const ShowVolumes = ({ serverId }: Props) => {
 												<TableRow>
 													<TableCell
 														colSpan={columns.length}
-														className="h-24 text-center text-muted-foreground"
+														className="text-center"
 													>
-														No volumes match your filters.
+														<EmptyState
+															icon={<Search />}
+															title="No volumes match your filters"
+															description="Try adjusting your search or filter criteria."
+															className="py-8"
+														/>
 													</TableCell>
 												</TableRow>
 											)}

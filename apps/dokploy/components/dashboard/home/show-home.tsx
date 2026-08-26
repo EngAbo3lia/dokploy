@@ -2,18 +2,13 @@ import { formatDistanceToNow } from "date-fns";
 import { ArrowRight, Rocket, Server } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
+import { EmptyState } from "@/components/shared/empty-state";
+import { StatusDot } from "@/components/shared/status-indicator";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { api } from "@/utils/api";
 
 type DeploymentStatus = "idle" | "running" | "done" | "error";
-
-const statusDotClass: Record<string, string> = {
-	done: "bg-emerald-500",
-	running: "bg-amber-500",
-	error: "bg-red-500",
-	idle: "bg-muted-foreground/40",
-};
 
 function getServiceInfo(d: any) {
 	const app = d.application;
@@ -70,7 +65,18 @@ function StatusListCard({
 	items,
 }: {
 	label: string;
-	items: { dotClass: string; label: string; count: number }[];
+	items: {
+		status:
+			| "success"
+			| "error"
+			| "idle"
+			| "running"
+			| "info"
+			| "warning"
+			| "stopped";
+		label: string;
+		count: number;
+	}[];
 }) {
 	return (
 		<div className="rounded-xl border bg-background p-5 min-h-[140px] flex flex-col gap-3">
@@ -80,10 +86,7 @@ function StatusListCard({
 			<ul className="flex flex-col gap-1.5">
 				{items.map((item) => (
 					<li key={item.label} className="flex items-center gap-2.5 text-sm">
-						<span
-							className={`size-2 rounded-full shrink-0 ${item.dotClass}`}
-							aria-hidden
-						/>
+						<StatusDot status={item.status} />
 						<span className="font-semibold tabular-nums w-8">{item.count}</span>
 						<span className="text-muted-foreground">{item.label}</span>
 					</li>
@@ -197,17 +200,17 @@ export const ShowHome = () => {
 							label="Status"
 							items={[
 								{
-									dotClass: "bg-emerald-500",
+									status: "success",
 									label: "running",
 									count: statusBreakdown.running,
 								},
 								{
-									dotClass: "bg-red-500",
+									status: "error",
 									label: "errored",
 									count: statusBreakdown.error,
 								},
 								{
-									dotClass: "bg-muted-foreground/40",
+									status: "idle",
 									label: "idle",
 									count: statusBreakdown.idle,
 								},
@@ -236,26 +239,32 @@ export const ShowHome = () => {
 								<span>You do not have permission to view deployments.</span>
 							</div>
 						) : recentDeployments.length === 0 ? (
-							<div className="min-h-[400px] flex flex-col items-center justify-center gap-3 text-center text-sm text-muted-foreground p-10">
-								<Rocket className="size-8 opacity-40" />
-								<span>No deployments yet.</span>
-							</div>
+							<EmptyState
+								icon={<Rocket className="size-8 text-muted-foreground/60" />}
+								title="No deployments yet"
+								description="Deployments will appear here once you deploy your first service."
+							/>
 						) : (
 							<ul className="divide-y">
 								{recentDeployments.map((d) => {
 									const info = getServiceInfo(d);
 									if (!info) return null;
 									const status = (d.status ?? "idle") as DeploymentStatus;
+									const mappedStatus =
+										status === "done"
+											? "success"
+											: status === "running"
+												? "running"
+												: status === "error"
+													? "error"
+													: "idle";
 									return (
 										<li key={d.deploymentId}>
 											<Link
 												href={info.href}
 												className="flex items-center gap-4 px-5 py-4 hover:bg-muted/40 transition-colors"
 											>
-												<span
-													className={`size-2 rounded-full shrink-0 ${statusDotClass[status] ?? statusDotClass.idle}`}
-													aria-hidden
-												/>
+												<StatusDot status={mappedStatus} />
 												<div className="flex flex-col min-w-0 flex-1">
 													<span className="text-sm truncate">{info.name}</span>
 													<span className="text-xs text-muted-foreground truncate">

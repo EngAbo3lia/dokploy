@@ -14,8 +14,10 @@ import {
 	MysqlIcon,
 	PostgresqlIcon,
 } from "@/components/icons/data-tools-icons";
+import { StatusDot } from "@/components/shared/status-indicator";
 import { AlertBlock } from "@/components/shared/alert-block";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -30,7 +32,6 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
 import { api } from "@/utils/api";
 import type { ServiceType } from "../../application/advanced/show-resources";
 import { ShowDeploymentsModal } from "../../application/deployments/show-deployments-modal";
@@ -134,45 +135,50 @@ export const ShowBackups = ({
 			</CardHeader>
 			<CardContent className="flex flex-col gap-4">
 				{data?.length === 0 ? (
-					<div className="flex flex-col items-center gap-3 min-h-[35vh] justify-center">
-						<DatabaseBackup className="size-8 text-muted-foreground" />
-						<span className="text-base text-muted-foreground text-center">
-							To create a backup it is required to set at least 1 provider.
-							Please, go to{" "}
-							<Link
-								href="/dashboard/settings/destinations"
-								className="text-foreground"
-							>
-								S3 Destinations
-							</Link>{" "}
-							to do so.
-						</span>
-					</div>
+					<EmptyState
+						icon={
+							<DatabaseBackup className="size-8 text-muted-foreground/60" />
+						}
+						title="No backup destinations configured"
+						description="Set up at least one S3 destination before creating backups."
+						className="min-h-[35vh]"
+						action={
+							<Button variant="outline" size="sm" asChild>
+								<Link href="/dashboard/settings/destinations">
+									Configure S3 Destinations
+								</Link>
+							</Button>
+						}
+					/>
 				) : (
 					<div className="flex flex-col gap-4 w-full">
 						{postgres?.backups.length === 0 ? (
-							<div className="flex w-full flex-col items-center justify-center gap-3 pt-10">
-								<DatabaseBackup className="size-8 text-muted-foreground" />
-								<span className="text-base text-muted-foreground">
-									No backups configured
-								</span>
-								<div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-									<HandleBackup
-										id={id}
-										databaseType={databaseType}
-										backupType={backupType}
-										refetch={refetch}
-									/>
-									<RestoreBackup
-										id={id}
-										databaseType={databaseType}
-										backupType={backupType}
-										serverId={
-											"serverId" in postgres ? postgres.serverId : undefined
-										}
-									/>
-								</div>
-							</div>
+							<EmptyState
+								icon={
+									<DatabaseBackup className="size-8 text-muted-foreground/60" />
+								}
+								title="No backups configured"
+								description="Create a backup or restore from an existing backup file."
+								className="min-h-[35vh]"
+								action={
+									<div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+										<HandleBackup
+											id={id}
+											databaseType={databaseType}
+											backupType={backupType}
+											refetch={refetch}
+										/>
+										<RestoreBackup
+											id={id}
+											databaseType={databaseType}
+											backupType={backupType}
+											serverId={
+												"serverId" in postgres ? postgres.serverId : undefined
+											}
+										/>
+									</div>
+								}
+							/>
 						) : (
 							<div className="flex flex-col pt-2 gap-4">
 								{backupType === "compose" && (
@@ -218,13 +224,11 @@ export const ShowBackups = ({
 																	</div>
 																)}
 																<div className="flex items-center gap-2">
-																	<div
-																		className={cn(
-																			"size-1.5 rounded-full",
-																			backup.enabled
-																				? "bg-green-500"
-																				: "bg-red-500",
-																		)}
+																	<StatusDot
+																		status={
+																			backup.enabled ? "success" : "error"
+																		}
+																		size="sm"
 																	/>
 																	<span className="text-xs text-muted-foreground">
 																		{backup.enabled ? "Active" : "Inactive"}

@@ -1,11 +1,13 @@
 import type { OverviewDomainSortBy } from "@dokploy/server/services/overview-shared";
 import { sortOverviewDomains } from "@dokploy/server/services/overview-shared";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { ExternalLink, Globe } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { COMPOSE_REDEPLOY_TOAST } from "@/components/dashboard/application/domains/redeploy-hint";
 import { DateTooltip } from "@/components/shared/date-tooltip";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -203,17 +205,14 @@ export const ShowOverviewDomains = () => {
 					</div>
 				</div>
 
-				{isLoading && (
-					<div className="flex items-center justify-center gap-2 py-16 text-muted-foreground">
-						<Loader2 className="size-4 animate-spin" />
-						Loading domains...
-					</div>
-				)}
+				{isLoading && <SkeletonTable rows={5} />}
 
 				{!isLoading && filteredDomains.length === 0 && (
-					<div className="flex flex-col items-center justify-center gap-2 py-16 text-muted-foreground">
-						<span>No domains match the current filters.</span>
-					</div>
+					<EmptyState
+						icon={<Globe className="size-8 text-muted-foreground/60" />}
+						title="No domains match the current filters"
+						description="Try adjusting your search or filter criteria."
+					/>
 				)}
 
 				{!isLoading && filteredDomains.length > 0 && (

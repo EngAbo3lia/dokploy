@@ -6,40 +6,38 @@ export const STATUS_META: Record<
 > = {
 	healthy: {
 		label: "Healthy",
-		badge:
-			"border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-		dot: "bg-emerald-500",
+		badge: "border-success/20 bg-success/10 text-success",
+		dot: "bg-success",
 	},
 	degraded: {
 		label: "Degraded",
-		badge:
-			"border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400",
-		dot: "bg-amber-500",
+		badge: "border-warning/20 bg-warning/10 text-warning",
+		dot: "bg-warning",
 	},
 	deploying: {
 		label: "Deploying",
-		badge: "border-blue-500/20 bg-blue-500/10 text-blue-600 dark:text-blue-400",
-		dot: "bg-blue-500",
+		badge: "border-info/20 bg-info/10 text-info",
+		dot: "bg-info",
 		pulse: true,
 	},
 	failed: {
 		label: "Failed",
-		badge: "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400",
-		dot: "bg-red-500",
+		badge: "border-destructive/20 bg-destructive/10 text-destructive",
+		dot: "bg-destructive",
 	},
 	stopped: {
 		label: "Stopped",
-		badge: "border-border bg-muted/40 text-muted-foreground",
+		badge: "border-border bg-muted text-muted-foreground",
 		dot: "bg-muted-foreground/50",
 	},
 	empty: {
 		label: "No services",
-		badge: "border-border bg-muted/40 text-muted-foreground",
+		badge: "border-border bg-muted text-muted-foreground",
 		dot: "bg-muted-foreground/30",
 	},
 	unknown: {
 		label: "Unknown",
-		badge: "border-border bg-muted/40 text-muted-foreground",
+		badge: "border-border bg-muted text-muted-foreground",
 		dot: "bg-muted-foreground/40",
 	},
 };

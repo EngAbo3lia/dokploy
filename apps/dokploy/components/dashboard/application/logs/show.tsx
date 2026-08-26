@@ -2,7 +2,7 @@ import { Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { resolveContainerSelection } from "@/components/dashboard/docker/logs/utils";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/shared/status-indicator";
 import {
 	Card,
 	CardContent,
@@ -32,21 +32,12 @@ export const DockerLogs = dynamic(
 	},
 );
 
-export const badgeStateColor = (state: string) => {
-	switch (state) {
-		case "running":
-		case "ready":
-			return "green";
-		case "exited":
-		case "shutdown":
-			return "red";
-		case "accepted":
-		case "created":
-			return "blue";
-		default:
-			return "default";
-	}
-};
+function mapContainerState(state: string) {
+	if (["running", "ready"].includes(state)) return "success" as const;
+	if (["exited", "shutdown"].includes(state)) return "error" as const;
+	if (["accepted", "created"].includes(state)) return "info" as const;
+	return "idle" as const;
+}
 
 interface Props {
 	appName: string;
@@ -139,9 +130,9 @@ export const ShowDockerLogs = ({ appName, serverId, serviceId }: Props) => {
 											value={container.containerId}
 										>
 											{container.name} ({container.containerId}){" "}
-											<Badge variant={badgeStateColor(container.state)}>
+											<StatusBadge status={mapContainerState(container.state)}>
 												{container.state}
-											</Badge>
+											</StatusBadge>
 											{container.status ? ` ${container.status}` : ""}
 										</SelectItem>
 									))}
@@ -155,9 +146,9 @@ export const ShowDockerLogs = ({ appName, serverId, serviceId }: Props) => {
 										>
 											{container.name} ({container.containerId}@{container.node}
 											)
-											<Badge variant={badgeStateColor(container.state)}>
+											<StatusBadge status={mapContainerState(container.state)}>
 												{container.state}
-											</Badge>
+											</StatusBadge>
 											{container.currentState
 												? ` ${container.currentState}`
 												: ""}

@@ -2,7 +2,7 @@ import { Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/shared/status-indicator";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -23,7 +23,13 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { api } from "@/utils/api";
-import { badgeStateColor } from "../../application/logs/show";
+
+function mapContainerState(state: string) {
+	if (["running", "ready"].includes(state)) return "success" as const;
+	if (["exited", "shutdown"].includes(state)) return "error" as const;
+	if (["accepted", "created"].includes(state)) return "info" as const;
+	return "idle" as const;
+}
 
 const Terminal = dynamic(
 	() =>
@@ -120,9 +126,9 @@ export const DockerTerminalModal = ({
 									value={container.containerId}
 								>
 									{container.name} ({container.containerId}){" "}
-									<Badge variant={badgeStateColor(container.state)}>
+									<StatusBadge status={mapContainerState(container.state)}>
 										{container.state}
-									</Badge>
+									</StatusBadge>
 								</SelectItem>
 							))}
 							<SelectLabel>Containers ({data?.length})</SelectLabel>

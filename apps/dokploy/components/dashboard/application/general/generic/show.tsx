@@ -1,4 +1,4 @@
-import { GitBranch, Loader2, UploadCloud } from "lucide-react";
+import { GitBranch, UploadCloud } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -21,6 +21,12 @@ import { SaveBitbucketProvider } from "./save-bitbucket-provider";
 import { SaveDragNDrop } from "./save-drag-n-drop";
 import { SaveGitlabProvider } from "./save-gitlab-provider";
 import { UnauthorizedGitProvider } from "./unauthorized-git-provider";
+import {
+	Skeleton,
+	SkeletonCard,
+	SkeletonStat,
+	SkeletonTable,
+} from "@/components/shared/skeleton-card";
 
 type TabState =
 	| "github"
@@ -87,12 +93,7 @@ export const ShowProviderForm = ({ applicationId }: Props) => {
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div className="flex min-h-[25vh] items-center justify-center">
-						<div className="flex items-center gap-2 text-muted-foreground">
-							<Loader2 className="size-4 animate-spin" />
-							<span>Loading providers...</span>
-						</div>
-					</div>
+					<SkeletonCard />
 				</CardContent>
 			</Card>
 		);

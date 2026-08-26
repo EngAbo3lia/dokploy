@@ -1,4 +1,5 @@
 import { ChevronDown, ChevronRight, Server } from "lucide-react";
+import { StatusBadge } from "@/components/shared/status-indicator";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -86,9 +87,9 @@ export const NodeSection = ({
 								) : runningCount === group.containers.length ? (
 									<Badge variant="default">All Running</Badge>
 								) : (
-									<Badge variant="orange">
+									<StatusBadge status="warning">
 										{runningCount}/{group.containers.length} Running
-									</Badge>
+									</StatusBadge>
 								)}
 							</div>
 						</div>

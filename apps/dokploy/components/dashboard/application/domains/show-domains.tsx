@@ -13,6 +13,7 @@ import {
 	CheckCircle2,
 	ChevronDown,
 	ExternalLink,
+	Globe,
 	GlobeIcon,
 	InfoIcon,
 	LayoutGrid,
@@ -20,6 +21,7 @@ import {
 	Loader2,
 	PenBoxIcon,
 	RefreshCw,
+	Search,
 	Server,
 	Trash2,
 	XCircle,
@@ -28,6 +30,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -303,29 +307,23 @@ export const ShowDomains = ({ id, type }: Props) => {
 				)}
 				<CardContent className="flex w-full flex-row gap-4">
 					{isLoadingDomains ? (
-						<div className="flex w-full flex-row gap-4 min-h-[40vh] justify-center items-center">
-							<Loader2 className="size-5 animate-spin text-muted-foreground" />
-							<span className="text-base text-muted-foreground">
-								Loading domains...
-							</span>
-						</div>
+						<SkeletonTable rows={5} />
 					) : data?.length === 0 ? (
-						<div className="flex w-full flex-col items-center justify-center gap-3 min-h-[40vh]">
-							<GlobeIcon className="size-8 text-muted-foreground" />
-							<span className="text-base text-muted-foreground">
-								To access the application it is required to set at least 1
-								domain
-							</span>
-							{canCreateDomain && (
-								<div className="flex flex-row gap-4 flex-wrap">
+						<EmptyState
+							icon={<Globe className="size-8 text-muted-foreground/60" />}
+							title="No domains configured"
+							description="Set up at least one domain to access this application."
+							className="min-h-[40vh]"
+							action={
+								canCreateDomain ? (
 									<AddDomain id={id} type={type}>
 										<Button>
-											<GlobeIcon className="size-4" /> Add Domain
+											<Globe className="size-4" /> Add Domain
 										</Button>
 									</AddDomain>
-								</div>
-							)}
-						</div>
+								) : undefined
+							}
+						/>
 					) : viewMode === "table" ? (
 						<div className="flex flex-col gap-4 w-full">
 							<div className="flex items-center gap-2 max-sm:flex-wrap">
@@ -410,9 +408,14 @@ export const ShowDomains = ({ id, type }: Props) => {
 											<TableRow>
 												<TableCell
 													colSpan={columns.length}
-													className="h-24 text-center"
+													className="text-center"
 												>
-													No results.
+													<EmptyState
+														icon={<Search />}
+														title="No results"
+														description="No domains match your current filters."
+														className="py-8"
+													/>
 												</TableCell>
 											</TableRow>
 										)}

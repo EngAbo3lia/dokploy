@@ -1,6 +1,11 @@
 import { standardSchemaResolver as zodResolver } from "@hookform/resolvers/standard-schema";
-import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import {
+	Skeleton,
+	SkeletonCard,
+	SkeletonStat,
+	SkeletonTable,
+} from "@/components/shared/skeleton-card";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -104,12 +109,7 @@ export const ShowTraefikFile = ({ path, serverId }: Props) => {
 				>
 					<div className="flex flex-col overflow-auto">
 						{isLoadingFile ? (
-							<div className="w-full flex-col gap-2 flex items-center justify-center h-[55vh]">
-								<span className="text-muted-foreground text-lg font-medium">
-									Loading...
-								</span>
-								<Loader2 className="animate-spin size-8 text-muted-foreground" />
-							</div>
+							<Skeleton className="h-[55vh] w-full" />
 						) : (
 							<FormField
 								control={form.control}

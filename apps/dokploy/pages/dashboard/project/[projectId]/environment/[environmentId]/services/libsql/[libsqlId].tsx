@@ -26,7 +26,7 @@ import { ShowDatabaseAdvancedSettings } from "@/components/dashboard/shared/show
 import { LibsqlIcon } from "@/components/icons/data-tools-icons";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdvanceBreadcrumb } from "@/components/shared/advance-breadcrumb";
-import { StatusTooltip } from "@/components/shared/status-tooltip";
+import { StatusDot } from "@/components/shared/status-indicator";
 import { Badge } from "@/components/ui/badge";
 import {
 	Card,
@@ -47,6 +47,15 @@ import { UseKeyboardNav } from "@/hooks/use-keyboard-nav";
 import { cn } from "@/lib/utils";
 import { appRouter } from "@/server/api/root";
 import { api } from "@/utils/api";
+
+function mapServiceStatus(status: string | undefined | null) {
+	if (!status) return "idle" as const;
+	if (["running", "ready", "healthy"].includes(status))
+		return "running" as const;
+	if (["error", "failed"].includes(status)) return "error" as const;
+	if (["idle", "stopped"].includes(status)) return "stopped" as const;
+	return "idle" as const;
+}
 
 type TabState = "projects" | "monitoring" | "settings" | "backups" | "advanced";
 
@@ -84,7 +93,9 @@ const Libsql = (
 								<CardTitle className="text-xl flex flex-row gap-2">
 									<div className="relative flex flex-row gap-4">
 										<div className="absolute -right-1  -top-2">
-											<StatusTooltip status={data?.applicationStatus} />
+											<StatusDot
+												status={mapServiceStatus(data?.applicationStatus)}
+											/>
 										</div>
 
 										<LibsqlIcon className="h-6 w-6 text-muted-foreground" />

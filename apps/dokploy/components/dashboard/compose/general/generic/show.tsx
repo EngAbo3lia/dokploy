@@ -1,4 +1,4 @@
-import { CodeIcon, GitBranch, Loader2 } from "lucide-react";
+import { CodeIcon, GitBranch } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -20,6 +20,12 @@ import { SaveGitProviderCompose } from "./save-git-provider-compose";
 import { SaveGiteaProviderCompose } from "./save-gitea-provider-compose";
 import { SaveGithubProviderCompose } from "./save-github-provider-compose";
 import { SaveGitlabProviderCompose } from "./save-gitlab-provider-compose";
+import {
+	Skeleton,
+	SkeletonCard,
+	SkeletonStat,
+	SkeletonTable,
+} from "@/components/shared/skeleton-card";
 
 type TabState = "github" | "git" | "raw" | "gitlab" | "bitbucket" | "gitea";
 interface Props {
@@ -76,12 +82,7 @@ export const ShowProviderFormCompose = ({ composeId }: Props) => {
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div className="flex min-h-[25vh] items-center justify-center">
-						<div className="flex items-center gap-2 text-muted-foreground">
-							<Loader2 className="size-4 animate-spin" />
-							<span>Loading providers...</span>
-						</div>
-					</div>
+					<SkeletonCard />
 				</CardContent>
 			</Card>
 		);

@@ -9,10 +9,12 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ArrowUpDown, Loader2, LogOut, Smartphone } from "lucide-react";
+import { ArrowUpDown, LogOut, Smartphone } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
+import { StatusBadge } from "@/components/shared/status-indicator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -202,9 +204,7 @@ export const ShowSessions = () => {
 							Expired
 						</Badge>
 					) : (
-						<Badge variant="green" className="text-xs">
-							Active
-						</Badge>
+						<StatusBadge status="success">Active</StatusBadge>
 					);
 				},
 			},
@@ -290,10 +290,7 @@ export const ShowSessions = () => {
 					</CardHeader>
 					<CardContent className="space-y-4 py-8 border-t">
 						{isPending ? (
-							<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[25vh]">
-								<span>Loading...</span>
-								<Loader2 className="animate-spin size-4" />
-							</div>
+							<SkeletonTable rows={5} />
 						) : !sessions || sessions.length === 0 ? (
 							<div className="flex flex-col items-center gap-3 min-h-[25vh] justify-center">
 								<Smartphone className="size-8 self-center text-muted-foreground" />

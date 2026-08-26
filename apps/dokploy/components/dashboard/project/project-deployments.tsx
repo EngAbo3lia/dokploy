@@ -1,8 +1,9 @@
 import type { HealthServiceRow } from "@dokploy/server";
-import { CheckCircle2, History, Loader2, XCircle } from "lucide-react";
+import { CheckCircle2, History, Loader2, Search, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { DateTooltip } from "@/components/shared/date-tooltip";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -163,10 +164,11 @@ export const ProjectDeployments = ({
 	if (items.length === 0) {
 		return (
 			<Card>
-				<CardContent className="flex h-40 flex-col items-center justify-center gap-2">
-					<History className="size-8 text-muted-foreground" />
-					<span className="text-sm font-medium">No deployments yet</span>
-				</CardContent>
+				<EmptyState
+					icon={<History className="size-8 text-muted-foreground/60" />}
+					title="No deployments yet"
+					description="Deployments will appear here after your first deploy."
+				/>
 			</Card>
 		);
 	}
@@ -254,9 +256,12 @@ export const ProjectDeployments = ({
 					);
 				})}
 				{filtered.length === 0 && (
-					<p className="py-6 text-center text-sm text-muted-foreground">
-						No errored deployments
-					</p>
+					<EmptyState
+						icon={<Search />}
+						title="No deployments match your filters"
+						description="Try adjusting your filter criteria."
+						className="py-6"
+					/>
 				)}
 			</CardContent>
 		</Card>

@@ -1,10 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, ChevronsUpDown, Loader2, RefreshCw } from "lucide-react";
+import {
+	Check,
+	ChevronsUpDown,
+	Loader2,
+	Network,
+	RefreshCw,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { AlertBlock } from "@/components/shared/alert-block";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -170,9 +177,12 @@ export const AssignComposeNetworks = ({ composeId }: Props) => {
 						<Loader2 className="animate-spin size-4" />
 					</div>
 				) : !services?.length ? (
-					<span className="py-6 text-center text-sm text-muted-foreground">
-						No services found in this compose.
-					</span>
+					<EmptyState
+						icon={<Network />}
+						title="No services found"
+						description="This compose has no services to assign networks to."
+						className="py-8"
+					/>
 				) : (
 					<Form {...form}>
 						<form
@@ -288,9 +298,12 @@ const ServiceRow = ({
 										/>
 										<CommandList className="max-h-60">
 											{availableNetworks.length === 0 ? (
-												<div className="py-6 text-center text-sm text-muted-foreground">
-													No networks available on this server.
-												</div>
+												<EmptyState
+													icon={<Network />}
+													title="No networks available"
+													description="Create a network on this server first."
+													className="py-6"
+												/>
 											) : (
 												<CommandGroup>
 													{availableNetworks.map((n) => {

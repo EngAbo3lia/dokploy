@@ -17,11 +17,13 @@ import {
 	Download,
 	Globe,
 	InfoIcon,
+	Search,
 	Server,
 	TrendingUpIcon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -271,14 +273,15 @@ export const RequestsTable = ({ dateRange }: RequestsTableProps) => {
 										<TableRow>
 											<TableCell
 												colSpan={columns.length}
-												className="h-24 text-center"
+												className="text-center"
 											>
 												{statsLogs?.data.length === 0 && (
-													<div className="w-full flex-col gap-2 flex items-center justify-center h-[55vh]">
-														<span className="text-muted-foreground text-lg font-medium">
-															No results.
-														</span>
-													</div>
+													<EmptyState
+														icon={<Search />}
+														title="No results"
+														description="No requests match your current filters."
+														className="py-8"
+													/>
 												)}
 											</TableCell>
 										</TableRow>

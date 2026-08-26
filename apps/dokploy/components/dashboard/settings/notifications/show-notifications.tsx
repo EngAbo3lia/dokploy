@@ -1,4 +1,4 @@
-import { Bell, Loader2, Mail, PenBoxIcon, Trash2 } from "lucide-react";
+import { Bell, Mail, PenBoxIcon, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
 	DiscordIcon,
@@ -12,6 +12,7 @@ import {
 	TelegramIcon,
 } from "@/components/icons/notification-icons";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { SkeletonCard } from "@/components/shared/skeleton-card";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -45,9 +46,8 @@ export const ShowNotifications = () => {
 					</CardHeader>
 					<CardContent className="space-y-2 py-8 border-t">
 						{isPending ? (
-							<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[25vh]">
-								<span>Loading...</span>
-								<Loader2 className="animate-spin size-4" />
+							<div className="min-h-[25vh]">
+								<SkeletonCard />
 							</div>
 						) : (
 							<>

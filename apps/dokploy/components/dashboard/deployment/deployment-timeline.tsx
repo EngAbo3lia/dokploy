@@ -45,20 +45,20 @@ export const DeploymentTimeline = ({
 							<div
 								className={`flex items-center justify-center size-6 rounded-full border-2 transition-colors ${
 									isError && isCurrent
-										? "border-red-500 bg-red-500/10"
+										? "border-destructive bg-destructive/10"
 										: isComplete
-											? "border-emerald-500 bg-emerald-500/10"
+											? "border-success bg-success/10"
 											: isActive
-												? "border-blue-500 bg-blue-500/10"
+												? "border-info bg-info/10"
 												: "border-muted-foreground/30 bg-muted/40"
 								}`}
 							>
 								{isError && isCurrent ? (
-									<X className="size-3 text-red-500" />
+									<X className="size-3 text-destructive" />
 								) : isComplete ? (
-									<Check className="size-3 text-emerald-500" />
+									<Check className="size-3 text-success" />
 								) : isActive ? (
-									<Loader2 className="size-3 text-blue-500 animate-spin" />
+									<Loader2 className="size-3 text-info animate-spin" />
 								) : (
 									<Circle className="size-3 text-muted-foreground/40" />
 								)}
@@ -66,9 +66,7 @@ export const DeploymentTimeline = ({
 							{i < STEPS.length - 1 && (
 								<div
 									className={`w-px h-6 ${
-										i < activeIndex
-											? "bg-emerald-500/40"
-											: "bg-muted-foreground/20"
+										i < activeIndex ? "bg-success/40" : "bg-muted-foreground/20"
 									}`}
 								/>
 							)}
@@ -89,10 +87,10 @@ export const DeploymentTimeline = ({
 								</span>
 							)}
 							{isCurrent && deployment.status === "done" && (
-								<span className="text-xs text-emerald-500">Completed</span>
+								<span className="text-xs text-success">Completed</span>
 							)}
 							{isCurrent && isError && (
-								<span className="text-xs text-red-500">Failed</span>
+								<span className="text-xs text-destructive">Failed</span>
 							)}
 						</div>
 					</div>

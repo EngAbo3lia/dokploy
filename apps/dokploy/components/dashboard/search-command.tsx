@@ -24,7 +24,17 @@ import {
 	CommandSeparator,
 } from "@/components/ui/command";
 import { api } from "@/utils/api";
-import { StatusTooltip } from "../shared/status-tooltip";
+import { StatusDot } from "@/components/shared/status-indicator";
+
+function mapDeploymentStatus(status: string | undefined | null) {
+	if (!status) return "idle" as const;
+	if (status === "done") return "success" as const;
+	if (status === "running") return "running" as const;
+	if (status === "error") return "error" as const;
+	if (status === "cancelled") return "cancelled" as const;
+	if (status === "idle") return "idle" as const;
+	return "idle" as const;
+}
 
 // Extended Services type to include environmentId and environmentName for search navigation
 type SearchServices = Services & {
@@ -156,7 +166,9 @@ export const SearchCommand = () => {
 											<div style={{ display: "none" }}>{application.id}</div>
 										</span>
 										<div>
-											<StatusTooltip status={application.status} />
+											<StatusDot
+												status={mapDeploymentStatus(application.status)}
+											/>
 										</div>
 									</CommandItem>
 								));

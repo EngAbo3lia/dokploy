@@ -1,6 +1,8 @@
-import { Loader2, TagIcon, Trash2 } from "lucide-react";
+import { TagIcon, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonCard } from "@/components/shared/skeleton-card";
 import { TagBadge } from "@/components/shared/tag-badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,21 +37,21 @@ export const TagManager = () => {
 					</CardHeader>
 					<CardContent className="space-y-2 py-8 border-t">
 						{isPending ? (
-							<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[25vh]">
-								<span>Loading...</span>
-								<Loader2 className="animate-spin size-4" />
+							<div className="min-h-[25vh]">
+								<SkeletonCard />
 							</div>
 						) : (
 							<>
 								{!tags || tags.length === 0 ? (
-									<div className="flex flex-col items-center gap-3 min-h-[25vh] justify-center">
-										<TagIcon className="size-6 text-muted-foreground" />
-										<span className="text-base text-muted-foreground text-center">
-											No tags yet. Create your first tag to start organizing
-											projects.
-										</span>
-										{permissions?.tag.create && <HandleTag />}
-									</div>
+									<EmptyState
+										icon={
+											<TagIcon className="size-8 text-muted-foreground/60" />
+										}
+										title="No tags yet"
+										description="Create your first tag to start organizing projects."
+										className="min-h-[25vh]"
+										action={permissions?.tag.create ? <HandleTag /> : undefined}
+									/>
 								) : (
 									<div className="flex flex-col gap-4 min-h-[25vh]">
 										<div className="flex flex-col gap-4 rounded-lg">

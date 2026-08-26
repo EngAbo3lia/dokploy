@@ -6,9 +6,11 @@ import {
 	Loader2,
 	Pause,
 	Play,
+	Terminal,
 } from "lucide-react";
 import React, { useEffect, useRef } from "react";
 import { AlertBlock } from "@/components/shared/alert-block";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/utils/api";
@@ -434,14 +436,19 @@ export const DockerLogsId: React.FC<Props> = ({
 								<Loader2 className="h-6 w-6 animate-spin" />
 							</div>
 						) : hasContainer ? (
-							<div className="flex justify-center items-center h-full text-muted-foreground">
-								No logs found
-							</div>
+							<EmptyState
+								icon={<Terminal />}
+								title="No logs found"
+								description="Logs will appear here once the container produces output."
+								className="justify-center py-8"
+							/>
 						) : (
-							<div className="flex justify-center items-center h-full text-center text-sm text-muted-foreground px-8">
-								Select a container above to view its logs. If none are listed,
-								make sure the service is deployed and running.
-							</div>
+							<EmptyState
+								icon={<Terminal />}
+								title="Select a container"
+								description="Choose a container above to view its logs. If none are listed, make sure the service is deployed and running."
+								className="justify-center py-8"
+							/>
 						)}
 					</div>
 				</div>

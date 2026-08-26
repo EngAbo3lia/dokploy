@@ -2,12 +2,13 @@ import {
 	FileIcon,
 	Folder,
 	FolderOpen,
-	Loader2,
 	MousePointerClick,
 	Workflow,
 } from "lucide-react";
 import React from "react";
 import { AlertBlock } from "@/components/shared/alert-block";
+import { EmptyState } from "@/components/shared/empty-state";
+import { Skeleton } from "@/components/shared/skeleton-card";
 import {
 	Card,
 	CardContent,
@@ -66,32 +67,14 @@ export const ShowTraefikSystem = ({ serverId }: Props) => {
 										{error?.message}
 									</AlertBlock>
 								)}
-								{isLoading && (
-									<div className="w-full flex-col gap-2 flex items-center justify-center h-[55vh]">
-										<span className="text-muted-foreground text-lg font-medium">
-											Loading...
-										</span>
-										<Loader2 className="animate-spin size-8 text-muted-foreground" />
-									</div>
-								)}
+								{isLoading && <Skeleton className="h-[55vh] w-full" />}
 								{directories?.length === 0 && (
-									<div className="w-full flex-col gap-4 flex items-center justify-center h-[55vh] border border-dashed rounded-lg">
-										<div className="flex items-center justify-center size-14 rounded-full bg-muted">
-											<FolderOpen className="size-7 text-muted-foreground" />
-										</div>
-										<div className="flex flex-col items-center gap-1 text-center px-4">
-											<span className="text-base font-medium">
-												No configuration files found
-											</span>
-											<span className="text-sm text-muted-foreground">
-												There are no directories or files in{" "}
-												<code className="bg-muted px-1.5 py-0.5 rounded text-xs">
-													/etc/dokploy/traefik
-												</code>{" "}
-												on this server yet.
-											</span>
-										</div>
-									</div>
+									<EmptyState
+										icon={<FolderOpen className="size-7" />}
+										title="No configuration files found"
+										description={`There are no directories or files in "/etc/dokploy/traefik" on this server yet.`}
+										className="h-[55vh] border border-dashed rounded-lg"
+									/>
 								)}
 								{directories && directories?.length > 0 && (
 									<>

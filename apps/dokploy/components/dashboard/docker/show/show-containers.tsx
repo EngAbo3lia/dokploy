@@ -9,8 +9,9 @@ import {
 	useReactTable,
 	type VisibilityState,
 } from "@tanstack/react-table";
-import { ChevronDown, Container, RefreshCw } from "lucide-react";
+import { ChevronDown, Container, RefreshCw, Search } from "lucide-react";
 import * as React from "react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -203,11 +204,14 @@ export const ShowContainers = ({ serverId }: Props) => {
 											</span>
 										</div>
 									) : data?.length === 0 ? (
-										<div className="flex-col gap-2 flex items-center justify-center h-[55vh]">
-											<span className="text-muted-foreground text-lg font-medium">
-												No results.
-											</span>
-										</div>
+										<EmptyState
+											icon={
+												<Container className="size-8 text-muted-foreground/60" />
+											}
+											title="No containers found"
+											description="Containers will appear here once your services are deployed."
+											className="h-[55vh]"
+										/>
 									) : (
 										<Table>
 											<TableHeader>
@@ -258,7 +262,12 @@ export const ShowContainers = ({ serverId }: Props) => {
 																	</span>
 																</div>
 															) : (
-																<>No results.</>
+																<EmptyState
+																	icon={<Search />}
+																	title="No results"
+																	description="No containers match your current filters."
+																	className="py-8"
+																/>
 															)}
 														</TableCell>
 													</TableRow>

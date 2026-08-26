@@ -3,7 +3,6 @@ import {
 	ChevronDown,
 	ChevronRight,
 	Link,
-	Loader2,
 	Server,
 	ShieldCheck,
 	Trash2,
@@ -12,6 +11,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { AlertBlock } from "@/components/shared/alert-block";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { SkeletonCard } from "@/components/shared/skeleton-card";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -58,9 +58,8 @@ export const ShowCertificates = () => {
 					</CardHeader>
 					<CardContent className="space-y-2 py-8 border-t">
 						{isPending ? (
-							<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[25vh]">
-								<span>Loading...</span>
-								<Loader2 className="animate-spin size-4" />
+							<div className="min-h-[25vh]">
+								<SkeletonCard />
 							</div>
 						) : (
 							<>

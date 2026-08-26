@@ -1,3 +1,5 @@
+import { Package } from "lucide-react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import {
 	Dialog,
@@ -66,9 +68,12 @@ export const ShowContainerMounts = ({ containerId, serverId }: Props) => {
 				</DialogHeader>
 				<div className="overflow-auto max-h-[70vh]">
 					{mounts.length === 0 ? (
-						<div className="text-center text-muted-foreground py-8">
-							No mounts found for this container.
-						</div>
+						<EmptyState
+							icon={<Package />}
+							title="No mounts found"
+							description="This container has no volume or bind mounts configured."
+							className="py-8"
+						/>
 					) : (
 						<Table>
 							<TableHeader>
