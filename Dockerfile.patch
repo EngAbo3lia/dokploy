@@ -1,7 +1,6 @@
 FROM dokploy/dokploy:canary
 COPY apps/dokploy/.next /app/.next
 COPY apps/dokploy/public /app/public
-COPY apps/dokploy/dist /app/dist
 COPY compose.js /app/node_modules/@dokploy/server/dist/utils/builders/compose.js
 COPY services-compose.js /app/node_modules/@dokploy/server/dist/services/compose.js
 COPY packages/server/dist/index.js /app/node_modules/@dokploy/server/dist/index.js
