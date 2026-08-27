@@ -1,0 +1,139 @@
+name: Aboalia Docker Build
+
+on:
+  push:
+    branches: [aboalia]
+    tags: ["v*"]
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: aboalia/dokploy
+
+jobs:
+  docker-amd:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set tag and version
+        id: meta
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/aboalia" ]; then
+            TAG="aboalia"
+            VERSION=$(node -p "require('./apps/dokploy/package.json').version")
+          elif [ "${{ startsWith(github.ref, 'refs/tags/') }}" = "true" ]; then
+            TAG="${{ github.ref_name }}"
+          else
+            TAG="aboalia"
+          fi
+          echo "tags=${IMAGE_NAME}:${TAG}-amd64,${IMAGE_NAME}:aboalia-amd64" >> $GITHUB_OUTPUT
+
+      - name: Prepare env file
+        run: |
+          cp apps/dokploy/.env.production.example .env.production
+          cp apps/dokploy/.env.production.example apps/dokploy/.env.production
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+  docker-arm:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set tag and version
+        id: meta
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/aboalia" ]; then
+            TAG="aboalia"
+          elif [ "${{ startsWith(github.ref, 'refs/tags/') }}" = "true" ]; then
+            TAG="${{ github.ref_name }}"
+          else
+            TAG="aboalia"
+          fi
+          echo "tags=${IMAGE_NAME}:${TAG}-arm64,${IMAGE_NAME}:aboalia-arm64" >> $GITHUB_OUTPUT
+
+      - name: Prepare env file
+        run: |
+          cp apps/dokploy/.env.production.example .env.production
+          cp apps/dokploy/.env.production.example apps/dokploy/.env.production
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+  combine-manifests:
+    needs: [docker-amd, docker-arm]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create and push manifests
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/aboalia" ]; then
+            VERSION=$(node -p "require('./apps/dokploy/package.json').version")
+            TAG="aboalia"
+
+            docker buildx imagetools create -t ${IMAGE_NAME}:aboalia \
+              ${IMAGE_NAME}:aboalia-amd64 \
+              ${IMAGE_NAME}:aboalia-arm64
+
+            docker buildx imagetools create -t ${IMAGE_NAME}:${VERSION} \
+              ${IMAGE_NAME}:aboalia-amd64 \
+              ${IMAGE_NAME}:aboalia-arm64
+
+          elif [ "${{ startsWith(github.ref, 'refs/tags/') }}" = "true" ]; then
+            TAG="${{ github.ref_name }}"
+            docker buildx imagetools create -t ${IMAGE_NAME}:latest \
+              ${IMAGE_NAME}:${TAG}-amd64 \
+              ${IMAGE_NAME}:${TAG}-arm64
+
+            docker buildx imagetools create -t ${IMAGE_NAME}:${TAG} \
+              ${IMAGE_NAME}:${TAG}-amd64 \
+              ${IMAGE_NAME}:${TAG}-arm64
+          else
+            docker buildx imagetools create -t ${IMAGE_NAME}:aboalia \
+              ${IMAGE_NAME}:aboalia-amd64 \
+              ${IMAGE_NAME}:aboalia-arm64
+          fi
