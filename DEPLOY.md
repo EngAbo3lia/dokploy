@@ -1,96 +1,82 @@
 # Production Deployment Checklist
 
-Current production image: `dokploy-cc:v0.30.2-ccN` (N = latest successful deploy)
-Rollback image: `dokploy/dokploy:v0.30.2@sha256:98d9471d6152b3fdb2ecd1124b180ec0cb525586ed4186580069fdd3e8f9f482`
+Current production image: `aboalia/dokploy:aboalia` (built by CI from `aboalia` branch)
+Rollback image: `dokploy/dokploy:v0.30.2` (stock, previously running)
 Server: `server.aboalia.com` (Proxmox, Ubuntu 24.04, Docker Swarm)
 
 ---
 
-## Quick Deploy (after building + pushing release)
+## New Release Pipeline (CI)
 
-Paste into Proxmox console:
-
-```bash
-curl -fL -o /tmp/cc.tgz https://github.com/EngAbo3lia/dokploy/releases/download/cc-v0.30.2-rN/dokploy-cc.tar.gz
-rm -rf /tmp/cc && mkdir -p /tmp/cc && tar -xzf /tmp/cc.tgz -C /tmp/cc
-bash /tmp/cc/deploy.sh
-```
+1. Merge features into `aboalia` → push → GitHub Actions builds/pushes `aboalia/dokploy:<tag>`
+2. On the Proxmox VM console, patch the running swarm service (below)
 
 ---
 
-## Deployment Log
+## Patch Production (Proxmox console)
 
-| # | Tag | Date | Changes | Status | Notes |
-|---|-----|------|---------|--------|-------|
-| — | stock v0.30.2 | — | baseline (official image) | running | prod baseline |
-| r1 | cc-v0.30.2-r1 | 2026-08-25 | first attempt (swarm cp approach) | failed | swarm replaced task on restart, patch lost |
-| r2 | cc-v0.30.2-r2 | 2026-08-25 | docker cp + service update | failed | same swarm issue + start-first port conflict |
-| r3 | cc-v0.30.2-r3 | 2026-08-25 | docker build on server (swarm-native) | built ok | image built, service update hit port conflict (start-first) |
-| r3+fix | — | 2026-08-25 | manual `--update-order stop-first` | pending | user running now |
-
----
-
-## Build Commands (from repo root)
+Paste into Proxmox VM console (SSH not reachable — use web console):
 
 ```bash
-# 1. Typecheck
-pnpm --filter dokploy run typecheck
+# 1. Inspect current deployment
+docker service ls --format "table {{.Name}}\t{{.Image}}\t{{.Replicas}}" | grep dokploy
+grep -r "image:" /etc/dokploy/docker-compose.yml
 
-# 2. Frontend build
-rd /s /q apps\dokploy\.next\cache
-$env:NODE_OPTIONS='--dns-result-order=ipv4first'
-pnpm --filter=./apps/dokploy run build    # ~5-8 min
+# 2. Pull our image + patch in place (rolling update, no downtime)
+docker pull aboalia/dokploy:aboalia
+docker service update --image aboalia/dokploy:aboalia --update-order stop-first --force dokploy_dokploy
 
-# 3. Server bundle
-pnpm --filter dokploy run build-server   # ~10s
+# 3. Persist the change in the compose file (so install.sh re-deploys won't revert to dokploy org image)
+cp /etc/dokploy/docker-compose.yml /etc/dokploy/docker-compose.yml.bak
+sed -i 's#image: dokploy/dokploy:.*#image: aboalia/dokploy:aboalia#' /etc/dokploy/docker-compose.yml
 
-# 4. Server dist overlays (if backend changed)
-pnpm --filter @dokploy/server run build
-git checkout packages/server/package.json   # REVERT!
-cp packages/server/dist/utils/builders/compose.js ./compose.js
-cp packages/server/dist/services/compose.js ./services-compose.js
-
-# 5. Package
-$stage = "C:\Users\ahmed\AppData\Local\Temp\opencode\cc-deploy"
-tar -czf "$stage\next.tgz" -C apps\dokploy .next
-tar -czf "$stage\dist.tgz" -C apps\dokploy dist
-tar -czf "$stage\font.tgz" -h -C apps\dokploy\node_modules\@fontsource inter
-# Copy overlay .js files to $stage
-# Ensure deploy.sh is LF-only
-tar -czf "$stage\dokploy-cc.tar.gz" -C $stage deploy.sh next.tgz dist.tgz font.tgz *.js
-
-# 6. Release
-gh release create cc-v0.30.2-rN --repo EngAbo3lia/dokploy --target feat/project-control-center \
-  --title "Control Center rN" --notes "..." "$stage\dokploy-cc.tar.gz"
+# 4. Verify
+docker service ps dokploy_dokploy --format "table {{.Name}}\t{{.Image}}\t{{.TaskState}}\t{{.CurrentState}}"
+docker service logs dokploy_dokploy --tail 50
 ```
+
+Notes:
+- Service name is usually `dokploy_dokploy` (stack: `dokploy`) — confirm with step 1, adapt if different
+- **`--update-order stop-first` is REQUIRED** — default `start-first` causes port 3000 conflict with the still-running old task
+- Data (Postgres volumes, `/etc/dokploy`) is untouched — the `aboalia` image is built from the same `Dockerfile`/compose contract, so it's a drop-in replacement
+- If using `docker stack deploy` instead: run step 3 first, then `docker stack deploy --compose-file /etc/dokploy/docker-compose.yml dokploy`
 
 ---
 
 ## Rollback (if production breaks)
 
 ```bash
-# Via Proxmox console:
 docker service update --detach=false --update-order stop-first \
-  --image "dokploy/dokploy:v0.30.2@sha256:98d9471d6152b3fdb2ecd1124b180ec0cb525586ed4186580069fdd3e8f9f482" dokploy
+  --image dokploy/dokploy:v0.30.2 dokploy_dokploy
 ```
 
 ---
 
-## Post-Deploy Verification
+## Local Development
+
+```bash
+# Local test stack (dokploy + postgres + redis + traefik):
+docker compose -f docker-compose.test.yml up -d
+
+# Local patch image (for fast dev iteration; NOT for production):
+docker build -f Dockerfile.patch -t dokploy-local:patch .
+```
+
+---
+
+## Verification After Deploy
 
 1. Open `https://dokploy.aboalia.com` — should load without errors
-2. Navigate to SAP Projects → test/production environment
-3. Check: health strip visible, services show type labels, cards compact
-4. Check: Overview tab works, Deployments timeline populates, Logs load
-5. Check: Compose service details → Overview tab with runtime badge + info card
+2. Navigate to test-cycle-8 → production environment
+3. Check: card header (icon + env badge + description on one row, buttons inline), services grid, filters
+4. Check: Overview tab works, Deployments timeline populates
+5. Check: Compose service page renders correctly
 
 ---
 
 ## Notes
 
-- **Dockerfile.patch** in repo root is for LOCAL testing only (same logic as deploy.sh on server)
-- **deploy.sh** runs ON the server — builds image, updates service, auto-rollbacks on failure
-- **Port 3000**: always use `--update-order stop-first` to avoid conflict with still-running old task
-- **Image tag**: increment `ccN` each deploy so swarm detects the change
-- **@fontsource/inter**: included in tarball for node_modules safety (next/font/google blocked on server)
-- **DB backup**: deploy.sh auto-backs up postgres before patching (80KB compressed for our data)
+- **Repo ownership**: `aboalia` is our primary branch (GitHub default). `upstream` remote = `Dokploy/dokploy`; sync with `scripts/sync-upstream.sh`, then merge into `aboalia` with conflict resolution.
+- **CI**: `.github/workflows/build-aboalia.yml` builds on push to `aboalia` (tag `aboalia`), tags `v*` (tag `latest` + `vX.Y.Z`), and manual dispatch. Secrets: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`.
+- **Docker Hub**: `aboalia/dokploy:aboalia` (multi-arch manifest: amd64 + arm64)
+- Node 24.4.0 build in CI = matching container runtime (avoids local Node 22 → 24 mismatch crash)
