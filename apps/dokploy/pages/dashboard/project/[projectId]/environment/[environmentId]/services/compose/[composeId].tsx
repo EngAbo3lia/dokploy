@@ -205,7 +205,7 @@ const Service = (
 						))}
 					</div>
 				)}
-				<CardContent className="space-y-2 border-t py-8">
+				<CardContent className="flex flex-col gap-4 border-t p-4 sm:p-6">
 					{data?.server?.serverStatus === "inactive" ? (
 						<div className="flex h-[55vh] rounded-xl border-2 border-dashed p-4">
 							<div className="mx-auto flex max-w-3xl flex-col items-center justify-center gap-3 self-center">
@@ -246,79 +246,71 @@ const Service = (
 								{ value: "configuration", label: "Configuration" },
 							]}
 						>
-							<TabsContent value="overview">
-								<div className="flex flex-col gap-4 pt-2.5">
-									<ComposeOverview
-										composeId={composeId}
-										name={data?.name || ""}
-										description={data?.description || null}
-										composeStatus={data?.composeStatus || null}
-										composeType={data?.composeType || "docker-compose"}
-										sourceType={data?.sourceType || "raw"}
-										serverId={data?.serverId || ""}
-										serverName={data?.server?.name || null}
-										appName={data?.appName || ""}
-										canDeploy={!!permissions?.service.create}
-										canReadDomains={canReadDomains}
-										canReadDeployments={canReadDeployments}
-									/>
-								</div>
+							<TabsContent value="overview" className="pt-2.5">
+								<ComposeOverview
+									composeId={composeId}
+									name={data?.name || ""}
+									description={data?.description || null}
+									composeStatus={data?.composeStatus || null}
+									composeType={data?.composeType || "docker-compose"}
+									sourceType={data?.sourceType || "raw"}
+									serverId={data?.serverId || ""}
+									serverName={data?.server?.name || null}
+									appName={data?.appName || ""}
+									canDeploy={!!permissions?.service.create}
+									canReadDomains={canReadDomains}
+									canReadDeployments={canReadDeployments}
+								/>
 							</TabsContent>
-							<TabsContent value="configuration">
-								<div className="flex flex-col gap-4 pt-2.5">
-									<ComposeConfigurationTabs
-										composeId={composeId}
-										sourceType={data?.sourceType || "raw"}
-										composeType={data?.composeType || "docker-compose"}
-										appName={data?.appName || ""}
-										serverId={data?.serverId || ""}
-										server={
-											data?.server
-												? {
-														ipAddress: data.server.ipAddress,
-														metricsConfig: {
-															server: {
-																port: data.server.metricsConfig?.server?.port,
-																token: data.server.metricsConfig?.server?.token,
-															},
+							<TabsContent value="configuration" className="pt-2.5">
+								<ComposeConfigurationTabs
+									composeId={composeId}
+									sourceType={data?.sourceType || "raw"}
+									composeType={data?.composeType || "docker-compose"}
+									appName={data?.appName || ""}
+									serverId={data?.serverId || ""}
+									server={
+										data?.server
+											? {
+													ipAddress: data.server.ipAddress,
+													metricsConfig: {
+														server: {
+															port: data.server.metricsConfig?.server?.port,
+															token: data.server.metricsConfig?.server?.token,
 														},
-													}
-												: null
-										}
-										refreshToken={data?.refreshToken || ""}
-									/>
-								</div>
+													},
+												}
+											: null
+									}
+									refreshToken={data?.refreshToken || ""}
+								/>
 							</TabsContent>
 							{permissions?.logs.read && (
-								<TabsContent value="logs">
-									<div className="flex flex-col gap-4 pt-2.5">
-										{data?.composeType === "docker-compose" ? (
-											<ShowDockerLogsCompose
-												serverId={data?.serverId || ""}
-												appName={data?.appName || ""}
-												appType={data?.composeType || "docker-compose"}
-												serviceId={data?.composeId}
-											/>
-										) : (
-											<ShowDockerLogsStack
-												serverId={data?.serverId || ""}
-												appName={data?.appName || ""}
-												serviceId={data?.composeId}
-											/>
-										)}
-									</div>
+								<TabsContent value="logs" className="pt-2.5">
+									{data?.composeType === "docker-compose" ? (
+										<ShowDockerLogsCompose
+											serverId={data?.serverId || ""}
+											appName={data?.appName || ""}
+											appType={data?.composeType || "docker-compose"}
+											serviceId={data?.composeId}
+										/>
+									) : (
+										<ShowDockerLogsStack
+											serverId={data?.serverId || ""}
+											appName={data?.appName || ""}
+											serviceId={data?.composeId}
+										/>
+									)}
 								</TabsContent>
 							)}
 							{canReadDeployments && (
 								<TabsContent value="deployments" className="w-full pt-2.5">
-									<div className="flex flex-col gap-4 rounded-lg border">
-										<ShowDeployments
-											id={composeId}
-											type="compose"
-											serverId={data?.serverId || ""}
-											refreshToken={data?.refreshToken || ""}
-										/>
-									</div>
+									<ShowDeployments
+										id={composeId}
+										type="compose"
+										serverId={data?.serverId || ""}
+										refreshToken={data?.refreshToken || ""}
+									/>
 								</TabsContent>
 							)}
 						</ServiceTabs>

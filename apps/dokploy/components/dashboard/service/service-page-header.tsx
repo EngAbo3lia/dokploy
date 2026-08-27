@@ -12,6 +12,14 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+/**
+ * Service page header.
+ *
+ * Layout:
+ * - Desktop (md+): icon + title block on the left, badges + server + actions
+ *   on the right (`md:flex-row`).
+ * - Mobile: everything stacks vertically with consistent 4-unit gaps.
+ */
 export function ServicePageHeader({
 	icon,
 	statusDot,
@@ -38,31 +46,31 @@ export function ServicePageHeader({
 	actions?: React.ReactNode;
 }) {
 	return (
-		<CardHeader className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:gap-6">
-			<div className="flex min-w-0 flex-row items-center gap-4">
+		<CardHeader className="flex flex-col gap-4 p-4 sm:p-6 md:flex-row md:items-start md:justify-between md:gap-6 lg:p-6">
+			<div className="flex min-w-0 flex-row items-start gap-3 sm:items-center sm:gap-4">
 				<div className="relative shrink-0">
 					{icon}
 					<div className="absolute -right-1 -top-2 z-10">{statusDot}</div>
 				</div>
-				<div className="flex min-w-0 flex-col gap-1">
+				<div className="flex min-w-0 flex-col gap-1.5">
 					<CardTitle className="truncate text-xl leading-tight">
 						{title}
 					</CardTitle>
 					{titleSub}
 					{description && (
-						<CardDescription className="truncate">
+						<CardDescription className="line-clamp-2">
 							{description}
 						</CardDescription>
 					)}
 				</div>
 			</div>
-			<div className="flex shrink-0 flex-col gap-2">
+			<div className="flex w-full shrink-0 flex-col gap-3 md:max-w-md md:items-end">
 				{badges && (
-					<div className="flex flex-row flex-wrap justify-start gap-2 md:justify-end">
+					<div className="flex flex-row flex-wrap items-center gap-2">
 						{badges}
 					</div>
 				)}
-				<div className="flex flex-row flex-wrap items-center justify-start gap-2 md:justify-end">
+				<div className="flex flex-row flex-wrap items-center gap-2">
 					<Badge
 						className="cursor-pointer"
 						onClick={() => {

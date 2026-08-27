@@ -206,9 +206,9 @@ export const ShowDeployments = ({
 	}
 
 	return (
-		<Card className="bg-background border-0">
-			<CardHeader className="flex flex-row items-center justify-between flex-wrap gap-2">
-				<div className="flex flex-col gap-2">
+		<Card className="w-full bg-background">
+			<CardHeader className="flex flex-col gap-3 p-4 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+				<div className="flex flex-col gap-1">
 					<CardTitle className="text-xl">Deployments</CardTitle>
 					<CardDescription>
 						{isFilterable
@@ -216,7 +216,7 @@ export const ShowDeployments = ({
 							: "See the last 10 deployments"}
 					</CardDescription>
 				</div>
-				<div className="flex flex-row items-center flex-wrap gap-2">
+				<div className="flex flex-row flex-wrap items-center gap-2">
 					{(type === "application" || type === "compose") && (
 						<ClearDeployments id={id} type={type} />
 					)}
@@ -235,7 +235,7 @@ export const ShowDeployments = ({
 					)}
 				</div>
 			</CardHeader>
-			<CardContent className="flex flex-col gap-4">
+			<CardContent className="flex flex-col gap-4 p-4 sm:p-6">
 				{stuckDeployment && (type === "application" || type === "compose") && (
 					<AlertBlock
 						type="warning"
@@ -286,46 +286,48 @@ export const ShowDeployments = ({
 				)}
 
 				{refreshToken && (
-					<div className="flex flex-col gap-2 text-sm">
-						<span>
-							If you want to re-deploy this application use this URL in the
-							config of your git provider or docker
-						</span>
-						<div className="flex flex-row items-center gap-2 flex-wrap">
-							<span>Webhook URL: </span>
-							<div className="flex flex-row items-center gap-2">
-								<Badge
-									tabIndex={0}
-									aria-label="Copy webhook URL to clipboard"
-									className="p-2 rounded-md ml-1 mr-1 hover:border-primary hover:text-primary-foreground hover:bg-primary hover:cursor-pointer whitespace-normal break-all"
-									variant="outline"
-									onKeyDown={(event) => {
-										if (event.key === "Enter" || event.key === " ") {
-											event.preventDefault();
+					<div className="rounded-lg border bg-muted/30 p-3 text-sm sm:p-4">
+						<div className="flex flex-col gap-2">
+							<span>
+								If you want to re-deploy this application use this URL in the
+								config of your git provider or docker
+							</span>
+							<div className="flex flex-row flex-wrap items-center gap-2">
+								<span className="text-muted-foreground">Webhook URL:</span>
+								<div className="flex min-w-0 flex-row items-center gap-2">
+									<Badge
+										tabIndex={0}
+										aria-label="Copy webhook URL to clipboard"
+										className="rounded-md p-2 hover:border-primary hover:bg-primary hover:text-primary-foreground hover:cursor-pointer break-all whitespace-normal"
+										variant="outline"
+										onKeyDown={(event) => {
+											if (event.key === "Enter" || event.key === " ") {
+												event.preventDefault();
+												copy(webhookUrl);
+												toast.success("Copied to clipboard.");
+											}
+										}}
+										onClick={() => {
 											copy(webhookUrl);
 											toast.success("Copied to clipboard.");
-										}
-									}}
-									onClick={() => {
-										copy(webhookUrl);
-										toast.success("Copied to clipboard.");
-									}}
-								>
-									{webhookUrl}
-									<Copy className="h-4 w-4 ml-2" />
-								</Badge>
-								{(type === "application" || type === "compose") && (
-									<RefreshToken id={id} type={type} />
-								)}
+										}}
+									>
+										{webhookUrl}
+										<Copy className="ml-2 h-4 w-4" />
+									</Badge>
+									{(type === "application" || type === "compose") && (
+										<RefreshToken id={id} type={type} />
+									)}
+								</div>
 							</div>
 						</div>
 					</div>
 				)}
 
 				{isFilterable && (
-					<div className="flex flex-row items-center gap-3 flex-wrap">
-						<div className="relative flex-1 min-w-[200px] max-w-sm">
-							<Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+					<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
+						<div className="relative w-full sm:max-w-sm sm:flex-1">
+							<Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 							<Input
 								placeholder="Search deployments..."
 								value={search}
@@ -333,32 +335,34 @@ export const ShowDeployments = ({
 								className="pl-9"
 							/>
 						</div>
-						<Select value={statusFilter} onValueChange={setStatusFilter}>
-							<SelectTrigger className="w-[140px]">
-								<Filter className="size-3.5 mr-2" />
-								<SelectValue placeholder="Status" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="all">All statuses</SelectItem>
-								<SelectItem value="running">Running</SelectItem>
-								<SelectItem value="done">Done</SelectItem>
-								<SelectItem value="error">Error</SelectItem>
-								<SelectItem value="cancelled">Cancelled</SelectItem>
-							</SelectContent>
-						</Select>
-						<Select
-							value={environmentFilter}
-							onValueChange={setEnvironmentFilter}
-						>
-							<SelectTrigger className="w-[140px]">
-								<SelectValue placeholder="Environment" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="all">All envs</SelectItem>
-								<SelectItem value="production">Production</SelectItem>
-								<SelectItem value="preview">Preview</SelectItem>
-							</SelectContent>
-						</Select>
+						<div className="flex flex-row flex-wrap items-center gap-2">
+							<Select value={statusFilter} onValueChange={setStatusFilter}>
+								<SelectTrigger className="w-[140px]">
+									<Filter className="mr-2 size-3.5" />
+									<SelectValue placeholder="Status" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="all">All statuses</SelectItem>
+									<SelectItem value="running">Running</SelectItem>
+									<SelectItem value="done">Done</SelectItem>
+									<SelectItem value="error">Error</SelectItem>
+									<SelectItem value="cancelled">Cancelled</SelectItem>
+								</SelectContent>
+							</Select>
+							<Select
+								value={environmentFilter}
+								onValueChange={setEnvironmentFilter}
+							>
+								<SelectTrigger className="w-[140px]">
+									<SelectValue placeholder="Environment" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="all">All envs</SelectItem>
+									<SelectItem value="production">Production</SelectItem>
+									<SelectItem value="preview">Preview</SelectItem>
+								</SelectContent>
+							</Select>
+						</div>
 					</div>
 				)}
 
@@ -388,214 +392,220 @@ export const ShowDeployments = ({
 						className="min-h-[25vh] py-10"
 					/>
 				) : (
-					<div className="flex flex-col gap-0">
-						<div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] gap-3 items-center px-4 py-2 text-xs text-muted-foreground border-b">
-							<span>Deployment</span>
-							<span className="hidden sm:block w-24 text-right">Duration</span>
-							<span className="min-w-[96px] text-right">Status</span>
-							<span className="hidden sm:block w-32 text-right">Date</span>
-							<span aria-hidden="true" />
-						</div>
-						{deployments.map((deployment, _index) => {
-							const titleText = deployment?.title?.trim() || "";
-							const needsTruncation = titleText.length > MAX_DESCRIPTION_LENGTH;
-							const isExpanded = expandedDescriptions.has(
-								deployment.deploymentId,
-							);
-							const canDelete =
-								deployment.status === "done" || deployment.status === "error";
+					<div className="overflow-x-auto">
+						<div className="flex flex-col gap-0 min-w-[640px]">
+							<div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] items-center gap-3 border-b px-4 py-2 text-xs text-muted-foreground">
+								<span>Deployment</span>
+								<span className="hidden w-24 text-right sm:block">Duration</span>
+								<span className="min-w-[96px] text-right">Status</span>
+								<span className="hidden w-32 text-right sm:block">Date</span>
+								<span aria-hidden="true" />
+							</div>
+							{deployments.map((deployment, _index) => {
+								const titleText = deployment?.title?.trim() || "";
+								const needsTruncation =
+									titleText.length > MAX_DESCRIPTION_LENGTH;
+								const isExpanded = expandedDescriptions.has(
+									deployment.deploymentId,
+								);
+								const canDelete =
+									deployment.status === "done" ||
+									deployment.status === "error";
 
-							const duration =
-								deployment.startedAt && deployment.finishedAt
-									? Math.floor(
-											(new Date(deployment.finishedAt).getTime() -
-												new Date(deployment.startedAt).getTime()) /
-												1000,
-										)
-									: null;
+								const duration =
+									deployment.startedAt && deployment.finishedAt
+										? Math.floor(
+												(new Date(deployment.finishedAt).getTime() -
+													new Date(deployment.startedAt).getTime()) /
+													1000,
+											)
+										: null;
 
-							return (
-								<div
-									key={deployment.deploymentId}
-									className="group grid grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] gap-3 items-center px-4 py-3 border-b last:border-b-0 hover:bg-muted/30 transition-colors"
-								>
-									<div className="flex flex-col gap-0.5 min-w-0">
-										<div className="flex items-center gap-2">
-											<span className="font-medium text-sm truncate">
-												{isExpanded || !needsTruncation
-													? titleText
-													: truncateDescription(titleText)}
-											</span>
-											{deployment.environment && (
-												<Badge
-													variant="secondary"
-													className="text-[10px] shrink-0"
+								return (
+									<div
+										key={deployment.deploymentId}
+										className="group grid grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] items-center gap-3 border-b px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/30"
+									>
+										<div className="flex min-w-0 flex-col gap-0.5">
+											<div className="flex items-center gap-2">
+												<span className="truncate text-sm font-medium">
+													{isExpanded || !needsTruncation
+														? titleText
+														: truncateDescription(titleText)}
+												</span>
+												{deployment.environment && (
+													<Badge
+														variant="secondary"
+														className="shrink-0 text-[10px]"
+													>
+														{deployment.environment}
+													</Badge>
+												)}
+											</div>
+											{needsTruncation && (
+												<button
+													type="button"
+													onClick={() => {
+														const next = new Set(expandedDescriptions);
+														if (next.has(deployment.deploymentId)) {
+															next.delete(deployment.deploymentId);
+														} else {
+															next.add(deployment.deploymentId);
+														}
+														setExpandedDescriptions(next);
+													}}
+													className="flex w-fit cursor-pointer items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
 												>
-													{deployment.environment}
+													{isExpanded ? (
+														<>
+															<ChevronUp className="size-3" />
+															Show less
+														</>
+													) : (
+														<>
+															<ChevronDown className="size-3" />
+															Show more
+														</>
+													)}
+												</button>
+											)}
+											{deployment.description?.trim() && (
+												<span className="font-mono text-xs text-muted-foreground">
+													{deployment.description}
+												</span>
+											)}
+											<div className="mt-0.5 flex items-center gap-2">
+												{deployment.gitBranch && (
+													<span className="font-mono text-[10px] text-muted-foreground">
+														{deployment.gitBranch}
+													</span>
+												)}
+												{deployment.gitCommitSha && (
+													<span className="font-mono text-[10px] text-muted-foreground">
+														{deployment.gitCommitSha.slice(0, 7)}
+													</span>
+												)}
+											</div>
+										</div>
+
+										<div className="hidden w-24 items-center justify-end gap-1 sm:flex">
+											{duration !== null && (
+												<Badge
+													variant="outline"
+													className="flex items-center gap-1 text-[10px]"
+												>
+													<Clock className="size-3" />
+													{formatDuration(duration)}
 												</Badge>
 											)}
 										</div>
-										{needsTruncation && (
-											<button
-												type="button"
-												onClick={() => {
-													const next = new Set(expandedDescriptions);
-													if (next.has(deployment.deploymentId)) {
-														next.delete(deployment.deploymentId);
-													} else {
-														next.add(deployment.deploymentId);
-													}
-													setExpandedDescriptions(next);
-												}}
-												className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-fit cursor-pointer"
-											>
-												{isExpanded ? (
-													<>
-														<ChevronUp className="size-3" />
-														Show less
-													</>
-												) : (
-													<>
-														<ChevronDown className="size-3" />
-														Show more
-													</>
-												)}
-											</button>
-										)}
-										{deployment.description?.trim() && (
-											<span className="text-xs text-muted-foreground font-mono">
-												{deployment.description}
-											</span>
-										)}
-										<div className="flex items-center gap-2 mt-0.5">
-											{deployment.gitBranch && (
-												<span className="text-[10px] text-muted-foreground font-mono">
-													{deployment.gitBranch}
-												</span>
-											)}
-											{deployment.gitCommitSha && (
-												<span className="text-[10px] text-muted-foreground font-mono">
-													{deployment.gitCommitSha.slice(0, 7)}
-												</span>
-											)}
+
+										<div className="flex min-w-[96px] justify-end">
+											<DeploymentStatus
+												status={deployment.status || "idle"}
+											/>
 										</div>
-									</div>
 
-									<div className="hidden sm:flex items-center gap-1 w-24 justify-end">
-										{duration !== null && (
-											<Badge
-												variant="outline"
-												className="text-[10px] gap-1 flex items-center"
-											>
-												<Clock className="size-3" />
-												{formatDuration(duration)}
-											</Badge>
-										)}
-									</div>
+										<div className="hidden w-32 items-center justify-end sm:flex">
+											<DateTooltip date={deployment.createdAt} />
+										</div>
 
-									<div className="min-w-[96px] flex justify-end">
-										<DeploymentStatus status={deployment.status || "idle"} />
-									</div>
-
-									<div className="hidden sm:flex items-center w-32 justify-end">
-										<DateTooltip date={deployment.createdAt} />
-									</div>
-
-									<div className="flex items-center justify-end gap-0.5 opacity-100 transition-opacity duration-150 focus-within:opacity-100 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
-										{deployment.pid && deployment.status === "running" && (
-											<DialogAction
-												title="Kill Process"
-												description="Are you sure you want to kill the process?"
-												type="default"
-												onClick={async () => {
-													await killProcess({
-														deploymentId: deployment.deploymentId,
-													})
-														.then(() => {
-															toast.success("Process killed successfully");
+										<div className="flex items-center justify-end gap-0.5 opacity-100 transition-opacity duration-150 focus-within:opacity-100 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
+											{deployment.pid && deployment.status === "running" && (
+												<DialogAction
+													title="Kill Process"
+													description="Are you sure you want to kill the process?"
+													type="default"
+													onClick={async () => {
+														await killProcess({
+															deploymentId: deployment.deploymentId,
 														})
-														.catch(() => {
-															toast.error("Error killing process");
-														});
-												}}
-											>
-												<Button
-													variant="ghost"
-													size="sm"
-													isLoading={isKillingProcess}
-													className="h-7 w-7 p-0"
-													title="Kill build"
+															.then(() => {
+																toast.success("Process killed successfully");
+															})
+															.catch(() => {
+																toast.error("Error killing process");
+															});
+													}}
 												>
-													<Scissors className="size-3.5" />
-												</Button>
-											</DialogAction>
-										)}
-										<Button
-											variant="ghost"
-											size="sm"
-											onClick={() => setActiveLog(deployment)}
-											className="h-7 w-7 p-0"
-											title="View logs"
-										>
-											<Eye className="size-3.5" />
-										</Button>
-										{(type === "application" || type === "compose") && (
+													<Button
+														variant="ghost"
+														size="sm"
+														isLoading={isKillingProcess}
+														className="h-7 w-7 p-0"
+														title="Kill build"
+													>
+														<Scissors className="size-3.5" />
+													</Button>
+												</DialogAction>
+											)}
 											<Button
 												variant="ghost"
 												size="sm"
-												onClick={() =>
-													setDetailDeploymentId(deployment.deploymentId)
-												}
+												onClick={() => setActiveLog(deployment)}
 												className="h-7 w-7 p-0"
-												title="View deployment detail"
+												title="View logs"
 											>
-												<Info className="size-3.5" />
+												<Eye className="size-3.5" />
 											</Button>
-										)}
-										{canDelete && (
-											<DialogAction
-												title="Delete Deployment"
-												description="Are you sure you want to delete this deployment? This action cannot be undone."
-												type="default"
-												onClick={async () => {
-													setRemovingDeploymentIds((prev) => {
-														const next = new Set(prev);
-														next.add(deployment.deploymentId);
-														return next;
-													});
-													try {
-														await removeDeployment({
-															deploymentId: deployment.deploymentId,
-														});
-														toast.success("Deployment deleted");
-													} catch {
-														toast.error("Error deleting deployment");
-													} finally {
-														setRemovingDeploymentIds((prev) => {
-															const next = new Set(prev);
-															next.delete(deployment.deploymentId);
-															return next;
-														});
-													}
-												}}
-											>
+											{(type === "application" || type === "compose") && (
 												<Button
 													variant="ghost"
 													size="sm"
-													isLoading={removingDeploymentIds.has(
-														deployment.deploymentId,
-													)}
+													onClick={() =>
+														setDetailDeploymentId(deployment.deploymentId)
+													}
 													className="h-7 w-7 p-0"
-													title="Delete deployment"
+													title="View deployment detail"
 												>
-													<Trash2 className="size-3.5" />
+													<Info className="size-3.5" />
 												</Button>
-											</DialogAction>
-										)}
+											)}
+											{canDelete && (
+												<DialogAction
+													title="Delete Deployment"
+													description="Are you sure you want to delete this deployment? This action cannot be undone."
+													type="default"
+													onClick={async () => {
+														setRemovingDeploymentIds((prev) => {
+															const next = new Set(prev);
+															next.add(deployment.deploymentId);
+															return next;
+														});
+														try {
+															await removeDeployment({
+																deploymentId: deployment.deploymentId,
+															});
+															toast.success("Deployment deleted");
+														} catch {
+															toast.error("Error deleting deployment");
+														} finally {
+															setRemovingDeploymentIds((prev) => {
+																const next = new Set(prev);
+																next.delete(deployment.deploymentId);
+																return next;
+															});
+														}
+													}}
+												>
+													<Button
+														variant="ghost"
+														size="sm"
+														isLoading={removingDeploymentIds.has(
+															deployment.deploymentId,
+														)}
+														className="h-7 w-7 p-0"
+														title="Delete deployment"
+													>
+														<Trash2 className="size-3.5" />
+													</Button>
+												</DialogAction>
+											)}
+										</div>
 									</div>
-								</div>
-							);
-						})}
+								);
+							})}
+						</div>
 					</div>
 				)}
 

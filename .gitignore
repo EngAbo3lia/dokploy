@@ -29,6 +29,9 @@ coverage
 out/
 dist
 
+# Dev verification screenshots
+*.png
+
 
 # Debug
 npm-debug.log*

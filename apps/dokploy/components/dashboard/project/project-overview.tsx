@@ -48,7 +48,7 @@ export const ProjectOverview = ({
 
 	if (!health) {
 		return (
-			<Card>
+			<Card className="bg-background">
 				<CardContent className="flex h-40 flex-col items-center justify-center gap-3">
 					<span className="text-sm text-muted-foreground">
 						Project health information unavailable
@@ -117,17 +117,17 @@ export const ProjectOverview = ({
 		.slice(0, 6);
 
 	return (
-		<div className="flex flex-col gap-4">
-			<Card>
-				<CardContent className="flex flex-col gap-4 p-6">
-					<div className="flex flex-row items-center gap-3">
+		<div className="flex flex-col gap-4 lg:gap-6">
+			<Card className="bg-background">
+				<CardContent className="flex flex-col gap-4 p-4 sm:p-6">
+					<div className="flex flex-row flex-wrap items-center gap-3">
 						<span
 							className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium ${meta.badge}`}
 						>
 							<span className="relative flex size-2">
 								{meta.pulse && (
 									<span
-										className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-60 ${meta.dot}`}
+										className={`absolute inline-flex size-full animate-ping rounded-full opacity-60 ${meta.dot}`}
 									/>
 								)}
 								<span
@@ -143,11 +143,11 @@ export const ProjectOverview = ({
 							{services.filter((s) => s.runtime === "stopped").length} stopped
 						</span>
 					</div>
-					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+					<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
 						{stats.map((stat) => (
 							<div
 								key={stat.label}
-								className="flex flex-col gap-1 rounded-xl border p-4"
+								className="flex flex-col gap-1.5 rounded-xl border p-3 sm:p-4"
 							>
 								<span className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
 									{stat.icon}
@@ -170,9 +170,9 @@ export const ProjectOverview = ({
 				</CardContent>
 			</Card>
 
-			<div className="grid gap-4 lg:grid-cols-2">
-				<Card>
-					<CardHeader>
+			<div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
+				<Card className="bg-background">
+					<CardHeader className="p-4 sm:p-6">
 						<CardTitle className="flex items-center gap-2 text-base">
 							<LayoutGrid className="size-4 text-muted-foreground" />
 							Services
@@ -181,7 +181,7 @@ export const ProjectOverview = ({
 							Live status of every service in this environment
 						</CardDescription>
 					</CardHeader>
-					<CardContent className="space-y-2">
+					<CardContent className="space-y-2 px-4 pb-4 sm:px-6 sm:pb-6">
 						{services.map((service) => {
 							const dotStatus =
 								service.runtime === "healthy"
@@ -195,7 +195,7 @@ export const ProjectOverview = ({
 								<Link
 									key={service.serviceId}
 									href={`/dashboard/project/${projectId}/environment/${environmentId}/services/${service.type}/${service.serviceId}`}
-									className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2 transition-colors hover:bg-accent"
+									className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 transition-colors hover:bg-accent"
 								>
 									<span className="flex min-w-0 items-center gap-2.5">
 										<StatusDot status={dotStatus} />
@@ -230,8 +230,8 @@ export const ProjectOverview = ({
 					</CardContent>
 				</Card>
 
-				<Card>
-					<CardHeader>
+				<Card className="bg-background">
+					<CardHeader className="p-4 sm:p-6">
 						<CardTitle className="flex items-center gap-2 text-base">
 							<History className="size-4 text-muted-foreground" />
 							Recent deployments
@@ -240,11 +240,11 @@ export const ProjectOverview = ({
 							Latest successful or failed deployments per service
 						</CardDescription>
 					</CardHeader>
-					<CardContent className="space-y-2">
+					<CardContent className="space-y-2 px-4 pb-4 sm:px-6 sm:pb-6">
 						{recent.map((service) => (
 							<div
 								key={service.serviceId}
-								className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2"
+								className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5"
 							>
 								<span className="flex min-w-0 items-center gap-2.5">
 									<StatusDot

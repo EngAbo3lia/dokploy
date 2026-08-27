@@ -72,6 +72,7 @@ import { DialogAction } from "@/components/shared/dialog-action";
 import { EmptyState } from "@/components/shared/empty-state";
 import { FocusShortcutInput } from "@/components/shared/focus-shortcut-input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
 	Card,
 	CardContent,
@@ -1150,13 +1151,13 @@ const EnvironmentPage = (
 				</title>
 			</Head>
 			<div className="w-full">
-				<Card className="h-full bg-sidebar p-2.5 rounded-xl">
-					<div className="rounded-xl bg-background shadow-md">
-						<div className="flex justify-between gap-4 w-full items-center flex-wrap p-6">
-							<CardHeader className="p-0">
-								<CardTitle className="text-xl flex flex-row gap-2 items-center">
-									<FolderInput className="size-6 text-muted-foreground self-center" />
-									<p className="text-base font-medium max-w-[250px] truncate">
+				<Card className="h-full rounded-xl border-0 bg-transparent p-0 lg:bg-sidebar lg:p-2.5">
+					<div className="rounded-xl border bg-background shadow-sm lg:shadow-md">
+						<div className="flex flex-col gap-4 p-4 sm:p-6 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
+							<div className="flex min-w-0 flex-col gap-1.5">
+								<div className="flex flex-row flex-wrap items-center gap-2.5">
+									<FolderInput className="size-6 shrink-0 text-muted-foreground" />
+									<p className="text-base font-medium">
 										{currentEnvironment.project.name}
 									</p>
 									<AdvancedEnvironmentSelector
@@ -1164,64 +1165,72 @@ const EnvironmentPage = (
 										currentEnvironmentId={environmentId}
 									/>
 									<EnvironmentVariables environmentId={environmentId}>
-										<Button variant="ghost" size="icon">
-											<SquareTerminal className="size-5 text-muted-foreground cursor-pointer" />
+										<Button variant="ghost" size="icon" className="size-8 shrink-0">
+											<SquareTerminal className="size-4 cursor-pointer text-muted-foreground" />
 										</Button>
 									</EnvironmentVariables>
-								</CardTitle>
-								<CardDescription>
-									{currentEnvironment.description || "No description provided"}
-								</CardDescription>
-							</CardHeader>
-							<div className="flex flex-row gap-4 flex-wrap justify-between items-center">
-								<div className="flex flex-row gap-4 flex-wrap">
-									<ProjectEnvironment projectId={projectId}>
-										<Button variant="outline">Project Environment</Button>
-									</ProjectEnvironment>
-									{permissions?.service.create && (
-										<DropdownMenu>
-											<DropdownMenuTrigger asChild>
-												<Button>
-													<PlusIcon className="h-4 w-4" />
-													Create Service
-												</Button>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent
-												className="w-[200px] space-y-2"
-												align="end"
-											>
-												<DropdownMenuLabel className="text-sm font-normal">
-													Actions
-												</DropdownMenuLabel>
-												<DropdownMenuSeparator />
-												<AddApplication
-													projectName={projectData?.name}
-													environmentId={environmentId}
-												/>
-												<AddDatabase
-													projectName={projectData?.name}
-													environmentId={environmentId}
-												/>
-												<AddCompose
-													projectName={projectData?.name}
-													environmentId={environmentId}
-												/>
-												<AddTemplate environmentId={environmentId} />
-												<AddAiAssistant
-													projectName={projectData?.name}
-													environmentId={environmentId}
-												/>
-												<AddImport
-													projectName={projectData?.name}
-													environmentId={environmentId}
-												/>
-											</DropdownMenuContent>
-										</DropdownMenu>
-									)}
+								</div>
+								<div className="mt-0.5 flex items-center gap-2 text-sm">
+									<Badge
+										variant="secondary"
+										className="rounded-full px-2.5 py-0.5 text-xs font-medium"
+									>
+										{currentEnvironment.name}
+									</Badge>
+									<span className="truncate text-muted-foreground">
+										{currentEnvironment.description || "No description provided"}
+									</span>
 								</div>
 							</div>
+							<div className="flex w-full flex-row flex-wrap items-center gap-2 sm:gap-3 lg:w-auto lg:justify-end">
+								<ProjectEnvironment projectId={projectId}>
+									<Button variant="outline" className="h-9">
+										Project Environment
+									</Button>
+								</ProjectEnvironment>
+								{permissions?.service.create && (
+									<DropdownMenu>
+										<DropdownMenuTrigger asChild>
+											<Button className="h-9">
+												<PlusIcon className="h-4 w-4" />
+												Create Service
+											</Button>
+										</DropdownMenuTrigger>
+										<DropdownMenuContent
+											className="w-[200px] space-y-2"
+											align="end"
+										>
+											<DropdownMenuLabel className="text-sm font-normal">
+												Actions
+											</DropdownMenuLabel>
+											<DropdownMenuSeparator />
+											<AddApplication
+												projectName={projectData?.name}
+												environmentId={environmentId}
+											/>
+											<AddDatabase
+												projectName={projectData?.name}
+												environmentId={environmentId}
+											/>
+											<AddCompose
+												projectName={projectData?.name}
+												environmentId={environmentId}
+											/>
+											<AddTemplate environmentId={environmentId} />
+											<AddAiAssistant
+												projectName={projectData?.name}
+												environmentId={environmentId}
+											/>
+											<AddImport
+												projectName={projectData?.name}
+												environmentId={environmentId}
+											/>
+										</DropdownMenuContent>
+									</DropdownMenu>
+								)}
+							</div>
 						</div>
-						<CardContent className="space-y-2 py-8 border-t gap-4 flex flex-col min-h-[60vh]">
+						<CardContent className="flex min-h-[60vh] flex-col gap-4 border-t p-4 sm:p-6">
 							<ProjectHealthSummary
 								health={currentEnvHealth}
 								isLoading={isHealthLoading}
@@ -1234,16 +1243,16 @@ const EnvironmentPage = (
 								onValueChange={(v) => setProjectTab(v as typeof tab)}
 								className="w-full"
 							>
-								<div className="flex w-full flex-row items-center overflow-x-auto">
+								<div className="flex w-full flex-row items-center overflow-x-auto scrollbar-none">
 									<TabsList
 										variant="line"
-										className="flex h-10 w-fit items-center justify-start gap-3 rounded-none bg-transparent p-0 max-md:gap-3"
+										className="flex h-10 w-fit items-center justify-start gap-1 rounded-none bg-transparent p-0"
 									>
 										{tabs.map((t) => (
 											<TabsTrigger
 												key={t.value}
 												value={t.value}
-												className="h-9 px-2"
+												className="h-9 px-3 sm:px-4"
 											>
 												<t.icon className="size-4" />
 												{t.label}
@@ -1266,7 +1275,7 @@ const EnvironmentPage = (
 									<>
 										<div className="flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
 											{selectedServices.length > 0 && (
-												<div className="flex items-center gap-4">
+												<div className="flex flex-wrap items-center gap-4">
 													<div className="flex items-center gap-2">
 														<Checkbox
 															checked={
@@ -1648,8 +1657,8 @@ const EnvironmentPage = (
 												</div>
 											)}
 
-											<div className="flex flex-col gap-2 lg:flex-row lg:gap-4 lg:items-center">
-												<div className="w-full relative">
+											<div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-3">
+												<div className="w-full lg:flex-1 relative">
 													<FocusShortcutInput
 														placeholder="Filter services..."
 														value={searchQuery}
@@ -1658,8 +1667,9 @@ const EnvironmentPage = (
 													/>
 													<Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
 												</div>
+												<div className="flex flex-row flex-wrap items-center gap-2">
 												<Select value={sortBy} onValueChange={setSortBy}>
-													<SelectTrigger className="lg:w-[280px]">
+													<SelectTrigger className="w-full sm:w-[200px] lg:w-[180px]">
 														<SelectValue placeholder="Sort by..." />
 													</SelectTrigger>
 													<SelectContent>
@@ -1690,7 +1700,7 @@ const EnvironmentPage = (
 														<Button
 															variant="outline"
 															aria-expanded={openCombobox}
-															className="min-w-[200px] justify-between"
+															className="w-full justify-between sm:w-[200px] lg:w-[160px]"
 														>
 															{selectedTypes.length === 0
 																? "Select types..."
@@ -1753,7 +1763,7 @@ const EnvironmentPage = (
 														value={selectedServerId || "all"}
 														onValueChange={setSelectedServerId}
 													>
-														<SelectTrigger className="lg:w-[200px]">
+														<SelectTrigger className="w-full sm:w-[200px] lg:w-[180px]">
 															<SelectValue placeholder="Filter by server..." />
 														</SelectTrigger>
 														<SelectContent>
@@ -1780,6 +1790,7 @@ const EnvironmentPage = (
 														</SelectContent>
 													</Select>
 												)}
+												</div>
 											</div>
 										</div>
 
@@ -1803,8 +1814,8 @@ const EnvironmentPage = (
 													className="h-[70vh]"
 												/>
 											) : (
-												<div className="flex w-full flex-col gap-4">
-													<div className="gap-5 pb-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+										<div className="flex w-full flex-col gap-4">
+												<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
 														{filteredServices?.map((service) => (
 															<ContextMenu key={service.id}>
 																<ContextMenuTrigger asChild>
@@ -1812,7 +1823,7 @@ const EnvironmentPage = (
 																		href={`/dashboard/project/${projectId}/environment/${environmentId}/services/${service.type}/${service.id}`}
 																		className="block h-full"
 																	>
-																		<Card className="flex flex-col h-full group relative cursor-pointer bg-transparent transition-colors hover:bg-border">
+																		<Card className="group relative flex h-full cursor-pointer bg-transparent transition-colors hover:bg-border">
 																			{service.serverId && (
 																				<div className="absolute -left-1 -top-2">
 																					<ServerIcon className="size-4 text-muted-foreground" />
@@ -1855,30 +1866,28 @@ const EnvironmentPage = (
 
 																			<div
 																				className={cn(
-																					"absolute -left-3 -bottom-3 size-9 translate-y-1 rounded-full p-0 transition-all duration-200 z-10 bg-background border",
+																					"absolute -bottom-3 -left-3 z-10 flex size-9 translate-y-1 items-center justify-center rounded-full border bg-background p-0 transition-all duration-200",
 																					selectedServices.includes(service.id)
-																						? "opacity-100 translate-y-0"
+																						? "translate-y-0 opacity-100"
 																						: "opacity-0 group-hover:translate-y-0 group-hover:opacity-100",
 																				)}
 																				onClick={(e) =>
 																					handleServiceSelect(service.id, e)
 																				}
 																			>
-																				<div className="h-full w-full flex items-center justify-center">
-																					<Checkbox
-																						checked={selectedServices.includes(
-																							service.id,
-																						)}
-																						className="data-[state=checked]:bg-primary"
-																					/>
-																				</div>
+																				<Checkbox
+																					checked={selectedServices.includes(
+																						service.id,
+																					)}
+																					className="data-[state=checked]:bg-primary"
+																				/>
 																			</div>
 
 																			<CardHeader className="pb-2">
 																				<CardTitle className="flex items-center justify-between">
-																					<div className="flex flex-row items-center gap-2 justify-between w-full">
+																					<div className="flex w-full flex-row items-center justify-between gap-2">
 																						<div className="flex flex-col gap-1">
-																							<span className="text-base flex items-center gap-2 font-medium leading-none flex-wrap">
+																							<span className="flex flex-wrap items-center gap-2 text-base font-medium leading-none">
 																								{service.name}
 																							</span>
 																							<div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -1934,7 +1943,7 @@ const EnvironmentPage = (
 																							</div>
 																						</div>
 
-																						<span className="text-sm font-medium text-muted-foreground self-start">
+																						<span className="self-start text-sm font-medium text-muted-foreground">
 																							{service.type === "postgres" && (
 																								<PostgresqlIcon className="h-6 w-6" />
 																							)}
@@ -1967,7 +1976,7 @@ const EnvironmentPage = (
 																									<img
 																										src={service.icon}
 																										alt={service.name}
-																										className="size-6 object-contain rounded-sm"
+																										className="size-6 rounded-sm object-contain"
 																									/>
 																								) : null)}
 																							{service.type === "libsql" && (
@@ -1983,7 +1992,7 @@ const EnvironmentPage = (
 																				);
 																				if (!health) return null;
 																				return (
-																					<CardContent className="p-0 px-6 pb-2 space-y-1 text-xs">
+																					<CardContent className="space-y-1 px-6 pb-2 text-xs">
 																						<div className="flex items-center gap-1.5 text-muted-foreground">
 																							<Boxes className="size-3.5" />
 																							<span>
@@ -2028,7 +2037,7 @@ const EnvironmentPage = (
 																									const rest =
 																										health.domains.length - 1;
 																									return (
-																										<span className="flex items-center gap-1">
+																										<span className="flex flex-wrap items-center gap-1">
 																											<a
 																												href={`http${primary.https ? "s" : ""}://${primary.host}`}
 																												target="_blank"
@@ -2036,7 +2045,7 @@ const EnvironmentPage = (
 																												onClick={(e) =>
 																													e.stopPropagation()
 																												}
-																												className={`inline-flex items-center gap-0.5 rounded text-[11px] hover:text-primary transition-colors ${
+																												className={`inline-flex items-center gap-0.5 text-[11px] transition-colors hover:text-primary ${
 																													primary.enabled
 																														? ""
 																														: "line-through"
@@ -2074,7 +2083,7 @@ const EnvironmentPage = (
 																			})()}
 																			{service.serverId && (
 																				<CardFooter className="mt-auto pt-2">
-																					<div className="flex items-center gap-1.5 text-xs text-muted-foreground w-full">
+																					<div className="flex w-full items-center gap-1.5 text-xs text-muted-foreground">
 																						<ServerIcon className="size-3" />
 																						<span className="truncate">
 																							{service.serverName ||

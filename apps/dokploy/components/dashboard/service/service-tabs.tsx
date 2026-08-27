@@ -18,16 +18,16 @@ export function ServiceTabsList({
 	return (
 		<div
 			className={cn(
-				"flex w-full flex-row items-center overflow-x-auto",
+				"flex w-full flex-row items-center overflow-x-auto scrollbar-none",
 				className,
 			)}
 		>
 			<TabsList
 				variant="line"
-				className="flex h-full w-fit items-center justify-start gap-3 rounded-none bg-transparent p-0 max-md:gap-3"
+				className="flex h-10 w-fit items-center justify-start gap-1 rounded-none bg-transparent p-0"
 			>
 				{tabs.map((tab) => (
-					<TabsTrigger key={tab.value} value={tab.value} className="h-9 px-2">
+					<TabsTrigger key={tab.value} value={tab.value} className="h-9 px-3 sm:px-4">
 						{tab.label}
 					</TabsTrigger>
 				))}

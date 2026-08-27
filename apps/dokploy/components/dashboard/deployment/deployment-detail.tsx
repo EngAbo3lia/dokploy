@@ -51,7 +51,7 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 
 	if (isPending) {
 		return (
-			<div className="flex flex-col gap-4 max-w-3xl">
+			<div className="flex flex-col gap-4">
 				<SkeletonCard />
 			</div>
 		);
@@ -83,22 +83,24 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 	};
 
 	return (
-		<div className="flex flex-col gap-6">
-			<div className="flex items-center gap-3">
+		<div className="flex flex-col gap-5 sm:gap-6">
+			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
 				<Button variant="ghost" size="sm" onClick={onBack}>
-					<ArrowLeft className="size-4 mr-1" />
+					<ArrowLeft className="mr-1 size-4" />
 					Back
 				</Button>
-				<h2 className="text-lg font-semibold">{deployment.title}</h2>
+				<h2 className="text-lg font-semibold leading-tight">
+					{deployment.title}
+				</h2>
 				<DeploymentStatus status={deployment.status || "idle"} />
 				{deployment.environment && (
 					<Badge variant="secondary">{deployment.environment}</Badge>
 				)}
 			</div>
 
-			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-				<div className="lg:col-span-2 flex flex-col gap-6">
-					<Card>
+			<div className="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">
+				<div className="flex flex-col gap-5 lg:col-span-2 lg:gap-6">
+					<Card className="bg-background">
 						<CardHeader>
 							<CardTitle className="text-base">Build Timeline</CardTitle>
 						</CardHeader>
@@ -108,12 +110,12 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 					</Card>
 
 					{deployment.errorMessage && (
-						<Card>
+						<Card className="bg-background">
 							<CardHeader>
 								<CardTitle className="text-base">Build Logs</CardTitle>
 							</CardHeader>
 							<CardContent>
-								<pre className="text-xs font-mono bg-muted/50 rounded-lg p-4 max-h-[400px] overflow-auto whitespace-pre-wrap">
+								<pre className="max-h-[400px] overflow-auto whitespace-pre-wrap rounded-lg bg-muted/50 p-4 font-mono text-xs">
 									{deployment.errorMessage}
 								</pre>
 							</CardContent>
@@ -121,8 +123,8 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 					)}
 				</div>
 
-				<div className="flex flex-col gap-6">
-					<Card>
+				<div className="flex flex-col gap-5 lg:gap-6">
+					<Card className="bg-background">
 						<CardHeader>
 							<CardTitle className="text-base">Details</CardTitle>
 						</CardHeader>
@@ -156,7 +158,7 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 							{deployment.errorMessage && (
 								<div className="flex flex-col gap-1.5">
 									<span className="text-xs text-red-500">Error</span>
-									<span className="text-sm text-red-500 whitespace-pre-wrap">
+									<span className="whitespace-pre-wrap text-sm text-red-500">
 										{deployment.errorMessage}
 									</span>
 								</div>
@@ -165,7 +167,7 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 					</Card>
 
 					{(deployment.gitBranch || deployment.gitCommitSha) && (
-						<Card>
+						<Card className="bg-background">
 							<CardHeader>
 								<CardTitle className="text-base">Git</CardTitle>
 							</CardHeader>
@@ -200,7 +202,7 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 					)}
 
 					{deployment.deployUrl && (
-						<Card>
+						<Card className="bg-background">
 							<CardHeader>
 								<CardTitle className="text-base">URL</CardTitle>
 							</CardHeader>
@@ -209,28 +211,26 @@ export const DeploymentDetail = ({ deploymentId, onBack }: Props) => {
 									href={deployment.deployUrl}
 									target="_blank"
 									rel="noopener noreferrer"
-									className="flex items-center gap-2 text-sm text-primary hover:underline"
+									className="flex items-center gap-2 break-all text-sm text-primary hover:underline"
 								>
 									{deployment.deployUrl}
-									<ExternalLink className="size-3" />
+									<ExternalLink className="size-3 shrink-0" />
 								</a>
 							</CardContent>
 						</Card>
 					)}
 
-					<div className="flex flex-col gap-2">
-						{deployment.status === "done" &&
-							deployment.environment !== "production" && (
-								<Button
-									onClick={handlePromote}
-									disabled={isPromoting}
-									className="w-full"
-								>
-									<ArrowBigUp className="size-4 mr-2" />
-									{isPromoting ? "Promoting..." : "Promote to Production"}
-								</Button>
-							)}
-					</div>
+					{deployment.status === "done" &&
+						deployment.environment !== "production" && (
+							<Button
+								onClick={handlePromote}
+								disabled={isPromoting}
+								className="w-full"
+							>
+								<ArrowBigUp className="mr-2 size-4" />
+								{isPromoting ? "Promoting..." : "Promote to Production"}
+							</Button>
+						)}
 				</div>
 			</div>
 		</div>

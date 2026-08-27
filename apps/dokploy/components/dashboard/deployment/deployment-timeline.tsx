@@ -31,7 +31,7 @@ export const DeploymentTimeline = ({
 	const isError = deployment.status === "error";
 
 	return (
-		<div className="flex flex-col gap-0">
+		<div className="flex flex-col">
 			{STEPS.map((step, i) => {
 				const isComplete =
 					i < activeIndex ||
@@ -43,7 +43,7 @@ export const DeploymentTimeline = ({
 					<div key={step.key} className="flex items-start gap-3">
 						<div className="flex flex-col items-center">
 							<div
-								className={`flex items-center justify-center size-6 rounded-full border-2 transition-colors ${
+								className={`flex size-6 items-center justify-center rounded-full border-2 transition-colors ${
 									isError && isCurrent
 										? "border-destructive bg-destructive/10"
 										: isComplete
@@ -58,14 +58,14 @@ export const DeploymentTimeline = ({
 								) : isComplete ? (
 									<Check className="size-3 text-success" />
 								) : isActive ? (
-									<Loader2 className="size-3 text-info animate-spin" />
+									<Loader2 className="size-3 animate-spin text-info" />
 								) : (
 									<Circle className="size-3 text-muted-foreground/40" />
 								)}
 							</div>
 							{i < STEPS.length - 1 && (
 								<div
-									className={`w-px h-6 ${
+									className={`h-6 w-px ${
 										i < activeIndex ? "bg-success/40" : "bg-muted-foreground/20"
 									}`}
 								/>

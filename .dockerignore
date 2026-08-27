@@ -1,0 +1,37 @@
+# Only ignore heavy irrelevant dirs; keep .next, dist, public, packages/server/dist
+
+# Node
+node_modules
+**/node_modules
+.pnpm-store
+
+# Git
+.git
+.gitignore
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!.env.production.local
+docker-compose.test.yml
+
+# Logs & temp
+*.log
+tmp
+/tmp
+
+# Next.js build cache (safe to exclude; not needed at runtime)
+**/.next/cache
+
+# Test artifacts
+container-logs.txt
+build-next.log
+test-*.png
+ui-phase1-login.png
+
+# OS
+Thumbs.db
+.DS_Store
