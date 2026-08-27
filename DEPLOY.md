@@ -1,8 +1,10 @@
 # Production Deployment Checklist
 
-Current production image: `aboalia/dokploy:aboalia` (built by CI from `aboalia` branch)
-Rollback image: `dokploy/dokploy:v0.30.2` (stock, previously running)
+Current production image: `aboalia/dokploy:aboalia` (built by CI from `aboalia` branch) — **LIVE since 2026-08-27**
+Rollback image: `dokploy-cc:v0.30.2-cc2` (previous custom build, kept on node) / `dokploy/dokploy:v0.30.2` (stock)
 Server: `server.aboalia.com` (Proxmox, Ubuntu 24.04, Docker Swarm)
+
+**Deployment type**: bare `docker service create` (service name `dokploy`) — NO stack, NO compose file on disk.
 
 ---
 
@@ -13,33 +15,37 @@ Server: `server.aboalia.com` (Proxmox, Ubuntu 24.04, Docker Swarm)
 
 ---
 
-## Patch Production (Proxmox console)
-
-Paste into Proxmox VM console (SSH not reachable — use web console):
+## Patch Production (Proxmox console) — VERIFIED
 
 ```bash
 # 1. Inspect current deployment
 docker service ls --format "table {{.Name}}\t{{.Image}}\t{{.Replicas}}" | grep dokploy
-grep -r "image:" /etc/dokploy/docker-compose.yml
 
-# 2. Pull our image + patch in place (rolling update, no downtime)
+# 2. Patch in place (rolling update, stop-first REQUIRED for port 3000)
 docker pull aboalia/dokploy:aboalia
-docker service update --image aboalia/dokploy:aboalia --update-order stop-first --force dokploy_dokploy
+docker service update --image aboalia/dokploy:aboalia --update-order stop-first --force dokploy
 
-# 3. Persist the change in the compose file (so install.sh re-deploys won't revert to dokploy org image)
-cp /etc/dokploy/docker-compose.yml /etc/dokploy/docker-compose.yml.bak
-sed -i 's#image: dokploy/dokploy:.*#image: aboalia/dokploy:aboalia#' /etc/dokploy/docker-compose.yml
-
-# 4. Verify
-docker service ps dokploy_dokploy --format "table {{.Name}}\t{{.Image}}\t{{.TaskState}}\t{{.CurrentState}}"
-docker service logs dokploy_dokploy --tail 50
+# 3. Verify
+docker service ps dokploy --format "table {{.Name}}\t{{.Image}}\t{{.TaskState}}\t{{.CurrentState}}"
+docker service logs dokploy --tail 50 --since 2m
 ```
 
 Notes:
-- Service name is usually `dokploy_dokploy` (stack: `dokploy`) — confirm with step 1, adapt if different
+- Service name is **`dokploy`**, not `dokploy_dokploy` (bare service create, no stack)
+- No compose file exists (`/etc/dokploy/docker-compose.yml` absent) — `service update` IS the deployment; nothing persists on disk
 - **`--update-order stop-first` is REQUIRED** — default `start-first` causes port 3000 conflict with the still-running old task
-- Data (Postgres volumes, `/etc/dokploy`) is untouched — the `aboalia` image is built from the same `Dockerfile`/compose contract, so it's a drop-in replacement
-- If using `docker stack deploy` instead: run step 3 first, then `docker stack deploy --compose-file /etc/dokploy/docker-compose.yml dokploy`
+- Data volumes and env in the service spec are untouched (image swap only) — drop-in replacement
+- The aboalia image is a multi-arch manifest (amd64 + arm64); `docker pull` must succeed on every swarm node
+
+---
+
+## Deployment Log
+
+| # | Image | Date | Status | Notes |
+|---|-------|------|--------|-------|
+| — | stock `dokploy/dokploy:v0.30.2` | — | baseline | official image |
+| cc2 | `dokploy-cc:v0.30.2-cc2` | 2026-08-25 | was running | earlier cc patch build (local tar approach) |
+| aboalia | `aboalia/dokploy:aboalia` | 2026-08-27 | **LIVE** | CI build (Node 24), rolling update — verified working |
 
 ---
 
@@ -47,7 +53,7 @@ Notes:
 
 ```bash
 docker service update --detach=false --update-order stop-first \
-  --image dokploy/dokploy:v0.30.2 dokploy_dokploy
+  --image "dokploy-cc:v0.30.2-cc2" dokploy
 ```
 
 ---
