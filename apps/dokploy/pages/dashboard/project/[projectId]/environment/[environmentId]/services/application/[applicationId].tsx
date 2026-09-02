@@ -28,6 +28,7 @@ import { ShowDockerLogs } from "@/components/dashboard/application/logs/show";
 import { ShowPatches } from "@/components/dashboard/application/patches/show-patches";
 import { ShowPreviewDeployments } from "@/components/dashboard/application/preview-deployments/show-preview-deployments";
 import { ShowSchedules } from "@/components/dashboard/application/schedules/show-schedules";
+import { ApplicationHeaderActions } from "@/components/dashboard/application/application-header-actions";
 import { UpdateApplication } from "@/components/dashboard/application/update-application";
 import { ShowVolumeBackups } from "@/components/dashboard/application/volume-backups/show-volume-backups";
 import { DeleteService } from "@/components/dashboard/compose/delete-service";
@@ -125,16 +126,7 @@ const Service = (
 					ipAddress={data?.server?.ipAddress ?? null}
 					serverStatus={data?.server?.serverStatus || "active"}
 					fallbackIp={serverIp}
-					actions={
-						<>
-							{permissions?.service.create && (
-								<UpdateApplication applicationId={applicationId} />
-							)}
-							{permissions?.service.delete && (
-								<DeleteService id={applicationId} type="application" />
-							)}
-						</>
-					}
+					actions={<ApplicationHeaderActions applicationId={applicationId} />}
 				/>
 				<CardContent className="space-y-2 border-t py-8">
 					{data?.server?.serverStatus === "inactive" ? (

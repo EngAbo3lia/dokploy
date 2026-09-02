@@ -130,6 +130,8 @@ export const SaveGiteaProvider = ({ applicationId }: Props) => {
 		},
 		{
 			enabled: !!giteaId,
+			staleTime: 5 * 60 * 1000,
+			gcTime: 10 * 60 * 1000,
 		},
 	);
 
@@ -145,6 +147,8 @@ export const SaveGiteaProvider = ({ applicationId }: Props) => {
 		},
 		{
 			enabled: !!repository?.owner && !!repository?.repo && !!giteaId,
+			staleTime: 2 * 60 * 1000,
+			gcTime: 5 * 60 * 1000,
 		},
 	);
 

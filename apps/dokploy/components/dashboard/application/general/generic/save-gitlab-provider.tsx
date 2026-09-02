@@ -120,6 +120,8 @@ export const SaveGitlabProvider = ({ applicationId }: Props) => {
 		},
 		{
 			enabled: !!gitlabId,
+			staleTime: 5 * 60 * 1000,
+			gcTime: 10 * 60 * 1000,
 		},
 	);
 
@@ -136,6 +138,8 @@ export const SaveGitlabProvider = ({ applicationId }: Props) => {
 		},
 		{
 			enabled: !!repository?.owner && !!repository?.repo && !!gitlabId,
+			staleTime: 2 * 60 * 1000,
+			gcTime: 5 * 60 * 1000,
 		},
 	);
 

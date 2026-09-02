@@ -35,7 +35,8 @@ export const githubRouter = createTRPCRouter({
 		.query(async ({ input, ctx }) => {
 			const github = await findGithubById(input.githubId);
 			await assertGitProviderAccess(ctx.session, github.gitProvider);
-			return await getGithubRepositories(input.githubId);
+			// Pass the already-fetched provider to avoid a second DB hit inside the util
+			return await getGithubRepositories(input.githubId, github);
 		}),
 	getGithubBranches: protectedProcedure
 		.input(apiFindGithubBranches)
@@ -43,6 +44,8 @@ export const githubRouter = createTRPCRouter({
 			if (input.githubId) {
 				const github = await findGithubById(input.githubId);
 				await assertGitProviderAccess(ctx.session, github.gitProvider);
+				// Pass the already-fetched provider to avoid a second DB hit inside the util
+				return await getGithubBranches(input, github);
 			}
 			return await getGithubBranches(input);
 		}),

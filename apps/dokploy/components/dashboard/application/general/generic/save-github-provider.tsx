@@ -111,6 +111,8 @@ export const SaveGithubProvider = ({ applicationId }: Props) => {
 			},
 			{
 				enabled: !!githubId,
+				staleTime: 5 * 60 * 1000, // 5 min — repos don't change every second
+				gcTime: 10 * 60 * 1000,   // keep in cache for 10 min after unmount
 			},
 		);
 
@@ -126,6 +128,8 @@ export const SaveGithubProvider = ({ applicationId }: Props) => {
 		},
 		{
 			enabled: !!repository?.owner && !!repository?.repo && !!githubId,
+			staleTime: 2 * 60 * 1000, // 2 min — branches change less rarely than you think
+			gcTime: 5 * 60 * 1000,
 		},
 	);
 

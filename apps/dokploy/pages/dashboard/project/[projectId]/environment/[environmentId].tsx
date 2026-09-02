@@ -39,7 +39,7 @@ import { type ReactElement, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import superjson from "superjson";
 import { AddAiAssistant } from "@/components/dashboard/project/add-ai-assistant";
-import { AddApplication } from "@/components/dashboard/project/add-application";
+import { ApplicationWizard } from "@/components/dashboard/application/wizard/application-wizard";
 import { AddCompose } from "@/components/dashboard/project/add-compose";
 import { AddDatabase } from "@/components/dashboard/project/add-database";
 import { AddImport } from "@/components/dashboard/project/add-import";
@@ -1204,9 +1204,10 @@ const EnvironmentPage = (
 												Actions
 											</DropdownMenuLabel>
 											<DropdownMenuSeparator />
-											<AddApplication
+											<ApplicationWizard
 												projectName={projectData?.name}
 												environmentId={environmentId}
+												projectId={projectId}
 											/>
 											<AddDatabase
 												projectName={projectData?.name}
