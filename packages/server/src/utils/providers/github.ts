@@ -237,13 +237,12 @@ export const cloneGithubRepository = async ({
 	return command;
 };
 
-export const getGithubRepositories = async (githubId?: string, prefetchedProvider?: Awaited<ReturnType<typeof findGithubById>>) => {
+export const getGithubRepositories = async (githubId?: string) => {
 	if (!githubId) {
 		return [];
 	}
 
-	// Re-use the provider fetched upstream to skip a redundant DB query
-	const githubProvider = prefetchedProvider ?? await findGithubById(githubId);
+	const githubProvider = await findGithubById(githubId);
 
 	const octokit = new Octokit({
 		authStrategy: createAppAuth,
@@ -266,13 +265,11 @@ export const getGithubRepositories = async (githubId?: string, prefetchedProvide
 
 export const getGithubBranches = async (
 	input: z.infer<typeof apiFindGithubBranches>,
-	prefetchedProvider?: Awaited<ReturnType<typeof findGithubById>>,
 ) => {
 	if (!input.githubId) {
 		return [];
 	}
-	// Re-use the provider fetched upstream to skip a redundant DB query
-	const githubProvider = prefetchedProvider ?? await findGithubById(input.githubId);
+	const githubProvider = await findGithubById(input.githubId);
 
 	const octokit = new Octokit({
 		authStrategy: createAppAuth,

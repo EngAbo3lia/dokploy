@@ -27,6 +27,7 @@ import { ShowIconSettings } from "@/components/dashboard/application/icon/show-i
 import { ShowDockerLogs } from "@/components/dashboard/application/logs/show";
 import { ShowPatches } from "@/components/dashboard/application/patches/show-patches";
 import { ShowPreviewDeployments } from "@/components/dashboard/application/preview-deployments/show-preview-deployments";
+import { ApplicationCommandCenter } from "@/components/dashboard/application/application-command-center";
 import { ShowSchedules } from "@/components/dashboard/application/schedules/show-schedules";
 import { ApplicationHeaderActions } from "@/components/dashboard/application/application-header-actions";
 import { UpdateApplication } from "@/components/dashboard/application/update-application";
@@ -204,7 +205,15 @@ const Service = (
 							]}
 						>
 							<TabsContent value="general">
-								<div className="flex flex-col gap-4 pt-2.5">
+								<div className="flex flex-col gap-6 pt-2.5">
+									<ApplicationCommandCenter
+										applicationId={applicationId}
+										onTabChange={(t) => {
+											setTab(t as TabState);
+											const newPath = `/dashboard/project/${projectId}/environment/${environmentId}/services/application/${applicationId}?tab=${t}`;
+											router.push(newPath);
+										}}
+									/>
 									<ShowGeneralApplication applicationId={applicationId} />
 								</div>
 							</TabsContent>
