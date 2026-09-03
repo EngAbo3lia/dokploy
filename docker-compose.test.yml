@@ -1,6 +1,6 @@
 services:
   dokploy:
-    image: dokploy-local:patch
+    image: aboalia/dokploy:v0.30.5
     container_name: dokploy-test
     depends_on:
       - postgres
