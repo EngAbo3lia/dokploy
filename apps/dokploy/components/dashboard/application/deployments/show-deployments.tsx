@@ -18,12 +18,12 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DeploymentDetail } from "@/components/dashboard/deployment/deployment-detail";
-import { DeploymentStatus } from "@/components/shared/status-indicator";
 import { AlertBlock } from "@/components/shared/alert-block";
-import { EmptyState } from "@/components/shared/empty-state";
-import { SkeletonTable } from "@/components/shared/skeleton-card";
 import { DateTooltip } from "@/components/shared/date-tooltip";
 import { DialogAction } from "@/components/shared/dialog-action";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SkeletonTable } from "@/components/shared/skeleton-card";
+import { DeploymentStatus } from "@/components/shared/status-indicator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -396,7 +396,9 @@ export const ShowDeployments = ({
 						<div className="flex flex-col gap-0 min-w-[640px]">
 							<div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] items-center gap-3 border-b px-4 py-2 text-xs text-muted-foreground">
 								<span>Deployment</span>
-								<span className="hidden w-24 text-right sm:block">Duration</span>
+								<span className="hidden w-24 text-right sm:block">
+									Duration
+								</span>
 								<span className="min-w-[96px] text-right">Status</span>
 								<span className="hidden w-32 text-right sm:block">Date</span>
 								<span aria-hidden="true" />
@@ -409,8 +411,7 @@ export const ShowDeployments = ({
 									deployment.deploymentId,
 								);
 								const canDelete =
-									deployment.status === "done" ||
-									deployment.status === "error";
+									deployment.status === "done" || deployment.status === "error";
 
 								const duration =
 									deployment.startedAt && deployment.finishedAt
@@ -470,7 +471,7 @@ export const ShowDeployments = ({
 												</button>
 											)}
 											{deployment.description?.trim() && (
-												<span className="font-mono text-xs text-muted-foreground">
+												<span className="wrap-anywhere font-mono text-xs text-muted-foreground">
 													{deployment.description}
 												</span>
 											)}
@@ -501,9 +502,7 @@ export const ShowDeployments = ({
 										</div>
 
 										<div className="flex min-w-[96px] justify-end">
-											<DeploymentStatus
-												status={deployment.status || "idle"}
-											/>
+											<DeploymentStatus status={deployment.status || "idle"} />
 										</div>
 
 										<div className="hidden w-32 items-center justify-end sm:flex">

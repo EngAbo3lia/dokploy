@@ -17,6 +17,7 @@ import {
 	Download,
 	Globe,
 	InfoIcon,
+	Loader2,
 	Search,
 	Server,
 	TrendingUpIcon,
@@ -102,7 +103,12 @@ export const RequestsTable = ({ dateRange }: RequestsTableProps) => {
 		pageSize: 10,
 	});
 
-	const { data: statsLogs } = api.settings.readStatsLogs.useQuery(
+	const {
+		data: statsLogs,
+		isLoading,
+		isError,
+		error,
+	} = api.settings.readStatsLogs.useQuery(
 		{
 			sort: sorting[0],
 			page: pagination,
@@ -275,7 +281,19 @@ export const RequestsTable = ({ dateRange }: RequestsTableProps) => {
 												colSpan={columns.length}
 												className="text-center"
 											>
-												{statsLogs?.data.length === 0 && (
+												{isLoading ? (
+													<div className="flex h-24 w-full items-center justify-center gap-3 text-muted-foreground">
+														<Loader2 className="size-4 animate-spin" />
+														<span className="text-sm">Loading requests...</span>
+													</div>
+												) : isError ? (
+													<EmptyState
+														icon={<InfoIcon />}
+														title="Failed to load requests"
+														description={error?.message ?? "Unexpected error"}
+														className="py-8"
+													/>
+												) : (
 													<EmptyState
 														icon={<Search />}
 														title="No results"
