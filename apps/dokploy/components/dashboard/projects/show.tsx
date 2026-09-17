@@ -222,7 +222,7 @@ export const ShowProjects = () => {
 					<div className="rounded-xl bg-background shadow-md ">
 						<div className="flex justify-between gap-4 w-full items-center flex-wrap p-6">
 							<CardHeader className="flex-1 p-0">
-								<CardTitle className="text-xl flex flex-row gap-2">
+								<CardTitle className="text-2xl font-semibold tracking-tight flex flex-row gap-2">
 									<FolderInput className="size-6 text-muted-foreground self-center" />
 									Projects
 								</CardTitle>
@@ -349,7 +349,7 @@ export const ShowProjects = () => {
 													className="w-full lg:max-w-md"
 												>
 													<Card
-														className="group relative w-full h-full bg-transparent transition-colors hover:bg-border flex flex-col"
+														className="group relative w-full h-full bg-transparent transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 flex flex-col"
 														onClick={() => {
 															if (!hasNoEnvironments) {
 																router.push(
@@ -408,7 +408,7 @@ export const ShowProjects = () => {
 																					</span>
 																					{meta.label}
 																				</span>
-																				<span className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+																				<span className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground font-mono tabular-nums">
 																					<span>
 																						{health.totals.services} services
 																					</span>
@@ -611,7 +611,7 @@ export const ShowProjects = () => {
 																<DateTooltip date={project.createdAt}>
 																	Created
 																</DateTooltip>
-																<span>
+																<span className="font-mono tabular-nums">
 																	{totalServices}{" "}
 																	{totalServices === 1 ? "service" : "services"}
 																</span>

@@ -83,6 +83,13 @@ export const SearchCommand = () => {
 		return () => document.removeEventListener("keydown", down);
 	}, []);
 
+	React.useEffect(() => {
+		const openSearch = () => setOpen(true);
+		document.addEventListener("dokploy:open-search", openSearch);
+		return () =>
+			document.removeEventListener("dokploy:open-search", openSearch);
+	}, []);
+
 	return (
 		<div>
 			<CommandDialog open={open} onOpenChange={setOpen}>

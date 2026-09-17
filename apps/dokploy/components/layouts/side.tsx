@@ -29,6 +29,7 @@ import {
 	type LucideIcon,
 	Package,
 	Palette,
+	Search,
 	Server,
 	Settings2,
 	ShieldCheck,
@@ -1019,6 +1020,23 @@ export default function Page({ children }: Props) {
 					> */}
 					<LogoWrapper />
 					{/* </SidebarMenuButton> */}
+					<SidebarMenuItem className="group-data-[collapsible=icon]:hidden">
+						<button
+							type="button"
+							onClick={() =>
+								document.dispatchEvent(new Event("dokploy:open-search"))
+							}
+							className="flex h-8 w-full items-center justify-between gap-2 rounded-lg border border-border bg-muted/50 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+						>
+							<span className="flex items-center gap-2">
+								<Search className="size-3.5" />
+								Search...
+							</span>
+							<kbd className="pointer-events-none inline-flex h-5 select-none items-center rounded border bg-background px-1.5 font-mono text-[10px] font-medium">
+								⌘J
+							</kbd>
+						</button>
+					</SidebarMenuItem>
 				</SidebarHeader>
 				<SidebarContent>
 					<SidebarGroup>
@@ -1268,7 +1286,22 @@ export default function Page({ children }: Props) {
 									</BreadcrumbList>
 								</Breadcrumb>
 							</div>
+							<div className="flex items-center gap-2">
+							<button
+								type="button"
+								onClick={() =>
+									document.dispatchEvent(new Event("dokploy:open-search"))
+								}
+								className="inline-flex h-8 items-center gap-2 rounded-full border border-border bg-muted/50 pr-2 pl-3 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+							>
+								<Search className="size-3.5" />
+								<span className="hidden sm:inline">Search...</span>
+								<kbd className="pointer-events-none inline-flex h-5 select-none items-center rounded border bg-background px-1.5 font-mono text-[10px] font-medium">
+									⌘J
+								</kbd>
+							</button>
 							{!isCloud && <TimeBadge />}
+						</div>
 						</div>
 					</header>
 				)}

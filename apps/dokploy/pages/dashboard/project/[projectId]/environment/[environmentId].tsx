@@ -76,7 +76,6 @@ import { Badge } from "@/components/ui/badge";
 import {
 	Card,
 	CardContent,
-	CardDescription,
 	CardFooter,
 	CardHeader,
 	CardTitle,
@@ -1156,16 +1155,20 @@ const EnvironmentPage = (
 						<div className="flex flex-col gap-4 p-4 sm:p-6 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
 							<div className="flex min-w-0 flex-col gap-1.5">
 								<div className="flex flex-row flex-wrap items-center gap-2.5">
-									<FolderInput className="size-6 shrink-0 text-muted-foreground" />
-									<p className="text-base font-medium">
+									<FolderInput className="size-5 shrink-0 text-muted-foreground" />
+									<h1 className="text-2xl font-semibold tracking-tight">
 										{currentEnvironment.project.name}
-									</p>
+									</h1>
 									<AdvancedEnvironmentSelector
 										projectId={projectId}
 										currentEnvironmentId={environmentId}
 									/>
 									<EnvironmentVariables environmentId={environmentId}>
-										<Button variant="ghost" size="icon" className="size-8 shrink-0">
+										<Button
+											variant="ghost"
+											size="icon"
+											className="size-8 shrink-0"
+										>
 											<SquareTerminal className="size-4 cursor-pointer text-muted-foreground" />
 										</Button>
 									</EnvironmentVariables>
@@ -1178,7 +1181,8 @@ const EnvironmentPage = (
 										{currentEnvironment.name}
 									</Badge>
 									<span className="truncate text-muted-foreground">
-										{currentEnvironment.description || "No description provided"}
+										{currentEnvironment.description ||
+											"No description provided"}
 									</span>
 								</div>
 							</div>
@@ -1246,8 +1250,8 @@ const EnvironmentPage = (
 							>
 								<div className="flex w-full flex-row items-center overflow-x-auto scrollbar-none">
 									<TabsList
-										variant="line"
-										className="flex h-10 w-fit items-center justify-start gap-1 rounded-none bg-transparent p-0"
+										variant="seg"
+										className="flex h-auto w-fit items-center justify-start gap-1"
 									>
 										{tabs.map((t) => (
 											<TabsTrigger
@@ -1257,6 +1261,11 @@ const EnvironmentPage = (
 											>
 												<t.icon className="size-4" />
 												{t.label}
+												{t.value === "services" && applications.length > 0 && (
+													<span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-muted px-1 font-mono text-[10px] font-semibold text-muted-foreground">
+														{applications.length}
+													</span>
+												)}
 											</TabsTrigger>
 										))}
 									</TabsList>
@@ -1669,128 +1678,134 @@ const EnvironmentPage = (
 													<Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
 												</div>
 												<div className="flex flex-row flex-wrap items-center gap-2">
-												<Select value={sortBy} onValueChange={setSortBy}>
-													<SelectTrigger className="w-full sm:w-[200px] lg:w-[180px]">
-														<SelectValue placeholder="Sort by..." />
-													</SelectTrigger>
-													<SelectContent>
-														<SelectItem value="name-asc">Name (A-Z)</SelectItem>
-														<SelectItem value="name-desc">
-															Name (Z-A)
-														</SelectItem>
-														<SelectItem value="lastDeploy-desc">
-															Recently deployed
-														</SelectItem>
-														<SelectItem value="createdAt-desc">
-															Newest first
-														</SelectItem>
-														<SelectItem value="createdAt-asc">
-															Oldest first
-														</SelectItem>
-														<SelectItem value="type-asc">Type (A-Z)</SelectItem>
-														<SelectItem value="type-desc">
-															Type (Z-A)
-														</SelectItem>
-													</SelectContent>
-												</Select>
-												<Popover
-													open={openCombobox}
-													onOpenChange={setOpenCombobox}
-												>
-													<PopoverTrigger asChild>
-														<Button
-															variant="outline"
-															aria-expanded={openCombobox}
-															className="w-full justify-between sm:w-[200px] lg:w-[160px]"
-														>
-															{selectedTypes.length === 0
-																? "Select types..."
-																: `${selectedTypes.length} selected`}
-															<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-														</Button>
-													</PopoverTrigger>
-													<PopoverContent className="w-[200px] p-0">
-														<Command>
-															<CommandInput placeholder="Search type..." />
-															<CommandEmpty>No type found.</CommandEmpty>
-															<CommandGroup>
-																{serviceTypes.map((type) => (
-																	<CommandItem
-																		key={type.value}
-																		onSelect={() => {
-																			setSelectedTypes((prev) =>
-																				prev.includes(type.value)
-																					? prev.filter((t) => t !== type.value)
-																					: [...prev, type.value],
-																			);
-																			setOpenCombobox(false);
-																		}}
-																	>
-																		<div className="flex flex-row">
-																			<Check
-																				className={cn(
-																					"mr-2 h-4 w-4",
-																					selectedTypes.includes(type.value)
-																						? "opacity-100"
-																						: "opacity-0",
-																				)}
-																			/>
-																			{type.icon && (
-																				<type.icon className="mr-2 h-4 w-4" />
-																			)}
-																			{type.label}
-																		</div>
-																	</CommandItem>
-																))}
-																<CommandItem
-																	onSelect={() => {
-																		setSelectedTypes([]);
-																		setOpenCombobox(false);
-																	}}
-																	className="border-t"
-																>
-																	<div className="flex flex-row items-center">
-																		<X className="mr-2 h-4 w-4" />
-																		Clear filters
-																	</div>
-																</CommandItem>
-															</CommandGroup>
-														</Command>
-													</PopoverContent>
-												</Popover>
-												{(availableServers.length > 0 ||
-													hasServicesWithoutServer) && (
-													<Select
-														value={selectedServerId || "all"}
-														onValueChange={setSelectedServerId}
-													>
+													<Select value={sortBy} onValueChange={setSortBy}>
 														<SelectTrigger className="w-full sm:w-[200px] lg:w-[180px]">
-															<SelectValue placeholder="Filter by server..." />
+															<SelectValue placeholder="Sort by..." />
 														</SelectTrigger>
 														<SelectContent>
-															<SelectItem value="all">All servers</SelectItem>
-															{hasServicesWithoutServer && (
-																<SelectItem value="dokploy-server">
-																	<div className="flex items-center gap-2">
-																		<ServerIcon className="size-4" />
-																		<span>Dokploy server</span>
-																	</div>
-																</SelectItem>
-															)}
-															{availableServers.map((server) => (
-																<SelectItem
-																	key={server.serverId}
-																	value={server.serverId}
-																>
-																	<div className="flex items-center gap-2">
-																		<ServerIcon className="size-4" />
-																		<span>{server.serverName}</span>
-																	</div>
-																</SelectItem>
-															))}
+															<SelectItem value="name-asc">
+																Name (A-Z)
+															</SelectItem>
+															<SelectItem value="name-desc">
+																Name (Z-A)
+															</SelectItem>
+															<SelectItem value="lastDeploy-desc">
+																Recently deployed
+															</SelectItem>
+															<SelectItem value="createdAt-desc">
+																Newest first
+															</SelectItem>
+															<SelectItem value="createdAt-asc">
+																Oldest first
+															</SelectItem>
+															<SelectItem value="type-asc">
+																Type (A-Z)
+															</SelectItem>
+															<SelectItem value="type-desc">
+																Type (Z-A)
+															</SelectItem>
 														</SelectContent>
 													</Select>
-												)}
+													<Popover
+														open={openCombobox}
+														onOpenChange={setOpenCombobox}
+													>
+														<PopoverTrigger asChild>
+															<Button
+																variant="outline"
+																aria-expanded={openCombobox}
+																className="w-full justify-between sm:w-[200px] lg:w-[160px]"
+															>
+																{selectedTypes.length === 0
+																	? "Select types..."
+																	: `${selectedTypes.length} selected`}
+																<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+															</Button>
+														</PopoverTrigger>
+														<PopoverContent className="w-[200px] p-0">
+															<Command>
+																<CommandInput placeholder="Search type..." />
+																<CommandEmpty>No type found.</CommandEmpty>
+																<CommandGroup>
+																	{serviceTypes.map((type) => (
+																		<CommandItem
+																			key={type.value}
+																			onSelect={() => {
+																				setSelectedTypes((prev) =>
+																					prev.includes(type.value)
+																						? prev.filter(
+																								(t) => t !== type.value,
+																							)
+																						: [...prev, type.value],
+																				);
+																				setOpenCombobox(false);
+																			}}
+																		>
+																			<div className="flex flex-row">
+																				<Check
+																					className={cn(
+																						"mr-2 h-4 w-4",
+																						selectedTypes.includes(type.value)
+																							? "opacity-100"
+																							: "opacity-0",
+																					)}
+																				/>
+																				{type.icon && (
+																					<type.icon className="mr-2 h-4 w-4" />
+																				)}
+																				{type.label}
+																			</div>
+																		</CommandItem>
+																	))}
+																	<CommandItem
+																		onSelect={() => {
+																			setSelectedTypes([]);
+																			setOpenCombobox(false);
+																		}}
+																		className="border-t"
+																	>
+																		<div className="flex flex-row items-center">
+																			<X className="mr-2 h-4 w-4" />
+																			Clear filters
+																		</div>
+																	</CommandItem>
+																</CommandGroup>
+															</Command>
+														</PopoverContent>
+													</Popover>
+													{(availableServers.length > 0 ||
+														hasServicesWithoutServer) && (
+														<Select
+															value={selectedServerId || "all"}
+															onValueChange={setSelectedServerId}
+														>
+															<SelectTrigger className="w-full sm:w-[200px] lg:w-[180px]">
+																<SelectValue placeholder="Filter by server..." />
+															</SelectTrigger>
+															<SelectContent>
+																<SelectItem value="all">All servers</SelectItem>
+																{hasServicesWithoutServer && (
+																	<SelectItem value="dokploy-server">
+																		<div className="flex items-center gap-2">
+																			<ServerIcon className="size-4" />
+																			<span>Dokploy server</span>
+																		</div>
+																	</SelectItem>
+																)}
+																{availableServers.map((server) => (
+																	<SelectItem
+																		key={server.serverId}
+																		value={server.serverId}
+																	>
+																		<div className="flex items-center gap-2">
+																			<ServerIcon className="size-4" />
+																			<span>{server.serverName}</span>
+																		</div>
+																	</SelectItem>
+																))}
+															</SelectContent>
+														</Select>
+													)}
 												</div>
 											</div>
 										</div>
@@ -1815,8 +1830,8 @@ const EnvironmentPage = (
 													className="h-[70vh]"
 												/>
 											) : (
-										<div className="flex w-full flex-col gap-4">
-												<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+												<div className="flex w-full flex-col gap-4">
+													<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
 														{filteredServices?.map((service) => (
 															<ContextMenu key={service.id}>
 																<ContextMenuTrigger asChild>
@@ -1824,12 +1839,7 @@ const EnvironmentPage = (
 																		href={`/dashboard/project/${projectId}/environment/${environmentId}/services/${service.type}/${service.id}`}
 																		className="block h-full"
 																	>
-																		<Card className="group relative flex h-full cursor-pointer bg-transparent transition-colors hover:bg-border">
-																			{service.serverId && (
-																				<div className="absolute -left-1 -top-2">
-																					<ServerIcon className="size-4 text-muted-foreground" />
-																				</div>
-																			)}
+																		<Card className="group relative flex h-full cursor-pointer bg-transparent transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
 																			<div className="absolute -right-1 -top-2">
 																				{(() => {
 																					const health = healthByServiceId.get(
@@ -1891,7 +1901,7 @@ const EnvironmentPage = (
 																							<span className="flex flex-wrap items-center gap-2 text-base font-medium leading-none">
 																								{service.name}
 																							</span>
-																							<div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+																							<div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
 																								{service.type === "compose" && (
 																									<CircuitBoard className="size-3" />
 																								)}
@@ -1994,7 +2004,7 @@ const EnvironmentPage = (
 																				if (!health) return null;
 																				return (
 																					<CardContent className="space-y-1 px-6 pb-2 text-xs">
-																						<div className="flex items-center gap-1.5 text-muted-foreground">
+																						<div className="flex items-center gap-1.5 font-mono tabular-nums text-muted-foreground">
 																							<Boxes className="size-3.5" />
 																							<span>
 																								{health.containers.total}{" "}

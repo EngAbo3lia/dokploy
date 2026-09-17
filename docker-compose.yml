@@ -1,7 +1,7 @@
 services:
   dokploy:
-    image: aboalia/dokploy:v0.30.5
-    container_name: dokploy-test
+    image: aboalia/dokploy:aboalia
+    container_name: dokploy
     depends_on:
       - postgres
     environment:
@@ -16,10 +16,12 @@ services:
       - dokploy-data:/etc/dokploy
       - ./.env.production.local:/app/.env
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - dokploy-network
     restart: unless-stopped
   traefik:
     image: traefik:v3.3
-    container_name: dokploy-test-traefik
+    container_name: traefik
     command:
       - "--api.insecure=true"
       - "--providers.docker.endpoint=unix:///var/run/docker.sock"
@@ -37,7 +39,7 @@ services:
     restart: unless-stopped
   postgres:
     image: postgres:16-alpine
-    container_name: dokploy-test-postgres
+    container_name: postgres
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=dokploy123
@@ -46,13 +48,17 @@ services:
       - dokploy-postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - dokploy-network
     restart: unless-stopped
   redis:
     image: redis:7-alpine
-    container_name: dokploy-test-redis
+    container_name: redis
     command: redis-server --maxmemory-policy noeviction
     volumes:
       - dokploy-redis:/data
+    networks:
+      - dokploy-network
     restart: unless-stopped
 networks:
   dokploy-network:

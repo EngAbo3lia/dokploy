@@ -46,12 +46,14 @@ function StatCard({
 	delta?: string;
 }) {
 	return (
-		<div className="rounded-xl border bg-background p-5 min-h-[140px] flex flex-col justify-between">
-			<span className="text-xs uppercase tracking-wider text-muted-foreground">
+		<div className="rounded-xl border bg-background p-5 shadow-sm min-h-[140px] flex flex-col justify-between">
+			<span className="text-[10px] uppercase tracking-wider text-muted-foreground">
 				{label}
 			</span>
 			<div className="flex flex-col gap-1">
-				<span className="text-3xl font-semibold tracking-tight">{value}</span>
+				<span className="font-mono text-3xl font-semibold tracking-tight">
+					{value}
+				</span>
 				{delta && (
 					<span className="text-xs text-muted-foreground">{delta}</span>
 				)}
@@ -79,15 +81,17 @@ function StatusListCard({
 	}[];
 }) {
 	return (
-		<div className="rounded-xl border bg-background p-5 min-h-[140px] flex flex-col gap-3">
-			<span className="text-xs uppercase tracking-wider text-muted-foreground">
+		<div className="rounded-xl border bg-background p-5 shadow-sm min-h-[140px] flex flex-col gap-3">
+			<span className="text-[10px] uppercase tracking-wider text-muted-foreground">
 				{label}
 			</span>
 			<ul className="flex flex-col gap-1.5">
 				{items.map((item) => (
 					<li key={item.label} className="flex items-center gap-2.5 text-sm">
 						<StatusDot status={item.status} />
-						<span className="font-semibold tabular-nums w-8">{item.count}</span>
+						<span className="font-mono font-semibold tabular-nums w-8">
+							{item.count}
+						</span>
 						<span className="text-muted-foreground">{item.label}</span>
 					</li>
 				))}
@@ -169,9 +173,14 @@ export const ShowHome = () => {
 			<Card className="h-full bg-sidebar p-2.5 rounded-xl min-h-[85vh]">
 				<div className="rounded-xl bg-background shadow-md p-6 flex flex-col gap-6 h-full">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-						<h1 className="text-3xl font-semibold tracking-tight">
-							{firstName ? `Welcome back, ${firstName}` : "Welcome back"}
-						</h1>
+						<div className="flex flex-col gap-1.5">
+							<h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
+								{firstName ? `Welcome back, ${firstName}` : "Welcome back"}
+							</h1>
+							<p className="text-sm text-muted-foreground">
+								Here's what's happening across your projects and deployments.
+							</p>
+						</div>
 						<Button asChild variant="secondary" className="w-fit">
 							<Link href="/dashboard/projects">
 								Go to projects
