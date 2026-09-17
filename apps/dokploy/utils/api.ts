@@ -73,7 +73,19 @@ const links =
 
 export const api = createTRPCNext<AppRouter>({
 	config() {
-		return { links };
+		return {
+			links,
+			queryClientConfig: {
+				defaultOptions: {
+					queries: {
+						staleTime: 30_000,
+						gcTime: 10 * 60_000,
+						refetchOnWindowFocus: false,
+						retry: 1,
+					},
+				},
+			},
+		};
 	},
 	ssr: false,
 	transformer: superjson,
