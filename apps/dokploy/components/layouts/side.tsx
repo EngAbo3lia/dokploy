@@ -1044,7 +1044,7 @@ export default function Page({ children }: Props) {
 												<SidebarMenuButton
 													asChild
 													tooltip={item.title}
-													className={cn(isActive && "bg-border")}
+													isActive={isActive}
 												>
 													<Link
 														href={item.url}
@@ -1079,7 +1079,7 @@ export default function Page({ children }: Props) {
 																<SidebarMenuSubItem key={subItem.title}>
 																	<SidebarMenuSubButton
 																		asChild
-																		className={cn(isActive && "bg-border")}
+																		isActive={isActive}
 																	>
 																		<Link
 																			href={subItem.url}
@@ -1133,7 +1133,7 @@ export default function Page({ children }: Props) {
 												<SidebarMenuButton
 													asChild
 													tooltip={item.title}
-													className={cn(isActive && "bg-border")}
+													isActive={isActive}
 												>
 													<Link
 														href={item.url}
@@ -1168,7 +1168,7 @@ export default function Page({ children }: Props) {
 																<SidebarMenuSubItem key={subItem.title}>
 																	<SidebarMenuSubButton
 																		asChild
-																		className={cn(isActive && "bg-border")}
+																		isActive={isActive}
 																	>
 																		<Link
 																			href={subItem.url}
@@ -1248,7 +1248,7 @@ export default function Page({ children }: Props) {
 			</Sidebar>
 			<SidebarInset>
 				{!includesProjects && (
-					<header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+					<header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b border-border/50 bg-background/75 backdrop-blur-[20px] transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
 						<div className="flex items-center justify-between w-full px-4">
 							<div className="flex items-center gap-2">
 								<SidebarTrigger className="-ml-1" />

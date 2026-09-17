@@ -19,16 +19,16 @@ const badgeVariants = cva(
 				ghost:
 					"hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
 				link: "text-primary underline-offset-4 hover:underline",
-				red: "border-transparent select-none items-center whitespace-nowrap font-medium bg-destructive/10 text-destructive text-xs h-4 px-1 py-1 rounded-md",
+				red: "border-transparent select-none items-center whitespace-nowrap font-medium bg-destructive/10 text-destructive text-xs h-4 px-1 py-1 rounded-full shadow-[0_0_6px_rgba(244,63,94,0.4)]",
 				yellow:
-					"border-transparent select-none items-center whitespace-nowrap font-medium bg-warning/10 dark:text-warning text-warning text-xs h-4 px-1 py-1 rounded-md",
+					"border-transparent select-none items-center whitespace-nowrap font-medium bg-warning/10 dark:text-warning text-warning text-xs h-4 px-1 py-1 rounded-full",
 				orange:
-					"border-transparent select-none items-center whitespace-nowrap font-medium bg-warning/10 text-warning text-xs h-4 px-1 py-1 rounded-md",
+					"border-transparent select-none items-center whitespace-nowrap font-medium bg-warning/10 text-warning text-xs h-4 px-1 py-1 rounded-full",
 				green:
-					"border-transparent select-none items-center whitespace-nowrap font-medium bg-success/10 dark:text-success text-success text-xs h-4 px-1 py-1 rounded-md",
-				blue: "border-transparent select-none items-center whitespace-nowrap font-medium bg-info/10 dark:text-info text-info text-xs h-4 px-1 py-1 rounded-md",
+					"border-transparent select-none items-center whitespace-nowrap font-medium bg-success/10 dark:text-success text-success text-xs h-4 px-1 py-1 rounded-full",
+				blue: "border-transparent select-none items-center whitespace-nowrap font-medium bg-info/10 dark:text-info text-info text-xs h-4 px-1 py-1 rounded-full",
 				blank:
-					"border-transparent select-none items-center whitespace-nowrap font-medium dark:bg-white/15 bg-black/15 text-foreground text-xs h-4 px-1 py-1 rounded-md",
+					"border-transparent select-none items-center whitespace-nowrap font-medium dark:bg-white/15 bg-black/15 text-foreground text-xs h-4 px-1 py-1 rounded-full",
 			},
 		},
 		defaultVariants: {
