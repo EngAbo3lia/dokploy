@@ -13,7 +13,6 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { BreadcrumbSidebar } from "@/components/shared/breadcrumb-sidebar";
 import { DateTooltip } from "@/components/shared/date-tooltip";
-import { EmptyState } from "@/components/shared/empty-state";
 import { FocusShortcutInput } from "@/components/shared/focus-shortcut-input";
 import { TagBadge } from "@/components/shared/tag-badge";
 import { TagFilter } from "@/components/shared/tag-filter";
@@ -29,14 +28,7 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { PageHeader } from "@/components/creative-os/page-header";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -217,27 +209,15 @@ export const ShowProjects = () => {
 			<BreadcrumbSidebar
 				list={[{ name: "Projects", href: "/dashboard/projects" }]}
 			/>
-			<div className="w-full">
-				<Card className="h-full bg-sidebar p-2.5 rounded-xl  ">
-					<div className="rounded-xl bg-background shadow-md ">
-						<div className="flex justify-between gap-4 w-full items-center flex-wrap p-6">
-							<CardHeader className="flex-1 p-0">
-								<CardTitle className="text-2xl font-semibold tracking-tight flex flex-row gap-2">
-									<FolderInput className="size-6 text-muted-foreground self-center" />
-									Projects
-								</CardTitle>
-								<CardDescription>
-									Create and manage your projects
-								</CardDescription>
-							</CardHeader>
-							{permissions?.project.create && (
-								<div className="">
-									<HandleProject />
-								</div>
-							)}
-						</div>
+			<div className="studio-page">
+				<PageHeader
+					title="Projects"
+					description="Create and manage your projects"
+				>
+					{permissions?.project.create ? <HandleProject /> : null}
+				</PageHeader>
 
-						<CardContent className="space-y-2 py-8 border-t gap-4 flex flex-col min-h-[60vh]">
+				<div className="flex min-h-[60vh] flex-col gap-4">
 							{isPending ? (
 								<div className="flex flex-row gap-2 items-center justify-center text-sm text-muted-foreground min-h-[60vh]">
 									<span>Loading...</span>
@@ -297,14 +277,16 @@ export const ShowProjects = () => {
 										</div>
 									</div>
 									{filteredProjects?.length === 0 && (
-										<EmptyState
-											icon={
-												<FolderInput className="size-8 text-muted-foreground/60" />
-											}
-											title="No projects found"
-											description="Create your first project to organize your services and deployments."
-											className="mt-6 h-[50vh]"
-										/>
+										<div className="studio-empty mt-6 h-[50vh]">
+											<div className="studio-empty-icon">
+												<FolderInput className="size-8" />
+											</div>
+											<p className="studio-empty-title">No projects found</p>
+											<p className="studio-empty-text">
+												Create your first project to organize your services
+												and deployments.
+											</p>
+										</div>
 									)}
 									<div className="w-full grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-5">
 										{filteredProjects?.map((project) => {
@@ -348,8 +330,8 @@ export const ShowProjects = () => {
 													key={project.projectId}
 													className="w-full lg:max-w-md"
 												>
-													<Card
-														className="group relative w-full h-full bg-transparent transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 flex flex-col"
+													<article
+														className="studio-card studio-card-hover group relative flex h-full w-full cursor-pointer flex-col"
 														onClick={() => {
 															if (!hasNoEnvironments) {
 																router.push(
@@ -358,9 +340,9 @@ export const ShowProjects = () => {
 															}
 														}}
 													>
-														<CardHeader>
-															<CardTitle className="flex items-center justify-between gap-2 overflow-clip">
-																<span className="flex flex-col gap-1.5 cursor-pointer">
+														<div className="studio-card-head flex-1">
+															<div className="flex w-full items-start justify-between gap-2 overflow-clip">
+																<span className="flex cursor-pointer flex-col gap-1.5">
 																	<div className="flex items-center gap-2">
 																		<BookIcon className="size-4 text-muted-foreground" />
 																		<span className="text-base font-medium leading-none">
@@ -394,7 +376,7 @@ export const ShowProjects = () => {
 																		return (
 																			<div className="mt-2 flex flex-col gap-1.5">
 																				<span
-																					className={`inline-flex w-fit items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium ${meta.badge}`}
+																					className={`studio-badge w-fit ${meta.badge}`}
 																				>
 																					<span className="relative flex size-1.5">
 																						{meta.pulse && (
@@ -604,29 +586,25 @@ export const ShowProjects = () => {
 																		</DropdownMenuContent>
 																	</DropdownMenu>
 																</div>
-															</CardTitle>
-														</CardHeader>
-														<CardFooter className="pt-4 mt-auto">
-															<div className="space-y-1 text-xs flex flex-row justify-between max-sm:flex-wrap w-full gap-2 sm:gap-4">
-																<DateTooltip date={project.createdAt}>
-																	Created
-																</DateTooltip>
-																<span className="font-mono tabular-nums">
-																	{totalServices}{" "}
-																	{totalServices === 1 ? "service" : "services"}
-																</span>
 															</div>
-														</CardFooter>
-													</Card>
+														</div>
+														<div className="studio-card-body mt-auto flex items-center justify-between gap-4 pt-0 max-sm:flex-wrap">
+															<DateTooltip date={project.createdAt}>
+																Created
+															</DateTooltip>
+															<span className="studio-font-mono text-xs text-muted-foreground">
+																{totalServices}{" "}
+																{totalServices === 1 ? "service" : "services"}
+															</span>
+														</div>
+													</article>
 												</div>
 											);
 										})}
 									</div>
 								</>
 							)}
-						</CardContent>
-					</div>
-				</Card>
+				</div>
 			</div>
 		</>
 	);

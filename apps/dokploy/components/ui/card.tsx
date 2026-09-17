@@ -12,7 +12,7 @@ function Card({
 			data-slot="card"
 			data-size={size}
 			className={cn(
-				"group/card flex flex-col rounded-xl border border-border bg-card text-sm text-card-foreground shadow-sm transition-shadow duration-200 hover:shadow-md *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
+				"group/card flex flex-col rounded-xl border border-border bg-card text-sm text-card-foreground shadow-md transition-shadow duration-150 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
 				className,
 			)}
 			{...props}
@@ -25,7 +25,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
 		<div
 			data-slot="card-header"
 			className={cn(
-				"group/card-header @container/card-header grid auto-rows-min items-start gap-1.5 rounded-t-xl p-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto]",
+				"group/card-header @container/card-header grid auto-rows-min items-start gap-1.5 rounded-t-xl p-5 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto]",
 				className,
 			)}
 			{...props}
@@ -38,7 +38,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
 		<div
 			data-slot="card-title"
 			className={cn(
-				"font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
+				"font-heading text-[15px] leading-snug font-semibold tracking-[-0.01em] group-data-[size=sm]/card:text-sm",
 				className,
 			)}
 			{...props}
@@ -73,7 +73,7 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
 			data-slot="card-content"
-			className={cn("p-6 pt-0", className)}
+			className={cn("p-5 pt-0", className)}
 			{...props}
 		/>
 	);
@@ -83,7 +83,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
 			data-slot="card-footer"
-			className={cn("flex items-center rounded-b-xl p-6 pt-0", className)}
+			className={cn("flex items-center rounded-b-xl p-5 pt-0", className)}
 			{...props}
 		/>
 	);
